@@ -14,6 +14,7 @@ import SignPdf from "./pdf/sign/SignPdf.jsx";
 import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
 import RedactPdf from "./pdf/redact/RedactPdf.jsx";
 import AddWatermark from "./pdf/add-watermark/AddWatermark.jsx";
+import PageNumbers from "./pdf/page-numbers/PageNumbers.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -32,6 +33,7 @@ const toolComponents = {
   "fill-pdf-form": FillPdfForm,
   "redact-pdf": RedactPdf,
   "add-watermark": AddWatermark,
+  "page-numbers": PageNumbers,
 };
 
 export default toolComponents;
