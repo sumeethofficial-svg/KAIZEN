@@ -11,6 +11,7 @@ import CropResizePdf from "./pdf/crop-resize/CropResizePdf.jsx";
 import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
 import EditPdf from "./pdf/edit/EditPdf.jsx";
 import SignPdf from "./pdf/sign/SignPdf.jsx";
+import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -26,6 +27,7 @@ const toolComponents = {
   "pdf-to-zip": PdfToZip,
   "edit-pdf": EditPdf,
   "sign-pdf": SignPdf,
+  "fill-pdf-form": FillPdfForm,
 };
 
 export default toolComponents;
