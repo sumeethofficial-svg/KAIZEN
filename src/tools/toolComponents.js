@@ -9,6 +9,7 @@ import PagesPerSheet from "./pdf/pages-per-sheet/PagesPerSheet.jsx";
 import FlipMirrorPdf from "./pdf/flip-mirror/FlipMirrorPdf.jsx";
 import CropResizePdf from "./pdf/crop-resize/CropResizePdf.jsx";
 import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
+
 import EditPdf from "./pdf/edit/EditPdf.jsx";
 import SignPdf from "./pdf/sign/SignPdf.jsx";
 import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
@@ -18,6 +19,7 @@ import PageNumbers from "./pdf/page-numbers/PageNumbers.jsx";
 import BatesNumbering from "./pdf/bates-numbering/BatesNumbering.jsx";
 import HeadersFooters from "./pdf/headers-footers/HeadersFooters.jsx";
 import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
+import EditMetadata from "./pdf/edit-metadata/EditMetadata.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -41,6 +43,7 @@ const toolComponents = {
   "bates-numbering": BatesNumbering,
   "headers-footers": HeadersFooters,
   "flatten-pdf": FlattenPdf,
+  "edit-metadata": EditMetadata,
 };
 
 export default toolComponents;
