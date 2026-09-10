@@ -9,6 +9,7 @@ import PagesPerSheet from "./pdf/pages-per-sheet/PagesPerSheet.jsx";
 import FlipMirrorPdf from "./pdf/flip-mirror/FlipMirrorPdf.jsx";
 import CropResizePdf from "./pdf/crop-resize/CropResizePdf.jsx";
 import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
+import ConvertImage from "./images/ConvertImage.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -22,6 +23,7 @@ const toolComponents = {
   "flip-mirror-pdf": FlipMirrorPdf,
   "crop-resize-pdf": CropResizePdf,
   "pdf-to-zip": PdfToZip,
+  "convert-image": ConvertImage,
 };
 
 export default toolComponents;

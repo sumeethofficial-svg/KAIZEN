@@ -2669,3 +2669,141 @@ footer {
     transition: none;
   }
 }
+
+/* =========================================================
+   KAIZEN - Shared Media Upload
+   Used by Image, Video, Audio and Document tools
+   ========================================================= */
+
+.media-upload {
+  width: 100%;
+  min-height: 330px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px;
+  text-align: center;
+
+  cursor: pointer;
+
+  border: 1px dashed rgba(255, 153, 72, 0.48);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(255, 255, 255, 0.012)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 18px 45px rgba(0, 0, 0, 0.14);
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.media-upload:hover {
+  border-color: rgba(255, 153, 72, 0.78);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 153, 72, 0.045),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 55px rgba(0, 0, 0, 0.2);
+
+  transform: translateY(-1px);
+}
+
+.media-upload-input {
+  display: none;
+}
+
+.media-upload-icon {
+  width: 68px;
+  height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 22px;
+
+  border-radius: 20px;
+
+  font-size: 31px;
+  font-weight: 700;
+  color: #ffffff;
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(255, 168, 77, 0.98),
+      rgba(235, 91, 22, 0.88) 55%,
+      rgba(150, 42, 10, 0.72)
+    );
+
+  box-shadow:
+    0 0 35px rgba(255, 119, 45, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.media-upload-title {
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.media-upload-subtitle {
+  margin: 9px 0 0;
+
+  font-size: 15px;
+
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.media-upload-meta {
+  margin-top: 15px;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: rgba(255, 159, 84, 0.82);
+}
+
+@media (max-width: 700px) {
+  .media-upload {
+    min-height: 250px;
+    padding: 28px 20px;
+  }
+
+  .media-upload-icon {
+    width: 58px;
+    height: 58px;
+    margin-bottom: 17px;
+  }
+
+  .media-upload-title {
+    font-size: 20px;
+  }
+}
