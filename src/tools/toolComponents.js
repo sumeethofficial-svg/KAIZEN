@@ -22,6 +22,7 @@ import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
 import EditMetadata from "./pdf/edit-metadata/EditMetadata.jsx";
 import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
 import PdfToHandwriting from "./pdf/pdf-to-handwriting/PdfToHandwriting.jsx";
+import HandwritingToPdf from "./pdf/handwriting-to-pdf/HandwritingToPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -48,6 +49,7 @@ const toolComponents = {
   "edit-metadata": EditMetadata,
   "invert-pdf-colours": InvertPdfColours,
   "pdf-to-handwriting": PdfToHandwriting,
+  "handwriting-to-pdf": HandwritingToPdf,
 };
 
 export default toolComponents;
