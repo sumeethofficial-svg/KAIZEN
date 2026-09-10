@@ -11,6 +11,20 @@ import CropResizePdf from "./pdf/crop-resize/CropResizePdf.jsx";
 import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
 import ConvertImage from "./images/ConvertImage.jsx";
 
+import EditPdf from "./pdf/edit/EditPdf.jsx";
+import SignPdf from "./pdf/sign/SignPdf.jsx";
+import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
+import RedactPdf from "./pdf/redact/RedactPdf.jsx";
+import AddWatermark from "./pdf/add-watermark/AddWatermark.jsx";
+import PageNumbers from "./pdf/page-numbers/PageNumbers.jsx";
+import BatesNumbering from "./pdf/bates-numbering/BatesNumbering.jsx";
+import HeadersFooters from "./pdf/headers-footers/HeadersFooters.jsx";
+import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
+import EditMetadata from "./pdf/edit-metadata/EditMetadata.jsx";
+import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
+import PdfToHandwriting from "./pdf/pdf-to-handwriting/PdfToHandwriting.jsx";
+import HandwritingToPdf from "./pdf/handwriting-to-pdf/HandwritingToPdf.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -23,7 +37,24 @@ const toolComponents = {
   "flip-mirror-pdf": FlipMirrorPdf,
   "crop-resize-pdf": CropResizePdf,
   "pdf-to-zip": PdfToZip,
+<<<<<<< HEAD
   "convert-image": ConvertImage,
+=======
+
+  "edit-pdf": EditPdf,
+  "sign-pdf": SignPdf,
+  "fill-pdf-form": FillPdfForm,
+  "redact-pdf": RedactPdf,
+  "add-watermark": AddWatermark,
+  "page-numbers": PageNumbers,
+  "bates-numbering": BatesNumbering,
+  "headers-footers": HeadersFooters,
+  "flatten-pdf": FlattenPdf,
+  "edit-metadata": EditMetadata,
+  "invert-pdf-colours": InvertPdfColours,
+  "pdf-to-handwriting": PdfToHandwriting,
+  "handwriting-to-pdf": HandwritingToPdf,
+>>>>>>> 22a2a1678dc9f06d1c3bb40e9b540e4b94df7e9e
 };
 
 export default toolComponents;

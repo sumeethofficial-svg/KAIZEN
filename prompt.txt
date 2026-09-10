@@ -1,0 +1,874 @@
+You are working on the same React + Vite + JavaScript project called KAIZEN.
+
+Your job is to build/update a tool inside the existing KAIZEN application while keeping the UI, UX, architecture, naming conventions, and visual language consistent with the tools already implemented.
+
+IMPORTANT:
+Do NOT redesign the application.
+Do NOT introduce a different visual style.
+Do NOT migrate anything to TypeScript, Next.js, Tailwind, shadcn, or another framework.
+Do NOT create a completely different component structure unless absolutely required.
+Follow the existing project patterns.
+
+==================================================
+1. KAIZEN PRODUCT DESIGN LANGUAGE
+==================================================
+
+KAIZEN is a premium digital utility platform.
+
+Brand:
+- KAIZEN
+- Japanese branding: 改善
+- Navbar label: カイゼンツール
+
+Overall visual direction:
+- Dark premium interface
+- Glassmorphism
+- Fire-orange atmospheric accents
+- Soft orange radial glow
+- Strong glass/ridge visual effect
+- Minimal and clean
+- Professional rather than flashy
+- Modern SaaS/productivity-tool appearance
+
+DO NOT use:
+- Blue-heavy UI
+- Neon cyberpunk colors
+- Purple gradients
+- Perspective grids
+- Excessive glowing borders
+- Cartoon styling
+- Large unnecessary illustrations
+- Cluttered dashboards
+
+The UI should feel:
+- premium
+- fast
+- simple
+- trustworthy
+- professional
+- calm
+- polished
+
+The general KAIZEN homepage language includes:
+PRIVATE · FAST · SIMPLE
+
+The tool pages should feel like they belong to the exact same product.
+
+==================================================
+2. TOOL PAGE STRUCTURE
+==================================================
+
+Every utility should use the same general lifecycle:
+
+IDLE
+↓
+SELECTING
+↓
+VALIDATING
+↓
+READY
+↓
+PROCESSING
+↓
+SUCCESS
+
+Also account for:
+- validation error
+- processing error
+- cancelled where relevant
+- unsupported input where relevant
+- file-too-large where relevant
+
+The normal user journey should be:
+
+1. Tool introduction
+2. File upload / drag & drop
+3. File validation
+4. File information / preview
+5. Tool-specific options
+6. Processing
+7. Truthful progress
+8. Result validation
+9. Success/result display
+10. Download
+11. Reset / process another
+
+Do not skip validation.
+Do not pretend progress is exact when the processing engine cannot provide exact progress.
+
+==================================================
+3. TOOL WORKSPACE VISUAL STYLE
+==================================================
+
+The main tool workspace should normally be inside a large glass container.
+
+Recommended visual characteristics:
+
+Main shell:
+- centered
+- max-width appropriate to the tool
+- rounded corners around 20–28px
+- subtle translucent background
+- subtle white border
+- backdrop blur
+- soft large shadow
+- very subtle inner highlight
+
+Example visual idea:
+
+background:
+rgba(255,255,255,0.02–0.06)
+
+border:
+1px solid rgba(255,255,255,0.06–0.10)
+
+border-radius:
+20px–28px
+
+backdrop-filter:
+blur(18px–24px)
+
+shadow:
+large but soft
+
+Do not create harsh cards everywhere.
+
+Use sections inside the shell with subtle separation.
+
+Orange should be used mainly for:
+- primary action
+- selected state
+- important accent
+- icon accent
+- progress
+- hover emphasis
+
+Avoid making the entire UI orange.
+
+==================================================
+4. UPLOAD EXPERIENCE
+==================================================
+
+File upload is a major part of KAIZEN.
+
+Use a premium drag-and-drop upload area.
+
+Typical characteristics:
+- dashed subtle orange border
+- rounded corners
+- dark translucent background
+- soft orange radial glow
+- centered icon
+- clear title
+- short description
+- "Choose File" / "Choose PDF" style button
+
+Example language:
+
+"Upload your PDF"
+"Drag & drop your file here, or choose a file"
+
+Do not make the upload zone visually overwhelming.
+
+The upload input itself can remain hidden behind a styled label/button.
+
+Always support:
+- normal file chooser
+- drag and drop when appropriate
+- file type validation
+- friendly validation errors
+
+==================================================
+5. FILE DISPLAY
+==================================================
+
+Once a file is selected, replace the upload state with a compact file bar/card.
+
+Typical structure:
+
+[ FILE ICON ] [ FILE NAME / SIZE / PAGE INFO ] [ REMOVE ]
+
+Use:
+- rounded container
+- subtle glass background
+- PDF/image/file-type indicator
+- ellipsis for very long filenames
+- remove button with ×
+
+Do not use a huge file preview unless the tool genuinely needs one.
+
+==================================================
+6. TYPOGRAPHY
+==================================================
+
+Typography should be clean and restrained.
+
+Headings:
+- medium/semibold/bold
+- not overly huge inside tools
+
+Section labels:
+- small uppercase text
+- letter spacing around 1.5–2px
+- muted white/gray
+
+Body:
+- muted white/gray
+- readable
+- comfortable line height
+
+Typical visual hierarchy:
+
+TITLE
+small muted description
+
+SECTION LABEL
+
+Control
+
+SECTION LABEL
+
+Control
+
+Primary CTA
+
+Keep things spacious.
+
+==================================================
+7. COLORS
+==================================================
+
+Base:
+- very dark background
+- translucent white surfaces
+
+Text:
+- primary white
+- secondary muted white
+- tertiary gray
+
+Accent:
+- fire orange
+- warm orange
+- subtle orange glow
+
+Example orange family:
+#ff6420
+#ff7c34
+#ff8a3d
+#ff9b57
+#ffae78
+
+IMPORTANT:
+Do not force all of these exact values everywhere.
+Use them as a visual guide.
+
+For errors:
+- muted red background
+- muted red border
+- readable warm red text
+
+For success:
+- subtle green tint
+- subtle green border
+- not bright neon green
+
+==================================================
+8. BUTTON STYLE
+==================================================
+
+Primary action:
+- orange gradient or orange glass treatment
+- rounded 12–14px
+- strong text
+- subtle orange shadow
+- small hover lift
+
+Typical:
+"Process PDF"
+"Add Watermark"
+"Flatten PDF"
+"Save Metadata"
+
+Primary button should be visually dominant.
+
+Secondary:
+- translucent glass
+- subtle border
+- muted text
+
+Examples:
+"Reset"
+"Remove"
+"Cancel"
+
+Do not make every button orange.
+
+Disabled states:
+- reduced opacity
+- cursor not-allowed
+- no hover transform
+
+==================================================
+9. INPUTS AND CONTROLS
+==================================================
+
+Inputs should use:
+
+- dark translucent background
+- subtle white border
+- rounded 10–12px
+- white text
+- muted placeholder
+- orange focus ring/border
+
+Example:
+background:
+rgba(255,255,255,0.04–0.06)
+
+border:
+1px solid rgba(255,255,255,0.08)
+
+Focus:
+orange border + subtle orange glow
+
+Controls should have enough spacing so labels and toggles never overlap.
+
+This is VERY important:
+Do not compress controls so tightly that labels, toggles, fields, or buttons overlap.
+
+Use flex/grid properly.
+
+==================================================
+10. TOGGLE STYLE
+==================================================
+
+For enable/disable settings:
+
+Use a compact glass toggle.
+
+Structure:
+
+[ label + description ]        [ toggle ]
+
+The toggle should remain vertically aligned with the content.
+
+Do not let it collide with the label.
+
+==================================================
+11. SECTION STRUCTURE
+==================================================
+
+Use sections such as:
+
+OPTIONS
+STYLE
+PAGES
+POSITION
+OUTPUT
+ADVANCED
+
+depending on the tool.
+
+Section labels should be subtle and uppercase.
+
+Separate sections with:
+- spacing
+- subtle divider
+- not thick borders
+
+Do not turn every section into a giant separate card.
+
+==================================================
+12. PREVIEWS
+==================================================
+
+For tools where visual preview is important, provide a live preview.
+
+Examples:
+- Crop & Resize
+- Watermark
+- Page Numbers
+- Headers & Footers
+- Redaction
+- Signature
+- Edit PDF
+
+Preview should:
+- feel integrated into the glass workspace
+- remain clean
+- support zoom/navigation where necessary
+- reflect settings when practical
+
+For PDFs:
+- use PDF.js where visual rendering is needed
+- use the project's established PDF rendering approach
+- do not replace a working PDF preview with an iframe unless there is a deliberate reason
+
+For visual editors:
+- use normalized coordinates where appropriate
+- keep interaction smooth
+- support drag placement if the feature needs positioning
+- do not create inaccurate fake previews when actual document rendering is available
+
+==================================================
+13. PROGRESS
+==================================================
+
+Processing must show truthful feedback.
+
+Typical design:
+
+Processing PDF                        72%
+
+[========================----]
+
+Use an indeterminate state if exact progress is unavailable.
+
+Never fake progress just to make the UI look animated.
+
+==================================================
+14. SUCCESS STATE
+==================================================
+
+After processing:
+
+Show a clean success panel.
+
+Example:
+
+PDF processed successfully.
+
+filename.pdf
+
+[ Download PDF ]
+
+Also offer:
+Reset
+
+The result area should feel calm and trustworthy.
+
+Do not immediately navigate the user away.
+
+==================================================
+15. ERROR STATE
+==================================================
+
+Show a clean inline error panel.
+
+Example:
+
+Unable to process this PDF.
+The selected file may be invalid or unsupported.
+
+Errors should:
+- explain what happened
+- avoid technical stack traces
+- be short
+- remain visible in the workspace
+
+==================================================
+16. FILE PRIVACY
+==================================================
+
+KAIZEN is privacy-first.
+
+When client-side processing is practical:
+- prefer local processing
+- do not upload unnecessarily
+- revoke object URLs
+- clean up memory/resources
+
+Do not log document contents.
+
+If a backend is required:
+- use HTTPS
+- use temporary storage
+- automatically clean temporary files
+- avoid storing document contents unnecessarily
+
+Never falsely claim something is private/local if it actually uploads data.
+
+==================================================
+17. ARCHITECTURE
+==================================================
+
+Current architecture:
+
+src/
+  app/
+  components/
+  pages/
+  tools/
+    registry.js
+    toolComponents.js
+    pdf/
+  services/
+    pdf/
+  workers/
+  hooks/
+  utils/
+  styles/
+  main.jsx
+
+Processing logic belongs in:
+
+src/services/pdf/
+
+Tool UI belongs in:
+
+src/tools/pdf/
+
+Example:
+
+src/services/pdf/exampleTool.js
+
+src/tools/pdf/example-tool/ExampleTool.jsx
+
+UI and processing should remain separated.
+
+The JSX tool should call the service rather than putting PDF manipulation logic directly into the component.
+
+==================================================
+18. CURRENT CODING CONVENTION
+==================================================
+
+Project:
+- React
+- Vite
+- JavaScript
+- JSX
+- CSS
+
+IMPORTANT:
+- Use explicit .jsx imports where the project already does so.
+- Follow existing filenames and import paths exactly.
+- Do not randomly rename existing tools.
+- Do not introduce TypeScript.
+- Do not introduce a new UI framework.
+- Do not add dependencies unless genuinely necessary.
+
+Existing tools commonly import services like:
+
+import {
+  someFunction,
+  someInfoFunction,
+} from "../../../services/pdf/someFile.js";
+
+Tool components should generally export:
+
+export default ToolComponent;
+
+==================================================
+19. FULL FILE REPLACEMENTS
+==================================================
+
+When providing code for this project, ALWAYS provide the COMPLETE FILE.
+
+Do NOT provide:
+- partial snippets
+- diffs
+- "replace this section"
+- "find this block"
+- "add this below..."
+- incomplete code
+
+The developer working on the project prefers full-file replacements because the files can become large.
+
+So return:
+
+1. File path
+2. Complete file contents
+
+Nothing omitted.
+
+==================================================
+20. TOOL IMPLEMENTATION ORDER
+==================================================
+
+For each new utility, follow this exact order:
+
+STEP 1
+Create the service file:
+
+src/services/pdf/<toolName>.js
+
+STEP 2
+Create the tool UI:
+
+src/tools/pdf/<tool-folder>/<ToolComponent>.jsx
+
+STEP 3
+Wire it into:
+
+src/app/toolComponents.js
+
+or the project's actual existing toolComponents.js location.
+
+STEP 4
+Make sure the tool ID exactly matches registry.js.
+
+Never invent a different ID.
+
+==================================================
+21. TOOLCOMPONENTS WIRING
+==================================================
+
+This is VERY important.
+
+Whenever a new tool is finished, update toolComponents.js.
+
+Typical pattern:
+
+import ExampleTool from "./pdf/example-tool/ExampleTool.jsx";
+
+const toolComponents = {
+  ...
+
+  "example-tool": ExampleTool,
+};
+
+export default toolComponents;
+
+The key must EXACTLY match the tool ID in registry.js.
+
+Do not assume similar names are interchangeable.
+
+For example:
+"alternate-mix"
+is different from
+"alternate-and-mix"
+
+Use the exact registry ID.
+
+==================================================
+22. EXISTING KAIZEN PDF TOOLS
+==================================================
+
+Already implemented/established tools include:
+
+Page Management:
+- Merge PDF
+- Split PDF
+- Organize Pages
+- Rotate PDF
+- PDF to JPG
+- Compress PDF
+- Alternate & Mix
+- Pages Per Sheet
+- Flip / Mirror
+- Crop & Resize
+- PDF to ZIP
+
+Edit & Annotate:
+- Edit PDF
+- Sign PDF
+- Fill PDF Form
+- Redact PDF
+- Add Watermark
+- Page Numbers
+- Bates Numbering
+- Headers & Footers
+- Flatten PDF
+- Edit Metadata
+
+The new tool must visually and structurally fit these.
+
+==================================================
+23. IMPORTANT EXISTING IMPLEMENTATION PATTERNS
+==================================================
+
+Several existing PDF tools use:
+- pdf-lib for PDF modification
+- PDF.js for visual rendering
+- service-layer functions for processing
+- progress callbacks
+- Blob output
+- URL.createObjectURL()
+- URL.revokeObjectURL()
+
+Typical processing pattern:
+
+const blob = await serviceFunction(
+  file,
+  options,
+  ({ percent }) => {
+    setProgress(percent);
+  }
+);
+
+Then:
+
+const url = URL.createObjectURL(blob);
+
+Then offer:
+
+<a href={url} download={filename}>
+  Download PDF
+</a>
+
+Always revoke old object URLs when replacing them.
+
+==================================================
+24. IMPORTANT REDACTION RULE
+==================================================
+
+If implementing redaction:
+- redaction must be permanent
+- do not simply draw a black rectangle over sensitive text
+- underlying content must not remain recoverable in the resulting PDF
+
+This is a security-sensitive tool.
+
+==================================================
+25. SIGNATURE LANGUAGE
+==================================================
+
+For Sign PDF:
+- appearance signature is NOT the same thing as cryptographic certificate signing
+- do not falsely describe visual signatures as digitally certified signatures
+
+==================================================
+26. UI CONSISTENCY RULE
+==================================================
+
+When looking at an existing KAIZEN tool, ask:
+
+"Would a user believe this was designed by the same product team?"
+
+The answer should be YES.
+
+Match:
+- shell shape
+- spacing
+- controls
+- buttons
+- typography
+- orange accent
+- card treatment
+- preview style
+- upload area
+- success/error states
+- responsive behavior
+
+Do not create a new visual language for one tool.
+
+==================================================
+27. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+- spacious
+- multi-column where useful
+
+Tablet:
+- reduce column count
+
+Mobile:
+- stack controls vertically
+- buttons become full width when appropriate
+- avoid horizontal overflow
+- keep touch targets comfortable
+- preserve visual hierarchy
+
+Do not let grids collapse awkwardly.
+
+==================================================
+28. ACCESSIBILITY
+==================================================
+
+Use:
+- semantic labels
+- proper buttons
+- keyboard accessible controls
+- aria-label where icon-only controls are used
+- visible focus states
+- sufficient contrast
+- disabled states
+
+Do not use clickable divs when a button is appropriate.
+
+==================================================
+29. PERFORMANCE
+==================================================
+
+Be mindful of:
+- large PDFs
+- object URLs
+- rendering cost
+- memory consumption
+- repeated PDF parsing
+
+Clean up:
+- object URLs
+- rendering tasks
+- workers where applicable
+- temporary canvases/resources
+
+For expensive processing:
+- consider Web Workers or WASM if the existing architecture supports it.
+
+==================================================
+30. FINAL CHECK BEFORE RETURNING CODE
+==================================================
+
+Before giving me code, verify mentally that:
+
+- import paths are correct
+- file names are correct
+- export names match imports
+- JSX syntax is valid
+- service function names match component imports
+- registry ID is respected
+- toolComponents wiring is included when requested
+- no undefined variables are used
+- no missing state variables exist
+- no accidental duplicate exports exist
+- no blue/neon redesign was introduced
+- UI matches KAIZEN
+- full file is provided
+- no code is omitted
+
+==================================================
+31. HOW TO RESPOND
+==================================================
+
+Be direct.
+
+When I say:
+"give me service file"
+
+Return only the complete service file and a very short explanation.
+
+When I say:
+"give me JSX"
+
+Return only the complete JSX file.
+
+When I say:
+"toolComponents.js"
+
+Return the complete updated toolComponents.js file.
+
+Do not jump ahead to the next tool unless I ask.
+
+==================================================
+32. MOST IMPORTANT RULE
+==================================================
+
+KAIZEN should feel like ONE coherent premium product, not 50 individually designed mini-apps.
+
+Every new utility must inherit the established:
+- glass shell
+- dark background
+- fire-orange accent
+- premium spacing
+- restrained typography
+- upload experience
+- option sections
+- progress state
+- success state
+- error state
+- responsive behavior
+
+Build the feature itself differently when the functionality requires it, but keep the visual language consistent.
