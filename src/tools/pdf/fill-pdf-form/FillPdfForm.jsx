@@ -19,19 +19,14 @@ function getFieldTypeLabel(type) {
   switch (type) {
     case "text":
       return "Text";
-
     case "checkbox":
       return "Checkbox";
-
     case "dropdown":
       return "Dropdown";
-
     case "radio":
       return "Radio";
-
     case "optionlist":
       return "Option list";
-
     default:
       return "Unknown";
   }
@@ -40,57 +35,38 @@ function getFieldTypeLabel(type) {
 function FillPdfForm() {
   const [file, setFile] = useState(null);
   const [pdfInfo, setPdfInfo] = useState(null);
-
   const [values, setValues] = useState({});
+  const [flatten, setFlatten] = useState(false);
+  const [search, setSearch] = useState("");
 
-  const [flatten, setFlatten] =
-    useState(false);
-
-  const [search, setSearch] =
-    useState("");
-
-  const [isLoading, setIsLoading] =
-    useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [isProcessing, setIsProcessing] =
     useState(false);
 
-  const [progress, setProgress] =
-    useState(0);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
 
-  const [error, setError] =
-    useState("");
-
-  const [result, setResult] =
-    useState(null);
-
-  const [pdfUrl, setPdfUrl] =
-    useState("");
-
-  const [resultUrl, setResultUrl] =
-    useState("");
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [resultUrl, setResultUrl] = useState("");
 
   const filteredFields = useMemo(() => {
     if (!pdfInfo?.fields) {
       return [];
     }
 
-    const query =
-      search.trim().toLowerCase();
+    const query = search.trim().toLowerCase();
 
     if (!query) {
       return pdfInfo.fields;
     }
 
-    return pdfInfo.fields.filter(
-      (field) =>
-        field.name
-          .toLowerCase()
-          .includes(query) ||
-        field.type
-          .toLowerCase()
-          .includes(query)
-    );
+    return pdfInfo.fields.filter((field) => {
+      return (
+        field.name.toLowerCase().includes(query) ||
+        field.type.toLowerCase().includes(query)
+      );
+    });
   }, [pdfInfo, search]);
 
   const filledFieldCount = useMemo(() => {
@@ -98,22 +74,19 @@ function FillPdfForm() {
       return 0;
     }
 
-    return pdfInfo.fields.filter(
-      (field) => {
-        const value =
-          values[field.name];
+    return pdfInfo.fields.filter((field) => {
+      const value = values[field.name];
 
-        if (field.type === "checkbox") {
-          return value === true;
-        }
-
-        return (
-          value !== undefined &&
-          value !== null &&
-          String(value).trim() !== ""
-        );
+      if (field.type === "checkbox") {
+        return value === true;
       }
-    ).length;
+
+      return (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+      );
+    }).length;
   }, [pdfInfo, values]);
 
   useEffect(() => {
@@ -122,9 +95,7 @@ function FillPdfForm() {
       return;
     }
 
-    const url =
-      URL.createObjectURL(file);
-
+    const url = URL.createObjectURL(file);
     setPdfUrl(url);
 
     return () => {
@@ -156,19 +127,15 @@ function FillPdfForm() {
       setProgress(0);
 
       try {
-        const info =
-          await getFillPdfFormInfo(file);
+        const info = await getFillPdfFormInfo(file);
 
         if (cancelled) {
           return;
         }
 
         setPdfInfo(info);
-
         setValues(
-          createEmptyFormValues(
-            info.fields
-          )
+          createEmptyFormValues(info.fields)
         );
       } catch (loadError) {
         if (!cancelled) {
@@ -198,31 +165,26 @@ function FillPdfForm() {
 
     if (
       !selectedFile ||
-      selectedFile.type !==
-        "application/pdf"
+      selectedFile.type !== "application/pdf"
     ) {
       setFile(null);
       setPdfInfo(null);
       setValues({});
-      setError(
-        "Please select a valid PDF file."
-      );
+      setError("Please select a valid PDF file.");
       return;
     }
 
     setFile(selectedFile);
   }
 
-  function updateField(
-    fieldName,
-    value
-  ) {
+  function updateField(fieldName, value) {
     setValues((previous) => ({
       ...previous,
       [fieldName]: value,
     }));
 
     setError("");
+    setResult(null);
   }
 
   function clearAllFields() {
@@ -231,9 +193,7 @@ function FillPdfForm() {
     }
 
     setValues(
-      createEmptyFormValues(
-        pdfInfo.fields
-      )
+      createEmptyFormValues(pdfInfo.fields)
     );
 
     setError("");
@@ -242,16 +202,11 @@ function FillPdfForm() {
 
   async function handleFillForm() {
     if (!file) {
-      setError(
-        "Please select a PDF form first."
-      );
+      setError("Please select a PDF form first.");
       return;
     }
 
-    if (
-      !pdfInfo ||
-      pdfInfo.fieldCount === 0
-    ) {
+    if (!pdfInfo || pdfInfo.fieldCount === 0) {
       setError(
         "This PDF does not contain fillable fields."
       );
@@ -271,40 +226,32 @@ function FillPdfForm() {
     setProgress(0);
 
     try {
-      const processed =
-        await fillPdfForm(
-          file,
-          values,
-          {
-            flatten,
-            updateFieldAppearances: true,
-          },
-          setProgress
-        );
+      const processed = await fillPdfForm(
+        file,
+        values,
+        {
+          flatten,
+          updateFieldAppearances: true,
+        },
+        setProgress
+      );
 
       if (resultUrl) {
-        URL.revokeObjectURL(
-          resultUrl
-        );
+        URL.revokeObjectURL(resultUrl);
       }
 
-      const url =
-        URL.createObjectURL(
-          processed.blob
-        );
+      const url = URL.createObjectURL(
+        processed.blob
+      );
 
       setResultUrl(url);
 
       setResult({
-        blob: processed.blob,
-        pageCount:
-          processed.pageCount,
-        fieldCount:
-          processed.fieldCount,
+        pageCount: processed.pageCount,
+        fieldCount: processed.fieldCount,
         filledFieldCount:
           processed.filledFieldCount,
-        flattened:
-          processed.flattened,
+        flattened: processed.flattened,
       });
     } catch (processError) {
       setError(
@@ -318,9 +265,7 @@ function FillPdfForm() {
 
   function resetTool() {
     if (resultUrl) {
-      URL.revokeObjectURL(
-        resultUrl
-      );
+      URL.revokeObjectURL(resultUrl);
     }
 
     setFile(null);
@@ -345,19 +290,17 @@ function FillPdfForm() {
             ▤
           </div>
 
-          <h2>
-            Fill your PDF form
-          </h2>
+          <h2>Fill your PDF form</h2>
 
           <p>
-            Automatically detect the
-            fillable fields in your PDF
-            and complete them in one
-            place.
+            Automatically detect the fillable
+            fields in your PDF and complete them
+            in one place.
           </p>
 
           <label className="fill-pdf-upload-button">
             Choose PDF
+
             <input
               type="file"
               accept="application/pdf,.pdf"
@@ -366,13 +309,10 @@ function FillPdfForm() {
                   event.target.files?.[0];
 
                 if (selectedFile) {
-                  handleFile(
-                    selectedFile
-                  );
+                  handleFile(selectedFile);
                 }
 
-                event.target.value =
-                  "";
+                event.target.value = "";
               }}
             />
           </label>
@@ -397,15 +337,11 @@ function FillPdfForm() {
                 PDF
               </div>
 
-              <div>
-                <strong>
-                  {file.name}
-                </strong>
+              <div className="fill-pdf-file-details">
+                <strong>{file.name}</strong>
 
                 <span>
-                  {formatFileSize(
-                    file.size
-                  )}
+                  {formatFileSize(file.size)}
                 </span>
               </div>
             </div>
@@ -413,23 +349,16 @@ function FillPdfForm() {
             <div className="fill-pdf-toolbar-stats">
               <div>
                 <strong>
-                  {pdfInfo?.fieldCount ??
-                    "—"}
+                  {pdfInfo?.fieldCount ?? "—"}
                 </strong>
 
-                <span>
-                  fields
-                </span>
+                <span>fields</span>
               </div>
 
               <div>
-                <strong>
-                  {filledFieldCount}
-                </strong>
+                <strong>{filledFieldCount}</strong>
 
-                <span>
-                  filled
-                </span>
+                <span>filled</span>
               </div>
             </div>
 
@@ -437,10 +366,7 @@ function FillPdfForm() {
               type="button"
               className="fill-pdf-change-button"
               onClick={resetTool}
-              disabled={
-                isLoading ||
-                isProcessing
-              }
+              disabled={isLoading || isProcessing}
             >
               Change PDF
             </button>
@@ -450,22 +376,32 @@ function FillPdfForm() {
             <div className="fill-pdf-loading">
               <div className="fill-pdf-loading-spinner" />
 
-              <h3>
-                Inspecting your form
-              </h3>
+              <h3>Inspecting your form</h3>
 
               <p>
-                Looking for fillable PDF
-                fields...
+                Looking for fillable PDF fields...
               </p>
             </div>
           ) : (
             <div className="fill-pdf-editor">
               <aside className="fill-pdf-sidebar">
                 <section className="fill-pdf-section">
-                  <span className="fill-pdf-label">
-                    FORM FIELDS
-                  </span>
+                  <div className="fill-pdf-section-heading">
+                    <div>
+                      <span className="fill-pdf-label">
+                        FORM FIELDS
+                      </span>
+
+                      <p>
+                        Fill the fields detected
+                        in your PDF.
+                      </p>
+                    </div>
+
+                    <span className="fill-pdf-section-count">
+                      {pdfInfo?.fieldCount ?? 0}
+                    </span>
+                  </div>
 
                   <div className="fill-pdf-search">
                     <span>⌕</span>
@@ -473,192 +409,143 @@ function FillPdfForm() {
                     <input
                       type="text"
                       value={search}
-                      onChange={(
-                        event
-                      ) =>
+                      onChange={(event) =>
                         setSearch(
-                          event.target
-                            .value
+                          event.target.value
                         )
                       }
                       placeholder="Search fields..."
-                      disabled={
-                        isProcessing
-                      }
+                      disabled={isProcessing}
                     />
                   </div>
 
                   {pdfInfo &&
-                    pdfInfo.fieldCount ===
-                      0 && (
+                    pdfInfo.fieldCount === 0 && (
                       <div className="fill-pdf-no-fields">
-                        This PDF doesn't
-                        contain interactive
-                        form fields.
+                        This PDF does not contain
+                        interactive form fields.
                       </div>
                     )}
 
                   <div className="fill-pdf-field-list">
-                    {filteredFields.map(
-                      (field) => {
-                        const fieldValue =
-                          values[
-                            field.name
-                          ];
+                    {filteredFields.map((field) => {
+                      const fieldValue =
+                        values[field.name];
 
-                        return (
-                          <div
-                            key={
-                              field.name
-                            }
-                            className="fill-pdf-field-card"
-                          >
-                            <div className="fill-pdf-field-heading">
-                              <div>
-                                <strong>
-                                  {
-                                    field.name
-                                  }
-                                </strong>
+                      const isFilled =
+                        field.type === "checkbox"
+                          ? fieldValue === true
+                          : fieldValue !== undefined &&
+                            fieldValue !== null &&
+                            String(fieldValue).trim() !== "";
 
-                                <span>
-                                  {getFieldTypeLabel(
-                                    field.type
-                                  )}
-                                </span>
-                              </div>
+                      return (
+                        <div
+                          key={field.name}
+                          className={`fill-pdf-field-card ${
+                            isFilled
+                              ? "is-filled"
+                              : ""
+                          }`}
+                        >
+                          <div className="fill-pdf-field-heading">
+                            <div className="fill-pdf-field-title">
+                              <strong>
+                                {field.name}
+                              </strong>
 
-                              <span
-                                className={
-                                  field.type ===
-                                  "checkbox"
-                                    ? fieldValue
-                                      ? "filled"
-                                      : ""
-                                    : fieldValue !==
-                                        undefined &&
-                                      fieldValue !==
-                                        null &&
-                                      String(
-                                        fieldValue
-                                      ).trim()
-                                        ? "filled"
-                                        : ""
-                                }
-                              />
+                              <span>
+                                {getFieldTypeLabel(
+                                  field.type
+                                )}
+                              </span>
                             </div>
 
-                            {field.type ===
-                              "text" && (
-                              <input
-                                type="text"
-                                value={
-                                  fieldValue ??
-                                  ""
-                                }
-                                onChange={(
-                                  event
-                                ) =>
-                                  updateField(
-                                    field.name,
-                                    event.target
-                                      .value
-                                  )
-                                }
-                                placeholder="Enter value..."
-                                disabled={
-                                  isProcessing
-                                }
-                              />
-                            )}
-
-                            {field.type ===
-                              "checkbox" && (
-                              <label className="fill-pdf-checkbox">
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    Boolean(
-                                      fieldValue
-                                    )
-                                  }
-                                  onChange={(
-                                    event
-                                  ) =>
-                                    updateField(
-                                      field.name,
-                                      event.target
-                                        .checked
-                                    )
-                                  }
-                                  disabled={
-                                    isProcessing
-                                  }
-                                />
-
-                                <span className="fill-pdf-checkbox-box">
-                                  {fieldValue
-                                    ? "✓"
-                                    : ""}
-                                </span>
-
-                                <span>
-                                  {fieldValue
-                                    ? "Checked"
-                                    : "Not checked"}
-                                </span>
-                              </label>
-                            )}
-
-                            {(field.type ===
-                              "dropdown" ||
-                              field.type ===
-                                "optionlist" ||
-                              field.type ===
-                                "radio") && (
-                              <input
-                                type="text"
-                                value={
-                                  fieldValue ??
-                                  ""
-                                }
-                                onChange={(
-                                  event
-                                ) =>
-                                  updateField(
-                                    field.name,
-                                    event.target
-                                      .value
-                                  )
-                                }
-                                placeholder={
-                                  field.type ===
-                                  "radio"
-                                    ? "Enter selected option..."
-                                    : "Enter option value..."
-                                }
-                                disabled={
-                                  isProcessing
-                                }
-                              />
-                            )}
-
-                            {field.type ===
-                              "unknown" && (
-                              <div className="fill-pdf-unsupported">
-                                Unsupported field
-                                type
-                              </div>
-                            )}
+                            <span
+                              className={`fill-pdf-status-dot ${
+                                isFilled ? "filled" : ""
+                              }`}
+                            />
                           </div>
-                        );
-                      }
-                    )}
 
-                    {filteredFields.length ===
-                      0 &&
-                      pdfInfo?.fieldCount >
-                        0 && (
+                          {field.type === "text" && (
+                            <input
+                              className="fill-pdf-value-input"
+                              type="text"
+                              value={fieldValue ?? ""}
+                              onChange={(event) =>
+                                updateField(
+                                  field.name,
+                                  event.target.value
+                                )
+                              }
+                              placeholder="Enter value..."
+                              disabled={isProcessing}
+                            />
+                          )}
+
+                          {field.type === "checkbox" && (
+                            <label className="fill-pdf-checkbox">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(
+                                  fieldValue
+                                )}
+                                onChange={(event) =>
+                                  updateField(
+                                    field.name,
+                                    event.target.checked
+                                  )
+                                }
+                                disabled={isProcessing}
+                              />
+
+                              <span className="fill-pdf-checkbox-box">
+                                {fieldValue ? "✓" : ""}
+                              </span>
+
+                              <span className="fill-pdf-checkbox-copy">
+                                {fieldValue
+                                  ? "Checked"
+                                  : "Not checked"}
+                              </span>
+                            </label>
+                          )}
+
+                          {(field.type === "dropdown" ||
+                            field.type ===
+                              "optionlist" ||
+                            field.type === "radio") && (
+                            <input
+                              className="fill-pdf-value-input"
+                              type="text"
+                              value={fieldValue ?? ""}
+                              onChange={(event) =>
+                                updateField(
+                                  field.name,
+                                  event.target.value
+                                )
+                              }
+                              placeholder={
+                                field.type === "radio"
+                                  ? "Enter selected option..."
+                                  : "Enter option value..."
+                              }
+                              disabled={isProcessing}
+                            />
+                          )}
+
+                          {field.type === "unknown" && (
+                            <div className="fill-pdf-unsupported">
+                              Unsupported field type
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {filteredFields.length === 0 &&
+                      pdfInfo?.fieldCount > 0 && (
                         <div className="fill-pdf-empty-search">
                           No matching fields.
                         </div>
@@ -666,59 +553,47 @@ function FillPdfForm() {
                   </div>
                 </section>
 
-                <section className="fill-pdf-section">
+                <section className="fill-pdf-section fill-pdf-options-section">
                   <span className="fill-pdf-label">
                     OPTIONS
                   </span>
 
-                  <label className="fill-pdf-flatten">
+                  <label className="fill-pdf-flatten-row">
                     <input
                       type="checkbox"
-                      checked={
-                        flatten
-                      }
-                      onChange={(
-                        event
-                      ) =>
+                      checked={flatten}
+                      onChange={(event) =>
                         setFlatten(
-                          event.target
-                            .checked
+                          event.target.checked
                         )
                       }
-                      disabled={
-                        isProcessing
-                      }
+                      disabled={isProcessing}
                     />
 
                     <span className="fill-pdf-switch">
                       <span />
                     </span>
 
-                    <div>
-                      <strong>
-                        Flatten form
-                      </strong>
+                    <span className="fill-pdf-flatten-copy">
+                      <strong>Flatten form</strong>
 
                       <small>
                         Make entered values
-                        non-editable in
-                        the output PDF.
+                        non-editable in the
+                        output PDF.
                       </small>
-                    </div>
+                    </span>
                   </label>
                 </section>
 
-                <section className="fill-pdf-section">
+                <section className="fill-pdf-section fill-pdf-actions-section">
                   <button
                     type="button"
                     className="fill-pdf-clear-button"
-                    onClick={
-                      clearAllFields
-                    }
+                    onClick={clearAllFields}
                     disabled={
                       isProcessing ||
-                      filledFieldCount ===
-                        0
+                      filledFieldCount === 0
                     }
                   >
                     Clear all fields
@@ -740,9 +615,13 @@ function FillPdfForm() {
                     </span>
 
                     <p>
-                      Your original form
-                      remains unchanged.
+                      Your original PDF stays
+                      untouched.
                     </p>
+                  </div>
+
+                  <div className="fill-pdf-preview-meta">
+                    Page preview
                   </div>
                 </div>
 
@@ -757,17 +636,12 @@ function FillPdfForm() {
                     )}
 
                     <div className="fill-pdf-preview-overlay">
-                      {pdfInfo?.fieldCount >
-                        0 && (
+                      {pdfInfo?.fieldCount > 0 && (
                         <div className="fill-pdf-preview-badge">
-                          {
-                            pdfInfo.fieldCount
-                          }{" "}
-                          fillable{" "}
-                          {pdfInfo.fieldCount ===
-                          1
-                            ? "field"
-                            : "fields"}
+                          {pdfInfo.fieldCount}{" "}
+                          {pdfInfo.fieldCount === 1
+                            ? "fillable field"
+                            : "fillable fields"}
                         </div>
                       )}
                     </div>
@@ -775,8 +649,8 @@ function FillPdfForm() {
                 </div>
 
                 <div className="fill-pdf-preview-hint">
-                  Fill the detected fields
-                  from the panel on the left.
+                  Fill the detected fields from
+                  the panel.
                 </div>
               </main>
             </div>
@@ -787,8 +661,7 @@ function FillPdfForm() {
               <div className="fill-pdf-summary">
                 <span>
                   {filledFieldCount} of{" "}
-                  {pdfInfo?.fieldCount ??
-                    0}{" "}
+                  {pdfInfo?.fieldCount ?? 0}{" "}
                   fields filled
                 </span>
 
@@ -808,9 +681,7 @@ function FillPdfForm() {
                       Filling PDF form
                     </span>
 
-                    <strong>
-                      {progress}%
-                    </strong>
+                    <strong>{progress}%</strong>
                   </div>
 
                   <div className="fill-pdf-progress-track">
@@ -826,16 +697,12 @@ function FillPdfForm() {
                 <button
                   type="button"
                   className="fill-pdf-process-button"
-                  onClick={
-                    handleFillForm
-                  }
+                  onClick={handleFillForm}
                   disabled={
                     !file ||
                     !pdfInfo ||
-                    pdfInfo.fieldCount ===
-                      0 ||
-                    filledFieldCount ===
-                      0
+                    pdfInfo.fieldCount === 0 ||
+                    filledFieldCount === 0
                   }
                 >
                   Fill PDF
@@ -853,22 +720,16 @@ function FillPdfForm() {
                 </span>
 
                 <h3>
-                  Your completed PDF is
-                  ready.
+                  Your completed PDF is ready.
                 </h3>
 
                 <p>
-                  {
-                    result.filledFieldCount
-                  }{" "}
-                  {result.filledFieldCount ===
-                  1
+                  {result.filledFieldCount}{" "}
+                  {result.filledFieldCount === 1
                     ? "field"
                     : "fields"}{" "}
-                  filled across{" "}
-                  {result.pageCount}{" "}
-                  {result.pageCount ===
-                  1
+                  filled across {result.pageCount}{" "}
+                  {result.pageCount === 1
                     ? "page"
                     : "pages"}.
                   {result.flattened
@@ -891,13 +752,18 @@ function FillPdfForm() {
       )}
 
       <style>{`
-        .fill-pdf {
+        .fill-pdf-form {
           width: 100%;
+          max-width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           color: rgba(255,255,255,0.94);
         }
 
         .fill-pdf-upload {
-          min-height: 520px;
+          width: 100%;
+          min-height: 500px;
+          box-sizing: border-box;
           border: 1px solid rgba(255,255,255,0.1);
           border-radius: 28px;
           background:
@@ -919,22 +785,22 @@ function FillPdfForm() {
         }
 
         .fill-pdf-upload-icon {
-          width: 74px;
-          height: 74px;
-          border-radius: 22px;
+          width: 72px;
+          height: 72px;
+          border-radius: 21px;
           display: flex;
           align-items: center;
           justify-content: center;
           background:
             radial-gradient(
               circle at center,
-              rgba(255,115,35,0.38),
-              rgba(255,115,35,0.08) 65%,
-              transparent 75%
+              rgba(255,115,35,0.35),
+              rgba(255,115,35,0.07) 68%,
+              transparent 76%
             );
           color: #ff8d4a;
-          font-size: 30px;
-          margin-bottom: 22px;
+          font-size: 28px;
+          margin-bottom: 20px;
         }
 
         .fill-pdf-upload h2 {
@@ -944,17 +810,18 @@ function FillPdfForm() {
         }
 
         .fill-pdf-upload p {
-          max-width: 510px;
-          margin: 10px 0 28px;
-          color: rgba(255,255,255,0.56);
+          max-width: 500px;
+          margin: 10px 0 26px;
+          color: rgba(255,255,255,0.52);
           font-size: 14px;
-          line-height: 1.5;
+          line-height: 1.55;
         }
 
         .fill-pdf-upload-button {
           cursor: pointer;
           padding: 13px 22px;
           border-radius: 14px;
+          color: white;
           background:
             radial-gradient(
               circle at 50% 0%,
@@ -972,26 +839,33 @@ function FillPdfForm() {
         }
 
         .fill-pdf-upload-hint {
-          margin-top: 14px;
-          font-size: 12px;
-          color: rgba(255,255,255,0.3);
+          margin-top: 13px;
+          color: rgba(255,255,255,0.28);
+          font-size: 11px;
         }
 
         .fill-pdf-upload-error {
-          margin-top: 18px;
+          margin-top: 17px;
           padding: 9px 12px;
           border-radius: 10px;
           border: 1px solid rgba(255,80,55,0.18);
-          color: #ff9b84;
           background: rgba(255,70,50,0.07);
+          color: #ff9b84;
           font-size: 10px;
         }
 
         .fill-pdf-toolbar {
-          display: flex;
+          width: 100%;
+          min-width: 0;
+          min-height: 72px;
+          box-sizing: border-box;
+          display: grid;
+          grid-template-columns:
+            minmax(180px, 1fr)
+            auto
+            auto;
           align-items: center;
           gap: 18px;
-          min-height: 72px;
           padding: 12px 14px;
           margin-bottom: 18px;
           border: 1px solid rgba(255,255,255,0.09);
@@ -1006,7 +880,7 @@ function FillPdfForm() {
         }
 
         .fill-pdf-file {
-          min-width: 220px;
+          min-width: 0;
           display: flex;
           align-items: center;
           gap: 11px;
@@ -1015,6 +889,7 @@ function FillPdfForm() {
         .fill-pdf-file-icon {
           width: 38px;
           height: 38px;
+          flex: 0 0 38px;
           border-radius: 10px;
           display: flex;
           align-items: center;
@@ -1026,31 +901,32 @@ function FillPdfForm() {
           border: 1px solid rgba(255,123,54,0.18);
         }
 
-        .fill-pdf-file > div:last-child {
+        .fill-pdf-file-details {
           min-width: 0;
           display: flex;
           flex-direction: column;
           gap: 3px;
         }
 
-        .fill-pdf-file strong {
-          max-width: 200px;
+        .fill-pdf-file-details strong {
+          max-width: 100%;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           font-size: 12px;
         }
 
-        .fill-pdf-file span {
+        .fill-pdf-file-details span {
+          color: rgba(255,255,255,0.35);
           font-size: 10px;
-          color: rgba(255,255,255,0.38);
         }
 
         .fill-pdf-toolbar-stats {
-          flex: 1;
           display: flex;
+          align-items: center;
           justify-content: center;
-          gap: 34px;
+          gap: 25px;
+          padding: 0 8px;
         }
 
         .fill-pdf-toolbar-stats div {
@@ -1061,12 +937,12 @@ function FillPdfForm() {
 
         .fill-pdf-toolbar-stats strong {
           color: #ff9658;
-          font-size: 20px;
+          font-size: 19px;
         }
 
         .fill-pdf-toolbar-stats span {
-          color: rgba(255,255,255,0.35);
-          font-size: 10px;
+          color: rgba(255,255,255,0.32);
+          font-size: 9px;
         }
 
         .fill-pdf-change-button {
@@ -1075,8 +951,9 @@ function FillPdfForm() {
           color: rgba(255,255,255,0.68);
           border-radius: 11px;
           padding: 10px 13px;
-          font-size: 12px;
+          white-space: nowrap;
           cursor: pointer;
+          font-size: 11px;
         }
 
         .fill-pdf-change-button:hover {
@@ -1084,53 +961,15 @@ function FillPdfForm() {
           background: rgba(255,255,255,0.07);
         }
 
-        .fill-pdf-loading {
-          min-height: 610px;
-          border: 1px solid rgba(255,255,255,0.09);
-          border-radius: 24px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background:
-            linear-gradient(
-              135deg,
-              rgba(255,255,255,0.055),
-              rgba(255,255,255,0.018)
-            );
-        }
-
-        .fill-pdf-loading-spinner {
-          width: 34px;
-          height: 34px;
-          margin-bottom: 18px;
-          border: 2px solid rgba(255,255,255,0.08);
-          border-top-color: #ff7530;
-          border-radius: 50%;
-          animation: fillPdfSpin 0.85s linear infinite;
-        }
-
-        @keyframes fillPdfSpin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .fill-pdf-loading h3 {
-          margin: 0;
-          font-size: 16px;
-        }
-
-        .fill-pdf-loading p {
-          margin: 7px 0 0;
-          color: rgba(255,255,255,0.35);
-          font-size: 11px;
-        }
-
         .fill-pdf-editor {
-          display: grid;
-          grid-template-columns: 350px minmax(0,1fr);
+          width: 100%;
+          min-width: 0;
           min-height: 650px;
+          box-sizing: border-box;
+          display: grid;
+          grid-template-columns:
+            minmax(290px, 340px)
+            minmax(0, 1fr);
           border: 1px solid rgba(255,255,255,0.09);
           border-radius: 24px;
           overflow: hidden;
@@ -1146,13 +985,17 @@ function FillPdfForm() {
         }
 
         .fill-pdf-sidebar {
-          padding: 20px;
+          min-width: 0;
+          box-sizing: border-box;
+          padding: 22px;
+          overflow-x: hidden;
           overflow-y: auto;
           border-right: 1px solid rgba(255,255,255,0.07);
           background: rgba(7,7,7,0.24);
         }
 
         .fill-pdf-section {
+          min-width: 0;
           padding-bottom: 20px;
           margin-bottom: 20px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -1163,20 +1006,59 @@ function FillPdfForm() {
           margin-bottom: 0;
         }
 
+        .fill-pdf-section-heading {
+          min-width: 0;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+
+        .fill-pdf-section-heading > div {
+          min-width: 0;
+        }
+
         .fill-pdf-label {
           display: block;
-          margin-bottom: 10px;
           color: rgba(255,255,255,0.32);
           font-size: 9px;
           letter-spacing: 0.18em;
           font-weight: 800;
         }
 
+        .fill-pdf-section-heading p {
+          margin: 5px 0 0;
+          color: rgba(255,255,255,0.3);
+          font-size: 9px;
+          line-height: 1.45;
+        }
+
+        .fill-pdf-section-count {
+          flex: 0 0 auto;
+          min-width: 25px;
+          height: 25px;
+          padding: 0 7px;
+          box-sizing: border-box;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ff985c;
+          background: rgba(255,108,31,0.08);
+          border: 1px solid rgba(255,108,31,0.12);
+          font-size: 10px;
+          font-weight: 700;
+        }
+
         .fill-pdf-search {
+          width: 100%;
+          height: 36px;
+          min-width: 0;
+          box-sizing: border-box;
           display: flex;
           align-items: center;
           gap: 8px;
-          height: 36px;
           padding: 0 10px;
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 10px;
@@ -1184,8 +1066,9 @@ function FillPdfForm() {
         }
 
         .fill-pdf-search span {
+          flex: 0 0 auto;
           color: rgba(255,255,255,0.28);
-          font-size: 18px;
+          font-size: 17px;
         }
 
         .fill-pdf-search input {
@@ -1203,6 +1086,7 @@ function FillPdfForm() {
         }
 
         .fill-pdf-field-list {
+          min-width: 0;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -1210,10 +1094,16 @@ function FillPdfForm() {
         }
 
         .fill-pdf-field-card {
+          min-width: 0;
+          box-sizing: border-box;
           padding: 11px;
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 12px;
           background: rgba(255,255,255,0.025);
+        }
+
+        .fill-pdf-field-card.is-filled {
+          border-color: rgba(100,216,151,0.14);
         }
 
         .fill-pdf-field-card:focus-within {
@@ -1222,62 +1112,69 @@ function FillPdfForm() {
         }
 
         .fill-pdf-field-heading {
+          min-width: 0;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: space-between;
           gap: 10px;
           margin-bottom: 8px;
         }
 
-        .fill-pdf-field-heading > div {
+        .fill-pdf-field-title {
           min-width: 0;
           display: flex;
           flex-direction: column;
           gap: 3px;
         }
 
-        .fill-pdf-field-heading strong {
+        .fill-pdf-field-title strong {
+          min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           font-size: 10px;
         }
 
-        .fill-pdf-field-heading div span {
+        .fill-pdf-field-title span {
           color: rgba(255,255,255,0.28);
           font-size: 8px;
         }
 
-        .fill-pdf-field-heading > span {
-          flex: 0 0 auto;
+        .fill-pdf-status-dot {
+          flex: 0 0 7px;
           width: 7px;
           height: 7px;
+          margin-top: 3px;
           border-radius: 50%;
           background: rgba(255,255,255,0.12);
         }
 
-        .fill-pdf-field-heading > span.filled {
+        .fill-pdf-status-dot.filled {
           background: #65d996;
-          box-shadow: 0 0 10px rgba(101,217,150,0.35);
+          box-shadow:
+            0 0 10px rgba(101,217,150,0.35);
         }
 
-        .fill-pdf-field-card > input {
+        .fill-pdf-value-input {
           width: 100%;
+          min-width: 0;
           box-sizing: border-box;
           border: 1px solid rgba(255,255,255,0.07);
           border-radius: 8px;
-          padding: 8px;
+          padding: 8px 9px;
           outline: 0;
           background: rgba(0,0,0,0.18);
           color: white;
           font-size: 10px;
         }
 
-        .fill-pdf-field-card > input:focus {
+        .fill-pdf-value-input:focus {
           border-color: rgba(255,114,42,0.38);
         }
 
         .fill-pdf-checkbox {
+          width: 100%;
+          min-width: 0;
           display: flex;
           align-items: center;
           gap: 8px;
@@ -1287,19 +1184,23 @@ function FillPdfForm() {
         }
 
         .fill-pdf-checkbox input {
-          display: none;
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
         }
 
         .fill-pdf-checkbox-box {
+          flex: 0 0 18px;
           width: 18px;
           height: 18px;
+          box-sizing: border-box;
+          border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 5px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 1px solid rgba(255,255,255,0.14);
-          border-radius: 5px;
-          color: white;
           background: rgba(255,255,255,0.03);
+          color: white;
           font-size: 11px;
         }
 
@@ -1307,6 +1208,10 @@ function FillPdfForm() {
           + .fill-pdf-checkbox-box {
           border-color: rgba(255,114,42,0.5);
           background: #ff6b24;
+        }
+
+        .fill-pdf-checkbox-copy {
+          min-width: 0;
         }
 
         .fill-pdf-unsupported {
@@ -1328,19 +1233,33 @@ function FillPdfForm() {
           line-height: 1.45;
         }
 
-        .fill-pdf-flatten {
-          display: grid;
-          grid-template-columns: 1px 34px minmax(0,1fr);
-          align-items: center;
-          gap: 9px;
+        /*
+         * OPTIONS
+         * Extra vertical spacing keeps the heading
+         * comfortably separated from the toggle.
+         */
+        .fill-pdf-options-section .fill-pdf-label {
+          margin-bottom: 14px;
+        }
+
+        .fill-pdf-flatten-row {
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+          display: flex;
+          align-items: flex-start;
+          gap: 11px;
           cursor: pointer;
         }
 
-        .fill-pdf-flatten input {
-          display: none;
+        .fill-pdf-flatten-row > input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
         }
 
         .fill-pdf-switch {
+          flex: 0 0 34px;
           width: 34px;
           height: 20px;
           padding: 2px;
@@ -1356,39 +1275,49 @@ function FillPdfForm() {
           height: 16px;
           border-radius: 50%;
           background: rgba(255,255,255,0.52);
-          transition: transform 0.18s ease;
+          transition:
+            transform 0.18s ease,
+            background 0.18s ease;
         }
 
-        .fill-pdf-flatten input:checked
+        .fill-pdf-flatten-row
+          > input:checked
           + .fill-pdf-switch {
           background: #ff6b24;
         }
 
-        .fill-pdf-flatten input:checked
-          + .fill-pdf-switch span {
+        .fill-pdf-flatten-row
+          > input:checked
+          + .fill-pdf-switch
+          span {
           transform: translateX(14px);
           background: white;
         }
 
-        .fill-pdf-flatten > div {
+        .fill-pdf-flatten-copy {
+          min-width: 0;
+          flex: 1 1 auto;
           display: flex;
           flex-direction: column;
-          gap: 3px;
+          gap: 4px;
         }
 
-        .fill-pdf-flatten strong {
-          color: rgba(255,255,255,0.7);
-          font-size: 10px;
+        .fill-pdf-flatten-copy strong {
+          color: rgba(255,255,255,0.76);
+          font-size: 11px;
+          line-height: 1.25;
         }
 
-        .fill-pdf-flatten small {
-          color: rgba(255,255,255,0.28);
-          font-size: 8px;
-          line-height: 1.4;
+        .fill-pdf-flatten-copy small {
+          max-width: 100%;
+          color: rgba(255,255,255,0.31);
+          font-size: 9px;
+          line-height: 1.5;
         }
 
         .fill-pdf-clear-button {
           width: 100%;
+          box-sizing: border-box;
           border: 1px solid rgba(255,255,255,0.07);
           background: rgba(255,255,255,0.025);
           color: rgba(255,255,255,0.45);
@@ -1409,7 +1338,6 @@ function FillPdfForm() {
         }
 
         .fill-pdf-error {
-          margin-top: 15px;
           padding: 10px 11px;
           border: 1px solid rgba(255,80,55,0.18);
           border-radius: 10px;
@@ -1433,10 +1361,16 @@ function FillPdfForm() {
         }
 
         .fill-pdf-preview-header {
+          min-width: 0;
+          padding: 18px 20px 0;
           display: flex;
-          align-items: center;
+          align-items: flex-start;
           justify-content: space-between;
-          padding: 17px 20px 0;
+          gap: 15px;
+        }
+
+        .fill-pdf-preview-header > div:first-child {
+          min-width: 0;
         }
 
         .fill-pdf-preview-header .fill-pdf-label {
@@ -1449,9 +1383,20 @@ function FillPdfForm() {
           font-size: 9px;
         }
 
+        .fill-pdf-preview-meta {
+          flex: 0 0 auto;
+          padding: 6px 9px;
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 999px;
+          color: rgba(255,255,255,0.28);
+          background: rgba(255,255,255,0.02);
+          font-size: 8px;
+        }
+
         .fill-pdf-page-stage {
           flex: 1;
-          min-height: 560px;
+          min-height: 540px;
+          min-width: 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1463,6 +1408,7 @@ function FillPdfForm() {
           position: relative;
           width: min(100%, 740px);
           aspect-ratio: 0.707;
+          flex: 0 0 auto;
           background: white;
           border-radius: 2px;
           overflow: hidden;
@@ -1491,11 +1437,12 @@ function FillPdfForm() {
           right: 13px;
           padding: 6px 9px;
           border-radius: 999px;
-          color: #fff;
+          color: white;
           background: rgba(13,13,13,0.74);
           backdrop-filter: blur(8px);
           font-size: 8px;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+          box-shadow:
+            0 5px 15px rgba(0,0,0,0.2);
         }
 
         .fill-pdf-preview-hint {
@@ -1506,7 +1453,55 @@ function FillPdfForm() {
           border-top: 1px solid rgba(255,255,255,0.05);
         }
 
+        .fill-pdf-loading {
+          width: 100%;
+          min-height: 600px;
+          box-sizing: border-box;
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background:
+            linear-gradient(
+              135deg,
+              rgba(255,255,255,0.055),
+              rgba(255,255,255,0.018)
+            );
+        }
+
+        .fill-pdf-loading-spinner {
+          width: 34px;
+          height: 34px;
+          margin-bottom: 18px;
+          border: 2px solid rgba(255,255,255,0.08);
+          border-top-color: #ff7530;
+          border-radius: 50%;
+          animation:
+            fillPdfSpin 0.85s linear infinite;
+        }
+
+        @keyframes fillPdfSpin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .fill-pdf-loading h3 {
+          margin: 0;
+          font-size: 16px;
+        }
+
+        .fill-pdf-loading p {
+          margin: 7px 0 0;
+          color: rgba(255,255,255,0.35);
+          font-size: 11px;
+        }
+
         .fill-pdf-bottom {
+          width: 100%;
+          min-width: 0;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -1516,9 +1511,11 @@ function FillPdfForm() {
         }
 
         .fill-pdf-summary {
+          min-width: 0;
           display: flex;
           align-items: center;
           gap: 9px;
+          flex-wrap: wrap;
           color: rgba(255,255,255,0.38);
           font-size: 11px;
         }
@@ -1530,6 +1527,7 @@ function FillPdfForm() {
           padding: 12px 17px;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 12px;
           color: white;
           text-decoration: none;
@@ -1554,6 +1552,7 @@ function FillPdfForm() {
 
         .fill-pdf-progress {
           width: min(380px, 45%);
+          min-width: 180px;
         }
 
         .fill-pdf-progress-header {
@@ -1578,16 +1577,19 @@ function FillPdfForm() {
         .fill-pdf-progress-fill {
           height: 100%;
           border-radius: inherit;
-          background: linear-gradient(
-            90deg,
-            #ff5310,
-            #ff9b5b
-          );
-          transition:
-            width 0.2s ease;
+          background:
+            linear-gradient(
+              90deg,
+              #ff5310,
+              #ff9b5b
+            );
+          transition: width 0.2s ease;
         }
 
         .fill-pdf-result {
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
           margin-top: 18px;
           padding: 20px 22px;
           border: 1px solid rgba(102,255,170,0.12);
@@ -1602,6 +1604,10 @@ function FillPdfForm() {
               rgba(102,255,170,0.045),
               rgba(255,255,255,0.025)
             );
+        }
+
+        .fill-pdf-result > div:first-child {
+          min-width: 0;
         }
 
         .fill-pdf-result-label {
@@ -1623,21 +1629,23 @@ function FillPdfForm() {
           line-height: 1.4;
         }
 
-        @media (max-width: 1050px) {
-          .fill-pdf-editor {
-            grid-template-columns: 310px minmax(0,1fr);
-          }
-
-          .fill-pdf-file {
-            min-width: 180px;
+        @media (max-width: 1000px) {
+          .fill-pdf-toolbar {
+            grid-template-columns:
+              minmax(0, 1fr)
+              auto;
           }
 
           .fill-pdf-toolbar-stats {
-            gap: 18px;
+            justify-content: flex-end;
+          }
+
+          .fill-pdf-change-button {
+            grid-column: 2;
           }
         }
 
-        @media (max-width: 850px) {
+        @media (max-width: 860px) {
           .fill-pdf-editor {
             grid-template-columns: 1fr;
           }
@@ -1645,48 +1653,73 @@ function FillPdfForm() {
           .fill-pdf-sidebar {
             border-right: 0;
             border-bottom: 1px solid rgba(255,255,255,0.07);
+            max-height: none;
           }
 
-          .fill-pdf-page-stage {
-            min-height: 500px;
+          .fill-pdf-preview-area {
+            min-height: 600px;
           }
 
           .fill-pdf-toolbar {
-            flex-wrap: wrap;
+            grid-template-columns: 1fr;
           }
 
           .fill-pdf-toolbar-stats {
-            order: 3;
-            width: 100%;
             justify-content: flex-start;
+            padding: 0;
+          }
+
+          .fill-pdf-change-button {
+            grid-column: auto;
+            justify-self: start;
           }
         }
 
-        @media (max-width: 620px) {
+        @media (max-width: 600px) {
           .fill-pdf-upload {
             min-height: 400px;
-            padding: 28px;
+            padding: 28px 20px;
+          }
+
+          .fill-pdf-upload h2 {
+            font-size: 24px;
+          }
+
+          .fill-pdf-toolbar {
+            gap: 12px;
+          }
+
+          .fill-pdf-editor {
+            border-radius: 18px;
+          }
+
+          .fill-pdf-sidebar {
+            padding: 17px;
           }
 
           .fill-pdf-page-stage {
-            padding: 12px;
-            min-height: 430px;
+            min-height: 420px;
+            padding: 14px;
+          }
+
+          .fill-pdf-preview-header {
+            padding: 15px 15px 0;
           }
 
           .fill-pdf-bottom,
           .fill-pdf-result {
-            align-items: flex-start;
+            align-items: stretch;
             flex-direction: column;
           }
 
           .fill-pdf-progress {
             width: 100%;
+            min-width: 0;
           }
 
           .fill-pdf-process-button,
           .fill-pdf-download-button {
             width: 100%;
-            justify-content: center;
           }
         }
       `}</style>
