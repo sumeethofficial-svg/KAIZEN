@@ -1,0 +1,2671 @@
+/* =========================================================
+   ROOT
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+
+  min-width: 320px;
+
+  background: #020202;
+
+  color: #f5f5f5;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+
+  background: #020202;
+
+  color: #f5f5f5;
+}
+
+
+/* =========================================================
+   GLASS BACKGROUND
+========================================================= */
+
+.glass-background {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 0;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      #120500 0%,
+      #080301 55%,
+      #010101 100%
+    );
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   FIRE ORANGE LIGHT
+========================================================= */
+
+.glass-orange-light {
+  position: absolute;
+
+  width: 150%;
+
+  height: 95%;
+
+  left: -25%;
+
+  top: -25%;
+
+  background:
+    radial-gradient(
+      ellipse 58% 55% at 50% 38%,
+
+      rgba(255, 188, 84, 0.95) 0%,
+
+      rgba(255, 120, 15, 0.95) 12%,
+
+      rgba(244, 76, 0, 0.90) 25%,
+
+      rgba(191, 47, 0, 0.68) 38%,
+
+      rgba(104, 24, 0, 0.38) 52%,
+
+      rgba(35, 8, 0, 0.12) 67%,
+
+      transparent 80%
+    );
+
+  filter: blur(38px);
+
+  transform: scale(1.08);
+
+  animation:
+    orange-breath
+    10s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+@keyframes orange-breath {
+
+  0% {
+    transform:
+      scale(1.05)
+      translateX(-1%);
+  }
+
+  100% {
+    transform:
+      scale(1.12)
+      translateX(1%);
+  }
+
+}
+
+
+/* =========================================================
+   VERTICAL GLASS RIDGES
+========================================================= */
+
+.glass-ridges {
+  position: absolute;
+
+  inset: -8%;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+
+      rgba(255, 255, 255, 0.025) 0px,
+      rgba(255, 255, 255, 0.025) 3px,
+
+      rgba(255, 255, 255, 0.16) 4px,
+      rgba(255, 255, 255, 0.07) 6px,
+
+      rgba(0, 0, 0, 0.40) 8px,
+      rgba(0, 0, 0, 0.62) 13px,
+
+      rgba(255, 255, 255, 0.10) 15px,
+      rgba(255, 255, 255, 0.035) 18px,
+
+      rgba(0, 0, 0, 0.52) 21px,
+      rgba(0, 0, 0, 0.18) 27px
+    );
+
+  opacity: 0.88;
+
+  filter:
+    blur(1.15px)
+    contrast(145%);
+
+  mix-blend-mode: screen;
+
+  transform:
+    perspective(900px)
+    rotateY(-2deg)
+    scaleX(1.08);
+
+  animation:
+    glass-shift
+    18s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+@keyframes glass-shift {
+
+  0% {
+    transform:
+      perspective(900px)
+      rotateY(-2deg)
+      scaleX(1.08)
+      translateX(-0.5%);
+  }
+
+  100% {
+    transform:
+      perspective(900px)
+      rotateY(-2deg)
+      scaleX(1.08)
+      translateX(0.5%);
+  }
+
+}
+
+
+.glass-ridges::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+
+      transparent 0px,
+      transparent 7px,
+
+      rgba(255, 178, 80, 0.14) 8px,
+      rgba(255, 178, 80, 0.08) 10px,
+
+      transparent 12px,
+      transparent 26px
+    );
+
+  opacity: 0.72;
+
+  filter: blur(2px);
+
+  mix-blend-mode: color-dodge;
+}
+
+
+/* =========================================================
+   GLASS REFLECTIONS
+========================================================= */
+
+.glass-reflections {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+
+    radial-gradient(
+      ellipse 70% 28% at 50% 39%,
+
+      rgba(255, 196, 108, 0.45) 0%,
+      rgba(255, 126, 20, 0.22) 30%,
+      transparent 70%
+    ),
+
+    repeating-linear-gradient(
+      90deg,
+
+      transparent 0px,
+      transparent 31px,
+
+      rgba(255, 255, 255, 0.055) 32px,
+      rgba(255, 255, 255, 0.055) 34px,
+
+      transparent 35px,
+      transparent 68px
+    );
+
+  filter: blur(4px);
+
+  opacity: 0.72;
+
+  mix-blend-mode: screen;
+}
+
+
+/* =========================================================
+   DARKNESS
+========================================================= */
+
+.glass-darkness {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+
+    linear-gradient(
+      180deg,
+
+      transparent 0%,
+      transparent 28%,
+
+      rgba(5, 2, 1, 0.18) 42%,
+
+      rgba(2, 1, 0, 0.52) 62%,
+
+      rgba(0, 0, 0, 0.90) 84%,
+
+      #000000 100%
+    ),
+
+    linear-gradient(
+      90deg,
+
+      rgba(0, 0, 0, 0.58) 0%,
+
+      transparent 18%,
+
+      transparent 82%,
+
+      rgba(0, 0, 0, 0.58) 100%
+    );
+
+  z-index: 5;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.app-content {
+  position: relative;
+
+  z-index: 10;
+
+  width: 100%;
+
+  padding:
+    28px 50px 80px;
+}
+
+
+/* =========================================================
+   HERO GLASS SHELL
+========================================================= */
+
+.glass-shell {
+  position: relative;
+
+  width: 100%;
+
+  height:
+    calc(100vh - 56px);
+
+  min-height: 620px;
+
+  overflow: hidden;
+
+  border-radius: 34px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.16);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.008)
+    );
+
+  backdrop-filter:
+    blur(4px)
+    saturate(115%);
+
+  -webkit-backdrop-filter:
+    blur(4px)
+    saturate(115%);
+
+  box-shadow:
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.13),
+
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.025),
+
+    0 40px 100px
+      rgba(0, 0, 0, 0.55);
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+  position: relative;
+
+  width: 100%;
+
+  height: 110px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding: 0 42px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+}
+
+
+.brand {
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+}
+
+
+.brand-mark {
+  width: 60px;
+
+  height: 60px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 15px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.22);
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.12);
+
+  font-size: 23px;
+
+  font-weight: 700;
+}
+
+
+.nav-status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  color:
+    rgba(255, 255, 255, 0.55);
+
+  font-size: 16px;
+}
+
+
+.status-dot {
+  width: 9px;
+
+  height: 9px;
+
+  border-radius: 50%;
+
+  background: #8dffb4;
+
+  box-shadow:
+    0 0 12px
+    rgba(141, 255, 180, 0.7);
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  position: relative;
+
+  height:
+    calc(100% - 110px);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding:
+    30px 40px 50px;
+}
+
+
+.hero-content {
+  width: 100%;
+
+  max-width: 1200px;
+
+  transform:
+    translateY(-2%);
+}
+
+
+.hero h1 {
+  margin: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  font-size:
+    clamp(70px, 7vw, 118px);
+
+  line-height: 0.94;
+
+  letter-spacing:
+    -6px;
+
+  font-weight: 650;
+}
+
+
+.hero-muted {
+  color:
+    rgba(255, 255, 255, 0.45);
+}
+
+
+.hero-description {
+  max-width: 900px;
+
+  margin:
+    42px auto 0;
+
+  color:
+    rgba(255, 255, 255, 0.62);
+
+  font-size: 22px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   HERO ACTION
+========================================================= */
+
+.hero-action {
+  margin-top: 48px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 17px;
+}
+
+
+.hero-label {
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  letter-spacing: 4px;
+}
+
+
+.hero-action .rg-button {
+  width: 430px;
+
+  min-width: 430px;
+
+  min-height: 94px;
+
+  padding:
+    25px 40px;
+
+  border-radius: 18px;
+
+  font-size: 25px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   TOOLKIT
+========================================================= */
+
+.toolkit {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 1600px;
+
+  margin: 0 auto;
+
+  padding-top: 110px;
+}
+
+
+/* =========================================================
+   TOOLKIT INTRO
+========================================================= */
+
+.toolkit-intro {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 80px;
+
+  padding:
+    0 10px 80px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+}
+
+
+.toolkit-intro h2 {
+  margin:
+    18px 0 0;
+
+  font-size:
+    clamp(58px, 6vw, 92px);
+
+  line-height: 0.95;
+
+  letter-spacing:
+    -5px;
+
+  font-weight: 650;
+}
+
+
+.toolkit-intro h2 span {
+  color:
+    rgba(255, 255, 255, 0.40);
+}
+
+
+.toolkit-intro > p {
+  max-width: 440px;
+
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.48);
+
+  font-size: 17px;
+
+  line-height: 1.65;
+}
+
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.category-section {
+  padding:
+    100px 10px 105px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+}
+
+
+.category-title-group {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 25px;
+}
+
+
+.category-number {
+  width: 58px;
+
+  height: 58px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.14);
+
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(255, 255, 255, 0.55);
+
+  font-size: 13px;
+
+  letter-spacing: 2px;
+}
+
+
+.category-header {
+  margin-bottom: 55px;
+}
+
+
+.category-header h2 {
+  margin: 0;
+
+  font-size:
+    clamp(48px, 5vw, 76px);
+
+  line-height: 0.98;
+
+  letter-spacing:
+    -4px;
+
+  font-weight: 620;
+}
+
+
+.category-header p {
+  max-width: 600px;
+
+  margin:
+    17px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.43);
+
+  font-size: 17px;
+
+  line-height: 1.55;
+}
+
+
+/* =========================================================
+   TOOL GROUP
+========================================================= */
+
+.tool-group {
+  margin-bottom: 72px;
+}
+
+
+.tool-group:last-child {
+  margin-bottom: 0;
+}
+
+
+.section-heading {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 40px;
+
+  margin-bottom: 26px;
+
+  padding-bottom: 15px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+}
+
+
+.section-label {
+  color:
+    rgba(255, 255, 255, 0.50);
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  letter-spacing: 3px;
+
+  text-transform: uppercase;
+}
+
+
+.section-heading p {
+  max-width: 430px;
+
+  margin: 0;
+
+  text-align: right;
+
+  color:
+    rgba(255, 255, 255, 0.35);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   TOOL GRID
+========================================================= */
+
+.tool-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+
+/* =========================================================
+   TOOL CARD
+========================================================= */
+
+.tool-card {
+  position: relative;
+
+  min-height: 245px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  padding: 24px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.065),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  color: #ffffff;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  backdrop-filter:
+    blur(12px)
+    saturate(120%);
+
+  -webkit-backdrop-filter:
+    blur(12px)
+    saturate(120%);
+
+  box-shadow:
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.08),
+
+    0 15px 35px
+      rgba(0, 0, 0, 0.20);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+.tool-card:hover {
+  transform:
+    translateY(-5px);
+
+  border-color:
+    rgba(255, 165, 80, 0.28);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.085),
+      rgba(255, 95, 0, 0.045)
+    );
+
+  box-shadow:
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.12),
+
+    0 22px 50px
+      rgba(0, 0, 0, 0.35),
+
+    0 0 35px
+      rgba(255, 76, 0, 0.08);
+}
+
+
+.tool-card:active {
+  transform:
+    translateY(-1px);
+}
+
+
+.tool-card:focus-visible {
+  outline: none;
+
+  border-color:
+    rgba(255, 180, 100, 0.55);
+
+  box-shadow:
+    0 0 0 3px
+      rgba(255, 110, 20, 0.16);
+}
+
+
+.card-glow {
+  position: absolute;
+
+  width: 170px;
+
+  height: 170px;
+
+  top: -100px;
+
+  right: -80px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 120, 30, 0.20),
+      transparent 68%
+    );
+
+  filter: blur(12px);
+
+  opacity: 0.45;
+}
+
+
+.tool-card:hover .card-glow {
+  opacity: 0.85;
+}
+
+
+.card-top {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+}
+
+
+.card-number {
+  color:
+    rgba(255, 255, 255, 0.32);
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 2px;
+}
+
+
+.card-icon {
+  width: 40px;
+
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(255, 255, 255, 0.72);
+
+  font-size: 17px;
+}
+
+
+.card-bottom {
+  position: relative;
+
+  z-index: 2;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+
+.card-bottom h3 {
+  margin:
+    0 0 8px;
+
+  font-size: 20px;
+
+  line-height: 1.1;
+
+  letter-spacing:
+    -0.5px;
+}
+
+
+.card-bottom p {
+  max-width: 240px;
+
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.40);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+.card-arrow {
+  flex-shrink: 0;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 23px;
+}
+
+
+.tool-card:hover .card-arrow {
+  transform:
+    translate(3px, -3px);
+
+  color:
+    rgba(255, 190, 130, 0.90);
+}
+
+
+/* =========================================================
+   BOTTOM PANEL
+========================================================= */
+
+.bottom-panel {
+  margin:
+    95px 10px 60px;
+
+  padding:
+    55px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 60px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.012)
+    );
+
+  backdrop-filter:
+    blur(14px);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+}
+
+
+.small-label {
+  color:
+    rgba(255, 255, 255, 0.35);
+
+  font-size: 12px;
+
+  letter-spacing: 3px;
+}
+
+
+.bottom-panel h3 {
+  margin:
+    15px 0 0;
+
+  font-size:
+    clamp(38px, 4vw, 58px);
+
+  line-height: 0.98;
+
+  letter-spacing:
+    -3px;
+}
+
+
+.bottom-panel h3 span {
+  color:
+    rgba(255, 255, 255, 0.42);
+}
+
+
+.bottom-description {
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 40px;
+
+  max-width: 470px;
+}
+
+
+.bottom-description p {
+  margin: 0;
+
+  color:
+    rgba(255, 255, 255, 0.45);
+
+  line-height: 1.6;
+}
+
+
+.bottom-arrow {
+  font-size: 28px;
+
+  color:
+    rgba(255, 255, 255, 0.65);
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding:
+    0 10px 30px;
+
+  color:
+    rgba(255, 255, 255, 0.30);
+
+  font-size: 11px;
+
+  letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   FIXED TOOL PAGE
+   IMPORTANT:
+   The outer frame stays inside ONE viewport.
+========================================================= */
+
+.tool-page {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 20;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding:
+    28px 50px;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   TOOL PAGE SHELL
+========================================================= */
+
+.tool-page-shell {
+  position: relative;
+
+  width: 100%;
+
+  height:
+    calc(100vh - 56px);
+
+  min-height: 600px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border-radius: 34px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.18);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.008)
+    );
+
+  backdrop-filter:
+    blur(6px)
+    saturate(120%);
+
+  -webkit-backdrop-filter:
+    blur(6px)
+    saturate(120%);
+
+  box-shadow:
+
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.14),
+
+    inset 0 -1px 0
+      rgba(255, 255, 255, 0.025),
+
+    0 40px 100px
+      rgba(0, 0, 0, 0.58);
+}
+
+
+/* =========================================================
+   TOOL NAVBAR
+========================================================= */
+
+.tool-navbar {
+  position: relative;
+
+  flex-shrink: 0;
+
+  height: 110px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  padding:
+    0 62px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.10);
+}
+
+
+.tool-back-button {
+  padding:
+    13px 22px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.15);
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(255, 255, 255, 0.72);
+
+  font-size: 16px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+
+.tool-back-button:hover {
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  border-color:
+    rgba(255, 180, 100, 0.30);
+
+  color: #ffffff;
+
+  transform:
+    translateY(-1px);
+}
+
+
+.tool-page-category {
+  color:
+    rgba(255, 255, 255, 0.40);
+
+  font-size: 13px;
+
+  letter-spacing: 5px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   TOOL WORKSPACE
+========================================================= */
+
+.tool-workspace {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding:
+    70px 62px 35px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(255, 140, 50, 0.28)
+    rgba(255, 255, 255, 0.025);
+}
+
+.tool-workspace::-webkit-scrollbar {
+  width: 7px;
+}
+
+.tool-workspace::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tool-workspace::-webkit-scrollbar-thumb {
+  background: rgba(255, 140, 50, 0.28);
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   TOOL INTRO
+========================================================= */
+
+.tool-intro {
+  flex-shrink: 0;
+}
+
+
+.tool-number {
+  display: block;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  letter-spacing: 4px;
+}
+
+
+.tool-intro h1 {
+  margin:
+    22px 0 0;
+
+  font-size:
+    clamp(58px, 6vw, 94px);
+
+  line-height: 0.95;
+
+  letter-spacing:
+    -5px;
+
+  font-weight: 650;
+}
+
+
+.tool-intro p {
+  margin:
+    24px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.50);
+
+  font-size: 20px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   WORKSPACE BOX
+========================================================= */
+
+.tool-workspace-box {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-height: 320px;
+
+  margin-top: 45px;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  border:
+    1px dashed
+    rgba(255, 255, 255, 0.18);
+
+  border-radius: 24px;
+
+  background:
+    rgba(0, 0, 0, 0.20);
+
+  overflow: visible;
+}
+
+.tool-workspace-box > * {
+  width: 100%;
+  min-width: 0;
+}
+
+
+.tool-workspace-content {
+  width: 100%;
+
+  max-width: 650px;
+
+  padding: 40px;
+
+  text-align: center;
+}
+
+
+.tool-placeholder-label {
+  display: block;
+
+  color:
+    rgba(255, 255, 255, 0.28);
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 4px;
+}
+
+
+.tool-workspace-content strong {
+  display: block;
+
+  margin-top: 18px;
+
+  font-size: 32px;
+
+  font-weight: 600;
+}
+
+
+.tool-workspace-content p {
+  max-width: 520px;
+
+  margin:
+    14px auto 0;
+
+  color:
+    rgba(255, 255, 255, 0.38);
+
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TOOL BENEFITS
+========================================================= */
+
+.tool-benefits {
+  flex-shrink: 0;
+
+  min-height: 100px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  align-items: center;
+
+  gap: 40px;
+
+  padding:
+    25px 62px 0;
+}
+
+
+.tool-benefit {
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+}
+
+
+.benefit-icon {
+  width: 42px;
+
+  height: 42px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid
+    rgba(255, 140, 50, 0.30);
+
+  border-radius: 11px;
+
+  background:
+    rgba(255, 100, 20, 0.05);
+
+  color:
+    rgba(255, 170, 100, 0.90);
+
+  font-size: 17px;
+}
+
+
+.tool-benefit div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.tool-benefit strong {
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+
+.tool-benefit span {
+  color:
+    rgba(255, 255, 255, 0.35);
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1200px) {
+
+  .app-content {
+    padding:
+      22px 30px 70px;
+  }
+
+
+  .tool-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+
+  .tool-page {
+    padding:
+      22px 30px;
+  }
+
+
+  .tool-page-shell {
+    height:
+      calc(100vh - 44px);
+  }
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .app-content {
+    padding:
+      20px 20px 60px;
+  }
+
+
+  .glass-shell {
+    height:
+      calc(100vh - 40px);
+
+    min-height: 580px;
+
+    border-radius: 25px;
+  }
+
+
+  .navbar {
+    height: 90px;
+
+    padding:
+      0 25px;
+  }
+
+
+  .brand {
+    gap: 14px;
+  }
+
+
+  .brand-mark {
+    width: 50px;
+
+    height: 50px;
+  }
+
+
+  .hero {
+    height:
+      calc(100% - 90px);
+
+    padding:
+      30px 25px 40px;
+  }
+
+
+  .hero h1 {
+    font-size:
+      clamp(55px, 9vw, 85px);
+
+    letter-spacing:
+      -4px;
+  }
+
+
+  .hero-description {
+    font-size: 18px;
+  }
+
+
+  .hero-action .rg-button {
+    width: 380px;
+
+    min-width: 380px;
+
+    min-height: 82px;
+
+    font-size: 22px;
+  }
+
+
+  .toolkit {
+    padding-top: 80px;
+  }
+
+
+  .toolkit-intro {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 30px;
+  }
+
+
+  .category-section {
+    padding:
+      80px 5px 85px;
+  }
+
+
+  .tool-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  .bottom-panel {
+    margin:
+      75px 5px 50px;
+
+    padding:
+      40px;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+
+  /* TOOL PAGE */
+
+  .tool-page {
+    padding:
+      20px;
+  }
+
+
+  .tool-page-shell {
+    height:
+      calc(100vh - 40px);
+
+    min-height: 560px;
+
+    border-radius: 25px;
+  }
+
+
+  .tool-navbar {
+    height: 90px;
+
+    padding:
+      0 35px;
+  }
+
+
+  .tool-workspace {
+    padding:
+      50px 35px 25px;
+  }
+
+
+  .tool-intro h1 {
+    font-size:
+      clamp(50px, 8vw, 75px);
+  }
+
+
+  .tool-benefits {
+    padding:
+      20px 35px 0;
+
+    gap: 20px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .app-content {
+    padding:
+      12px 12px 45px;
+  }
+
+
+  .glass-shell {
+    height:
+      calc(100vh - 24px);
+
+    min-height: 560px;
+
+    border-radius: 20px;
+  }
+
+
+  .navbar {
+    height: 78px;
+
+    padding:
+      0 18px;
+  }
+
+
+  .brand {
+    gap: 11px;
+  }
+
+
+  .brand-mark {
+    width: 44px;
+
+    height: 44px;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+  }
+
+
+  .nav-status {
+    font-size: 11px;
+  }
+
+
+  .navbar .brand-name span:first-child {
+    font-size: 19px !important;
+
+    letter-spacing: 2px !important;
+  }
+
+
+  .navbar .brand-name span:last-child {
+    font-size: 8px !important;
+
+    letter-spacing: 3px !important;
+  }
+
+
+  .hero {
+    height:
+      calc(100% - 78px);
+
+    padding:
+      25px 18px 35px;
+  }
+
+
+  .hero h1 {
+    font-size:
+      clamp(45px, 13vw, 65px);
+
+    letter-spacing:
+      -3px;
+  }
+
+
+  .hero-description {
+    margin-top: 28px;
+
+    font-size: 16px;
+  }
+
+
+  .hero-label {
+    font-size: 11px;
+
+    letter-spacing: 2px;
+  }
+
+
+  .hero-action {
+    margin-top: 35px;
+  }
+
+
+  .hero-action .rg-button {
+    width:
+      min(90vw, 360px);
+
+    min-width: 0;
+
+    min-height: 76px;
+
+    padding:
+      20px 25px;
+
+    font-size: 20px;
+  }
+
+
+  .toolkit {
+    padding-top: 65px;
+  }
+
+
+  .toolkit-intro {
+    padding:
+      0 3px 50px;
+
+    gap: 25px;
+  }
+
+
+  .toolkit-intro h2 {
+    font-size:
+      clamp(48px, 14vw, 68px);
+
+    letter-spacing:
+      -4px;
+  }
+
+
+  .category-section {
+    padding:
+      65px 3px 70px;
+  }
+
+
+  .category-header {
+    margin-bottom: 40px;
+  }
+
+
+  .category-title-group {
+    gap: 15px;
+  }
+
+
+  .category-number {
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 12px;
+
+    font-size: 11px;
+  }
+
+
+  .category-header h2 {
+    font-size:
+      clamp(40px, 11vw, 58px);
+
+    letter-spacing:
+      -3px;
+  }
+
+
+  .category-header p {
+    font-size: 14px;
+  }
+
+
+  .section-heading {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+
+  .section-heading p {
+    text-align: left;
+  }
+
+
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .tool-card {
+    min-height: 215px;
+
+    padding: 21px;
+
+    border-radius: 19px;
+  }
+
+
+  .bottom-panel {
+    margin:
+      55px 3px 40px;
+
+    padding:
+      30px 25px;
+  }
+
+
+  footer {
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding:
+      0 3px 20px;
+  }
+
+
+  /* ==================================================
+     MOBILE TOOL PAGE
+  ================================================== */
+
+  .tool-page {
+    padding:
+      12px;
+  }
+
+
+  .tool-page-shell {
+    width: 100%;
+
+    height:
+      calc(100vh - 24px);
+
+    min-height: 0;
+
+    border-radius: 20px;
+  }
+
+
+  .tool-navbar {
+    height: 78px;
+
+    padding:
+      0 18px;
+  }
+
+
+  .tool-back-button {
+    padding:
+      10px 16px;
+
+    font-size: 14px;
+  }
+
+
+  .tool-page-category {
+    font-size: 10px;
+
+    letter-spacing: 3px;
+  }
+
+
+  .tool-workspace {
+    padding:
+      35px 18px 15px;
+  }
+
+
+  .tool-number {
+    font-size: 11px;
+
+    letter-spacing: 3px;
+  }
+
+
+  .tool-intro h1 {
+    margin-top: 15px;
+
+    font-size:
+      clamp(42px, 12vw, 62px);
+
+    letter-spacing:
+      -3px;
+  }
+
+
+  .tool-intro p {
+    margin-top: 18px;
+
+    font-size: 15px;
+  }
+
+
+  .tool-workspace-box {
+    margin-top: 30px;
+
+    border-radius: 18px;
+  }
+
+
+  .tool-workspace-content {
+    padding:
+      25px 18px;
+  }
+
+
+  .tool-workspace-content strong {
+    font-size: 24px;
+  }
+
+
+  .tool-workspace-content p {
+    font-size: 13px;
+  }
+
+
+  .tool-benefits {
+    min-height: 0;
+
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+
+    padding:
+      15px 18px 18px;
+  }
+
+
+  .tool-benefit {
+    gap: 12px;
+  }
+
+
+  .benefit-icon {
+    width: 36px;
+
+    height: 36px;
+
+    border-radius: 9px;
+  }
+
+
+  .tool-benefit strong {
+    font-size: 13px;
+  }
+
+
+  .tool-benefit span {
+    font-size: 10px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .nav-status {
+    display: none;
+  }
+
+
+  .hero h1 {
+    font-size: 45px;
+  }
+
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+
+  .hero-action .rg-button {
+    width: 90vw;
+
+    font-size: 18px;
+  }
+
+
+  .tool-intro h1 {
+    font-size: 40px;
+  }
+
+
+  .tool-workspace-box {
+    margin-top: 22px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+
+  .glass-orange-light,
+  .glass-ridges {
+    animation: none;
+  }
+
+
+  .tool-card,
+  .tool-back-button {
+    transition: none;
+  }
+
+}
+
+
+/* =========================================================
+   MERGE PDF
+========================================================= */
+
+.merge-pdf-tool {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.merge-pdf-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.merge-pdf-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(255, 150, 70, 0.72);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+}
+
+.merge-pdf-helper-title {
+  display: block;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.merge-pdf-add-button {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 108px;
+  height: 40px;
+  padding: 0 17px;
+  border: 1px solid rgba(255, 132, 45, 0.38);
+  border-radius: 11px;
+  background: rgba(255, 105, 20, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.merge-pdf-add-button:hover {
+  background: rgba(255, 105, 20, 0.15);
+  border-color: rgba(255, 132, 45, 0.65);
+  transform: translateY(-1px);
+}
+
+.merge-pdf-add-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.merge-pdf-dropzone label {
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.merge-pdf-dropzone label:hover {
+  border-color: rgba(255, 126, 38, 0.48);
+  background: rgba(255, 100, 20, 0.045);
+}
+
+.merge-pdf-drop-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 126, 38, 0.35);
+  border-radius: 9px;
+  color: rgba(255, 145, 65, 0.9);
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.merge-pdf-dropzone strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.merge-pdf-dropzone span:not(.merge-pdf-drop-icon) {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 10px;
+}
+
+.merge-pdf-dropzone input {
+  display: none;
+}
+
+.merge-pdf-error {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 90, 70, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 70, 50, 0.07);
+  color: rgba(255, 175, 165, 0.9);
+  font-size: 10px;
+}
+
+.merge-pdf-file-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.merge-pdf-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.merge-pdf-section-heading > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.merge-pdf-section-heading span {
+  color: rgba(255, 145, 65, 0.68);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+}
+
+.merge-pdf-section-heading strong {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.merge-pdf-section-heading button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.merge-pdf-section-heading button:hover {
+  color: rgba(255, 150, 80, 0.9);
+}
+
+.merge-pdf-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.merge-pdf-file-card {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.merge-pdf-file-number {
+  width: 25px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.merge-pdf-file-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 112, 35, 0.26);
+  border-radius: 8px;
+  background: rgba(255, 93, 18, 0.08);
+  color: rgba(255, 145, 70, 0.85);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.merge-pdf-file-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.merge-pdf-file-info strong {
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 11px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merge-pdf-file-info span {
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 9px;
+}
+
+.merge-pdf-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.merge-pdf-file-actions button {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.merge-pdf-file-actions button:hover:not(:disabled) {
+  border-color: rgba(255, 125, 40, 0.35);
+  background: rgba(255, 105, 20, 0.08);
+  color: rgba(255, 170, 105, 0.95);
+}
+
+.merge-pdf-file-actions button:disabled {
+  opacity: 0.18;
+  cursor: default;
+}
+
+.merge-pdf-footer {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.merge-pdf-status {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 10px;
+}
+
+.merge-pdf-action {
+  min-width: 132px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 127, 42, 0.5);
+  border-radius: 11px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 119, 31, 0.85),
+    rgba(214, 64, 8, 0.75)
+  );
+  box-shadow:
+    0 8px 25px rgba(255, 76, 10, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.merge-pdf-action:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.merge-pdf-action:disabled {
+  opacity: 0.28;
+  cursor: default;
+  box-shadow: none;
+}
+
+.merge-pdf-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 128, 40, 0.25);
+  border-radius: 15px;
+  background: rgba(255, 95, 20, 0.055);
+}
+
+.merge-pdf-result-label {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255, 148, 70, 0.75);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.merge-pdf-result h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.merge-pdf-result p {
+  margin: 3px 0 0;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+}
+
+.merge-pdf-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.merge-pdf-result-actions button {
+  height: 34px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.merge-pdf-result-actions button:first-child {
+  border: 1px solid rgba(255, 128, 40, 0.45);
+  background: rgba(255, 106, 22, 0.15);
+  color: rgba(255, 205, 175, 0.95);
+}
+
+.merge-pdf-result-actions button:last-child {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.025);
+  color: rgba(255, 255, 255, 0.48);
+}
+
+@media (max-width: 700px) {
+  .merge-pdf-tool {
+    padding: 18px;
+  }
+
+  .merge-pdf-action-row,
+  .merge-pdf-footer,
+  .merge-pdf-result {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .merge-pdf-add-button,
+  .merge-pdf-action {
+    width: 100%;
+  }
+
+  .merge-pdf-result-actions {
+    width: 100%;
+  }
+
+  .merge-pdf-result-actions button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .merge-pdf-add-button,
+  .merge-pdf-action {
+    transition: none;
+  }
+}
