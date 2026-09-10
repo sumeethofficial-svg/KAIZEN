@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState } from "react";
+
 import ToolCard from "./components/ToolCard";
 import RadialGlowButton from "./components/RadialGlowButton";
 
 import toolRegistry from "./tools/registry";
+import toolComponents from "./tools/toolComponents";
 
 import "./App.css";
 
@@ -14,9 +16,11 @@ function App() {
    * Stores the exact homepage scroll position
    * before entering a tool.
    */
-  const previousScrollPosition = useRef(0);
+  const previousScrollPosition =
+    useRef(0);
 
-  const categories = Object.values(toolRegistry);
+  const categories =
+    Object.values(toolRegistry);
 
   /*
    * =========================================================
@@ -27,68 +31,84 @@ function App() {
   const normalizedSearchQuery =
     searchQuery.trim().toLowerCase();
 
-  const filteredCategories = useMemo(() => {
-    if (!normalizedSearchQuery) {
-      return categories;
-    }
+  const filteredCategories =
+    useMemo(() => {
+      if (!normalizedSearchQuery) {
+        return categories;
+      }
 
-    return categories
-      .map((category) => {
-        const filteredGroups = category.groups
-          .map((group) => {
-            const filteredTools = group.tools.filter(
-              (tool) => {
-                const searchableText = [
-                  tool.title,
-                  tool.description,
-                  group.title,
-                  category.title,
-                ]
-                  .filter(Boolean)
-                  .join(" ")
-                  .toLowerCase();
+      return categories
+        .map((category) => {
+          const filteredGroups =
+            category.groups
+              .map((group) => {
+                const filteredTools =
+                  group.tools.filter(
+                    (tool) => {
+                      const searchableText = [
+                        tool.title,
+                        tool.description,
+                        group.title,
+                        category.title,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
 
-                return searchableText.includes(
-                  normalizedSearchQuery
-                );
-              }
-            );
+                      return searchableText.includes(
+                        normalizedSearchQuery
+                      );
+                    }
+                  );
 
-            return {
-              ...group,
-              tools: filteredTools,
-            };
-          })
-          .filter((group) => group.tools.length > 0);
+                return {
+                  ...group,
+                  tools: filteredTools,
+                };
+              })
+              .filter(
+                (group) =>
+                  group.tools.length > 0
+              );
 
-        return {
-          ...category,
-          groups: filteredGroups,
-        };
-      })
-      .filter(
-        (category) =>
-          category.groups.length > 0
-      );
-  }, [categories, normalizedSearchQuery]);
+          return {
+            ...category,
+            groups: filteredGroups,
+          };
+        })
+        .filter(
+          (category) =>
+            category.groups.length > 0
+        );
+    }, [
+      categories,
+      normalizedSearchQuery,
+    ]);
 
-  const searchResultCount = useMemo(() => {
-    return filteredCategories.reduce(
-      (categoryTotal, category) => {
-        return (
+  const searchResultCount =
+    useMemo(() => {
+      return filteredCategories.reduce(
+        (categoryTotal, category) =>
           categoryTotal +
           category.groups.reduce(
             (groupTotal, group) =>
-              groupTotal + group.tools.length,
+              groupTotal +
+              group.tools.length,
             0
-          )
-        );
-      },
-      0
-    );
-  }, [filteredCategories]);
+          ),
+        0
+      );
+    }, [filteredCategories]);
 
-  const handleSearchChange = (event) => {
+  /*
+   * =========================================================
+   * SEARCH HANDLERS
+   * =========================================================
+   */
+
+  const handleSearchChange = (
+    event
+  ) => {
     setSearchQuery(event.target.value);
   };
 
@@ -96,10 +116,17 @@ function App() {
     setSearchQuery("");
   };
 
-  const handleSearchKeyDown = (event) => {
+  /*
+   * Enter on a single search result opens it.
+   * Escape clears the search.
+   */
+  const handleSearchKeyDown = (
+    event
+  ) => {
     if (event.key === "Escape") {
       clearSearch();
       event.currentTarget.blur();
+      return;
     }
 
     if (
@@ -130,23 +157,28 @@ function App() {
    * =========================================================
    */
 
-  const handleToolClick = (tool, category) => {
+  const handleToolClick = (
+    tool,
+    category
+  ) => {
     /*
-     * Remember exactly where the user was on the homepage.
+     * Remember exactly where the user
+     * was on the homepage.
      */
     previousScrollPosition.current =
       window.scrollY;
 
     /*
-     * Open the selected tool.
+     * Store the complete tool metadata.
      */
     setActiveTool({
       ...tool,
-      categoryTitle: category.title,
+      categoryTitle:
+        category.title,
     });
 
     /*
-     * Make sure the tool page starts at the top.
+     * Start the tool page at the top.
      */
     window.scrollTo({
       top: 0,
@@ -162,22 +194,14 @@ function App() {
    */
 
   const handleBack = () => {
-    /*
-     * Store the position before leaving the tool page.
-     */
     const restorePosition =
       previousScrollPosition.current;
 
-    /*
-     * Return to the homepage.
-     */
     setActiveTool(null);
 
     /*
-     * React needs one render cycle to put the
-     * homepage back into the DOM.
-     *
-     * After that, restore the previous position.
+     * Give React time to restore the
+     * homepage before restoring scroll.
      */
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -192,11 +216,16 @@ function App() {
 
   /*
    * =========================================================
-   * TOOL WORKSPACE
+   * ACTIVE TOOL
    * =========================================================
    */
 
   if (activeTool) {
+    const ActiveToolComponent =
+      toolComponents[
+        activeTool.id
+      ];
+
     return (
       <main className="app">
         {/* ==================================================
@@ -214,7 +243,7 @@ function App() {
         </div>
 
         {/* ==================================================
-            FIXED TOOL PAGE
+            TOOL PAGE
         ================================================== */}
 
         <div className="tool-page">
@@ -227,13 +256,17 @@ function App() {
               <button
                 type="button"
                 className="tool-back-button"
-                onClick={handleBack}
+                onClick={
+                  handleBack
+                }
               >
                 ← Back
               </button>
 
               <span className="tool-page-category">
-                {activeTool.categoryTitle}
+                {
+                  activeTool.categoryTitle
+                }
               </span>
             </header>
 
@@ -244,37 +277,47 @@ function App() {
             <div className="tool-workspace">
               <div className="tool-intro">
                 <span className="tool-number">
-                  {activeTool.number || "01"}
+                  {activeTool.number ||
+                    "01"}
                 </span>
 
                 <h1>
-                  {activeTool.title}
+                  {
+                    activeTool.title
+                  }
                 </h1>
 
                 <p>
-                  {activeTool.description}
+                  {
+                    activeTool.description
+                  }
                 </p>
               </div>
 
               {/* ==================================================
-                  WORKSPACE
+                  ACTUAL TOOL COMPONENT
               ================================================== */}
 
               <div className="tool-workspace-box">
-                <div className="tool-workspace-content">
-                  <span className="tool-placeholder-label">
-                    TOOL WORKSPACE
-                  </span>
+                {ActiveToolComponent ? (
+                  <ActiveToolComponent />
+                ) : (
+                  <div className="tool-workspace-content">
+                    <span className="tool-placeholder-label">
+                      TOOL WORKSPACE
+                    </span>
 
-                  <strong>
-                    Coming next.
-                  </strong>
+                    <strong>
+                      Coming next.
+                    </strong>
 
-                  <p>
-                    The universal file workspace and processing
-                    engine will be connected to this tool here.
-                  </p>
-                </div>
+                    <p>
+                      This tool has not been
+                      connected to the component
+                      registry yet.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -294,7 +337,8 @@ function App() {
                   </strong>
 
                   <span>
-                    Your files stay on your device.
+                    Your files stay on
+                    your device.
                   </span>
                 </div>
               </div>
@@ -310,7 +354,8 @@ function App() {
                   </strong>
 
                   <span>
-                    Process files in seconds.
+                    Process files in
+                    seconds.
                   </span>
                 </div>
               </div>
@@ -383,8 +428,10 @@ function App() {
                 className="brand-name"
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+                  flexDirection:
+                    "column",
+                  justifyContent:
+                    "center",
                   gap: "3px",
                 }}
               >
@@ -392,7 +439,8 @@ function App() {
                   style={{
                     fontSize: "25px",
                     fontWeight: "700",
-                    letterSpacing: "3px",
+                    letterSpacing:
+                      "3px",
                     lineHeight: "1",
                     color:
                       "rgba(255, 255, 255, 0.96)",
@@ -405,7 +453,8 @@ function App() {
                   style={{
                     fontSize: "10px",
                     fontWeight: "500",
-                    letterSpacing: "5px",
+                    letterSpacing:
+                      "5px",
                     lineHeight: "1",
                     color:
                       "rgba(255, 255, 255, 0.42)",
@@ -421,7 +470,8 @@ function App() {
 
               <span
                 style={{
-                  letterSpacing: "2px",
+                  letterSpacing:
+                    "2px",
                 }}
               >
                 カイゼンツール
@@ -446,12 +496,14 @@ function App() {
               </h1>
 
               <p className="hero-description">
-                Simple tools for managing, editing and converting
-                your documents — directly in your browser.
+                Simple tools for managing,
+                editing and converting your
+                documents — directly in your
+                browser.
               </p>
 
               {/* ==================================================
-                  TOOL SEARCH
+                  SEARCH
               ================================================== */}
 
               <div className="hero-search">
@@ -465,7 +517,9 @@ function App() {
 
                   <input
                     type="search"
-                    value={searchQuery}
+                    value={
+                      searchQuery
+                    }
                     onChange={
                       handleSearchChange
                     }
@@ -493,25 +547,26 @@ function App() {
                 </div>
 
                 <div className="hero-search-meta">
-                  {searchQuery ? (
-                    <span>
-                      {searchResultCount}{" "}
-                      {searchResultCount === 1
-                        ? "tool"
-                        : "tools"}{" "}
-                      found
-                    </span>
-                  ) : (
-                    <span>
-                      Search across all KAIZEN tools
-                    </span>
-                  )}
+                  <span>
+                    {searchQuery
+                      ? `${searchResultCount} ${
+                          searchResultCount ===
+                          1
+                            ? "tool"
+                            : "tools"
+                        } found`
+                      : "Search across all KAIZEN tools"}
+                  </span>
 
                   <span className="hero-search-shortcut">
                     ESC to clear
                   </span>
                 </div>
               </div>
+
+              {/* ==================================================
+                  HERO CTA
+              ================================================== */}
 
               <div className="hero-action">
                 <span className="hero-label">
@@ -525,7 +580,8 @@ function App() {
                         "toolkit"
                       )
                       ?.scrollIntoView({
-                        behavior: "smooth",
+                        behavior:
+                          "smooth",
                       });
                   }}
                 >
@@ -558,6 +614,7 @@ function App() {
                 {searchQuery
                   ? "Search results."
                   : "Everything"}
+
                 {!searchQuery && (
                   <>
                     <br />
@@ -578,11 +635,12 @@ function App() {
           </section>
 
           {/* ==================================================
-              SEARCH EMPTY STATE
+              EMPTY SEARCH STATE
           ================================================== */}
 
           {searchQuery &&
-            searchResultCount === 0 && (
+            searchResultCount ===
+              0 && (
               <section className="search-empty-state">
                 <span className="section-label">
                   NO MATCHES
@@ -596,14 +654,16 @@ function App() {
                 </h3>
 
                 <p>
-                  Try a broader search such as
-                  PDF, image, compress, convert,
-                  sign or merge.
+                  Try a broader search such
+                  as PDF, image, compress,
+                  convert, sign or merge.
                 </p>
 
                 <button
                   type="button"
-                  onClick={clearSearch}
+                  onClick={
+                    clearSearch
+                  }
                 >
                   Clear Search
                 </button>
@@ -628,16 +688,22 @@ function App() {
                 <div className="category-header">
                   <div className="category-title-group">
                     <span className="category-number">
-                      {category.number}
+                      {
+                        category.number
+                      }
                     </span>
 
                     <div>
                       <h2>
-                        {category.title}
+                        {
+                          category.title
+                        }
                       </h2>
 
                       <p>
-                        {category.description}
+                        {
+                          category.description
+                        }
                       </p>
                     </div>
                   </div>
@@ -652,7 +718,9 @@ function App() {
                     (group) => (
                       <div
                         className="tool-group"
-                        key={group.id}
+                        key={
+                          group.id
+                        }
                       >
                         {/* ==================================================
                             GROUP HEADER
@@ -661,12 +729,16 @@ function App() {
                         <div className="section-heading">
                           <div>
                             <span className="section-label">
-                              {group.title}
+                              {
+                                group.title
+                              }
                             </span>
                           </div>
 
                           <p>
-                            {group.description}
+                            {
+                              group.description
+                            }
                           </p>
                         </div>
 
@@ -740,9 +812,10 @@ function App() {
 
             <div className="bottom-description">
               <p>
-                KAIZEN is designed to process files directly
-                on your device whenever possible, keeping
-                your documents private and your workflow simple.
+                KAIZEN is designed to process files
+                directly on your device whenever
+                possible, keeping your documents
+                private and your workflow simple.
               </p>
 
               <div className="bottom-arrow">
