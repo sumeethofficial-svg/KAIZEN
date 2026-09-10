@@ -26,6 +26,7 @@ import HandwritingToPdf from "./pdf/handwriting-to-pdf/HandwritingToPdf.jsx";
 
 import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
 import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
+import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -56,6 +57,7 @@ const toolComponents = {
 
   "encrypt-pdf": EncryptPdf,
   "remove-pdf-password": RemovePassword,
+  "unlock-pdf": UnlockPdf,
 };
 
 export default toolComponents;
