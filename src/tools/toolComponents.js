@@ -12,6 +12,7 @@ import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
 import EditPdf from "./pdf/edit/EditPdf.jsx";
 import SignPdf from "./pdf/sign/SignPdf.jsx";
 import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
+import RedactPdf from "./pdf/redact/RedactPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -28,6 +29,7 @@ const toolComponents = {
   "edit-pdf": EditPdf,
   "sign-pdf": SignPdf,
   "fill-pdf-form": FillPdfForm,
+  "redact-pdf": RedactPdf,
 };
 
 export default toolComponents;
