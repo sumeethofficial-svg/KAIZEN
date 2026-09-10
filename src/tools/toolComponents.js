@@ -15,6 +15,7 @@ import FillPdfForm from "./pdf/fill-pdf-form/FillPdfForm.jsx";
 import RedactPdf from "./pdf/redact/RedactPdf.jsx";
 import AddWatermark from "./pdf/add-watermark/AddWatermark.jsx";
 import PageNumbers from "./pdf/page-numbers/PageNumbers.jsx";
+import BatesNumbering from "./pdf/bates-numbering/BatesNumbering.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -34,6 +35,7 @@ const toolComponents = {
   "redact-pdf": RedactPdf,
   "add-watermark": AddWatermark,
   "page-numbers": PageNumbers,
+  "bates-numbering": BatesNumbering,
 };
 
 export default toolComponents;
