@@ -9,7 +9,6 @@ import PagesPerSheet from "./pdf/pages-per-sheet/PagesPerSheet.jsx";
 import FlipMirrorPdf from "./pdf/flip-mirror/FlipMirrorPdf.jsx";
 import CropResizePdf from "./pdf/crop-resize/CropResizePdf.jsx";
 import PdfToZip from "./pdf/pdf-to-zip/PdfToZip.jsx";
-import ConvertImage from "./images/ConvertImage.jsx";
 
 import EditPdf from "./pdf/edit/EditPdf.jsx";
 import SignPdf from "./pdf/sign/SignPdf.jsx";
@@ -25,6 +24,8 @@ import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
 import PdfToHandwriting from "./pdf/pdf-to-handwriting/PdfToHandwriting.jsx";
 import HandwritingToPdf from "./pdf/handwriting-to-pdf/HandwritingToPdf.jsx";
 
+import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -37,9 +38,6 @@ const toolComponents = {
   "flip-mirror-pdf": FlipMirrorPdf,
   "crop-resize-pdf": CropResizePdf,
   "pdf-to-zip": PdfToZip,
-<<<<<<< HEAD
-  "convert-image": ConvertImage,
-=======
 
   "edit-pdf": EditPdf,
   "sign-pdf": SignPdf,
@@ -54,7 +52,7 @@ const toolComponents = {
   "invert-pdf-colours": InvertPdfColours,
   "pdf-to-handwriting": PdfToHandwriting,
   "handwriting-to-pdf": HandwritingToPdf,
->>>>>>> 22a2a1678dc9f06d1c3bb40e9b540e4b94df7e9e
+  "encrypt-pdf": EncryptPdf,
 };
 
 export default toolComponents;
