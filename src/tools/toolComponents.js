@@ -20,6 +20,7 @@ import BatesNumbering from "./pdf/bates-numbering/BatesNumbering.jsx";
 import HeadersFooters from "./pdf/headers-footers/HeadersFooters.jsx";
 import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
 import EditMetadata from "./pdf/edit-metadata/EditMetadata.jsx";
+import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -44,6 +45,7 @@ const toolComponents = {
   "headers-footers": HeadersFooters,
   "flatten-pdf": FlattenPdf,
   "edit-metadata": EditMetadata,
+  "invert-pdf-colours": InvertPdfColours,
 };
 
 export default toolComponents;
