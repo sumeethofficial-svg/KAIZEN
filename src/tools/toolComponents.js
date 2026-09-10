@@ -17,6 +17,7 @@ import AddWatermark from "./pdf/add-watermark/AddWatermark.jsx";
 import PageNumbers from "./pdf/page-numbers/PageNumbers.jsx";
 import BatesNumbering from "./pdf/bates-numbering/BatesNumbering.jsx";
 import HeadersFooters from "./pdf/headers-footers/HeadersFooters.jsx";
+import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -30,6 +31,7 @@ const toolComponents = {
   "flip-mirror-pdf": FlipMirrorPdf,
   "crop-resize-pdf": CropResizePdf,
   "pdf-to-zip": PdfToZip,
+
   "edit-pdf": EditPdf,
   "sign-pdf": SignPdf,
   "fill-pdf-form": FillPdfForm,
@@ -38,6 +40,7 @@ const toolComponents = {
   "page-numbers": PageNumbers,
   "bates-numbering": BatesNumbering,
   "headers-footers": HeadersFooters,
+  "flatten-pdf": FlattenPdf,
 };
 
 export default toolComponents;
