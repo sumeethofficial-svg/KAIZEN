@@ -35,6 +35,7 @@ import CreatePdf from "./pdf/create-pdf/CreatePdf.jsx";
 import MarkdownToPdf from "./pdf/markdown-to-pdf/MarkdownToPdf.jsx";
 import CsvToPdf from "./pdf/csv-to-pdf/CsvToPdf.jsx";
 import AudioToPdf from "./pdf/audio-to-pdf/AudioToPdf.jsx";
+import EbookToPdf from "./pdf/ebook-to-pdf/EbookToPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -74,6 +75,7 @@ const toolComponents = {
   "markdown-to-pdf": MarkdownToPdf,
   "csv-to-pdf": CsvToPdf,
   "audio-to-pdf": AudioToPdf,
+  "ebook-to-pdf": EbookToPdf,
 };
 
 export default toolComponents;
