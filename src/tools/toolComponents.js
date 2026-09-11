@@ -28,6 +28,8 @@ import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
 import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
 import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
 
+import WordToPdf from "./pdf/word-to-pdf/WordToPdf.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -58,6 +60,8 @@ const toolComponents = {
   "encrypt-pdf": EncryptPdf,
   "remove-pdf-password": RemovePassword,
   "unlock-pdf": UnlockPdf,
+
+  "word-to-pdf": WordToPdf,
 };
 
 export default toolComponents;
