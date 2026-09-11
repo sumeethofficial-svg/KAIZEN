@@ -29,6 +29,7 @@ import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
 import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
 
 import WordToPdf from "./pdf/word-to-pdf/WordToPdf.jsx";
+import ImagesToPdf from "./pdf/images-to-pdf/ImagesToPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -62,6 +63,7 @@ const toolComponents = {
   "unlock-pdf": UnlockPdf,
 
   "word-to-pdf": WordToPdf,
+  "images-to-pdf": ImagesToPdf,
 };
 
 export default toolComponents;
