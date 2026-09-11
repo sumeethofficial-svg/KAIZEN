@@ -28,6 +28,9 @@ import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
 
 import WordToPdf from "./pdf/word-to-pdf/WordToPdf.jsx";
 import ImagesToPdf from "./pdf/images-to-pdf/ImagesToPdf.jsx";
+import ExcelToPdf from "./pdf/excel-to-pdf/ExcelToPdf.jsx";
+import PowerpointToPdf from "./pdf/powerpoint-to-pdf/PowerpointToPdf.jsx";
+import HtmlToPdf from "./pdf/html-to-pdf/HtmlToPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -60,6 +63,9 @@ const toolComponents = {
 
   "word-to-pdf": WordToPdf,
   "images-to-pdf": ImagesToPdf,
+  "excel-to-pdf": ExcelToPdf,
+  "powerpoint-to-pdf": PowerpointToPdf,
+  "html-to-pdf": HtmlToPdf,
 };
 
 export default toolComponents;

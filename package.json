@@ -14,14 +14,19 @@
     "@pdfsmaller/pdf-encrypt": "^1.2.0",
     "clsx": "^2.1.1",
     "docx-preview": "^0.4.0",
+    "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.14.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "jszip": "^3.10.2",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289",
     "pdfstudio": "^0.4.0",
+    "pptx-svg": "^0.6.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
