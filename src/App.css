@@ -2994,3 +2994,42 @@ footer {
     letter-spacing: -1.5px;
   }
 }
+
+/* =========================================================
+   TOOL SHELL SPACING FIX
+   Keep the active tool content comfortably inset from
+   the outer glass shell and prevent the workspace box
+   from touching the shell border.
+========================================================= */
+.tool-workspace {
+  box-sizing: border-box;
+  padding: 52px 62px 42px;
+}
+
+.tool-intro {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tool-intro h1,
+.tool-intro p {
+  max-width: 1200px;
+}
+
+.tool-workspace-box {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 42px;
+}
+
+@media (max-width: 900px) {
+  .tool-workspace {
+    padding: 42px 28px 34px;
+  }
+}
+
+@media (max-width: 650px) {
+  .tool-workspace {
+    padding: 32px 18px 28px;
+  }
+}
