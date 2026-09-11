@@ -25,7 +25,6 @@ import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
 import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
 import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
 import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
-
 import WordToPdf from "./pdf/word-to-pdf/WordToPdf.jsx";
 import ImagesToPdf from "./pdf/images-to-pdf/ImagesToPdf.jsx";
 import ExcelToPdf from "./pdf/excel-to-pdf/ExcelToPdf.jsx";
@@ -36,6 +35,13 @@ import MarkdownToPdf from "./pdf/markdown-to-pdf/MarkdownToPdf.jsx";
 import CsvToPdf from "./pdf/csv-to-pdf/CsvToPdf.jsx";
 import AudioToPdf from "./pdf/audio-to-pdf/AudioToPdf.jsx";
 import EbookToPdf from "./pdf/ebook-to-pdf/EbookToPdf.jsx";
+
+import ConvertImage from "./images/ConvertImage.jsx";
+import CompressImage from "./images/CompressImage.jsx";
+import ResizeImage from "./images/ResizeImage.jsx";
+import FixedSizeImage from "./images/FixedSizeImage.jsx";
+import EnhanceImage from "./images/EnhanceImage.jsx";
+
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -65,9 +71,9 @@ const toolComponents = {
   "encrypt-pdf": EncryptPdf,
   "remove-pdf-password": RemovePassword,
   "unlock-pdf": UnlockPdf,
-
   "word-to-pdf": WordToPdf,
   "images-to-pdf": ImagesToPdf,
+
   "excel-to-pdf": ExcelToPdf,
   "powerpoint-to-pdf": PowerpointToPdf,
   "html-to-pdf": HtmlToPdf,
@@ -76,6 +82,12 @@ const toolComponents = {
   "csv-to-pdf": CsvToPdf,
   "audio-to-pdf": AudioToPdf,
   "ebook-to-pdf": EbookToPdf,
+
+  "convert-image": ConvertImage,
+  "compress-image": CompressImage,
+  "resize-image": ResizeImage,
+  "fixed-size-image": FixedSizeImage,
+  "enhance-image": EnhanceImage,
 };
 
 export default toolComponents;

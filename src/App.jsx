@@ -6,6 +6,7 @@ import {
 
 import ToolCard from "./components/ToolCard";
 import RadialGlowButton from "./components/RadialGlowButton";
+import TeamSection from "./components/TeamSection";
 
 import toolRegistry from "./tools/registry";
 import toolComponents from "./tools/toolComponents";
@@ -25,97 +26,102 @@ function App() {
   const categories =
     Object.values(toolRegistry);
 
-  const normalizedSearch =
-    searchQuery
+  /*
+   * =========================================================
+   * SEARCH RESULTS
+   * =========================================================
+   */
+
+  const filteredCategories = useMemo(() => {
+    const query = searchQuery
       .trim()
       .toLowerCase();
 
-  const filteredCategories =
-    useMemo(() => {
-      if (!normalizedSearch) {
-        return categories;
-      }
+    if (!query) {
+      return categories;
+    }
 
-      return categories
-        .map((category) => {
-          const categoryMatches =
-            [
-              category.title,
-              category.description,
-            ]
-              .join(" ")
-              .toLowerCase()
-              .includes(
-                normalizedSearch
-              );
+    return categories
+      .map((category) => {
+        const categoryText = [
+          category.title,
+          category.description,
+          category.id,
+          category.number,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
 
-          const filteredGroups =
-            category.groups
-              .map((group) => {
-                const groupMatches =
-                  [
-                    group.title,
-                    group.description,
+        const categoryMatches =
+          categoryText.includes(query);
+
+        const filteredGroups =
+          category.groups
+            .map((group) => {
+              const groupText = [
+                group.title,
+                group.description,
+                group.id,
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+              const groupMatches =
+                groupText.includes(query);
+
+              const filteredTools =
+                group.tools.filter((tool) => {
+                  const toolText = [
+                    tool.title,
+                    tool.description,
+                    tool.id,
                   ]
+                    .filter(Boolean)
                     .join(" ")
-                    .toLowerCase()
-                    .includes(
-                      normalizedSearch
-                    );
+                    .toLowerCase();
 
-                const filteredTools =
-                  group.tools.filter(
-                    (tool) =>
-                      categoryMatches ||
-                      groupMatches ||
-                      [
-                        tool.title,
-                        tool.description,
-                      ]
-                        .join(" ")
-                        .toLowerCase()
-                        .includes(
-                          normalizedSearch
-                        )
+                  return (
+                    categoryMatches ||
+                    groupMatches ||
+                    toolText.includes(query)
                   );
+                });
 
-                return {
-                  ...group,
-                  tools:
-                    filteredTools,
-                };
-              })
-              .filter(
-                (group) =>
-                  group.tools.length >
-                  0
-              );
+              return {
+                ...group,
+                tools: filteredTools,
+              };
+            })
+            .filter(
+              (group) =>
+                group.tools.length > 0
+            );
 
-            return {
-              ...category,
-              groups:
-                filteredGroups,
-            };
-          })
-          .filter(
-            (category) =>
-              category.groups.length >
-              0
-          );
-        }, [
-          categories,
-          normalizedSearch,
-        ]);
+        return {
+          ...category,
+          groups: filteredGroups,
+        };
+      })
+      .filter(
+        (category) =>
+          category.groups.length > 0
+      );
+  }, [categories, searchQuery]);
+
+  /*
+   * =========================================================
+   * SEARCH RESULT COUNT
+   * =========================================================
+   */
 
   const searchResultCount =
     filteredCategories.reduce(
       (total, category) =>
         total +
         category.groups.reduce(
-          (
-            groupTotal,
-            group
-          ) =>
+          (groupTotal, group) =>
             groupTotal +
             group.tools.length,
           0
@@ -123,14 +129,18 @@ function App() {
       0
     );
 
+  /*
+   * =========================================================
+   * OPEN TOOL
+   * =========================================================
+   */
+
   function handleToolClick(
     tool,
     category
   ) {
     previousScrollPosition.current =
       window.scrollY;
-
-    setSearchQuery("");
 
     setActiveTool({
       ...tool,
@@ -144,6 +154,12 @@ function App() {
       behavior: "instant",
     });
   }
+
+  /*
+   * =========================================================
+   * BACK TO TOOLKIT
+   * =========================================================
+   */
 
   function handleBack() {
     const restorePosition =
@@ -162,55 +178,9 @@ function App() {
     });
   }
 
-  function handleSearchChange(
-    event
-  ) {
-    setSearchQuery(
-      event.target.value
-    );
-  }
-
-  function handleSearchKeyDown(
-    event
-  ) {
-    if (
-      event.key === "Escape"
-    ) {
-      setSearchQuery("");
-      return;
-    }
-
-    if (
-      event.key === "Enter" &&
-      searchResultCount === 1
-    ) {
-      const onlyTool =
-        filteredCategories[0]
-          ?.groups[0]
-          ?.tools[0];
-
-      const onlyCategory =
-        filteredCategories[0];
-
-      if (
-        onlyTool &&
-        onlyCategory
-      ) {
-        handleToolClick(
-          onlyTool,
-          onlyCategory
-        );
-      }
-    }
-  }
-
-  function clearSearch() {
-    setSearchQuery("");
-  }
-
   /*
    * =========================================================
-   * ACTIVE TOOL
+   * ACTIVE TOOL PAGE
    * =========================================================
    */
 
@@ -222,42 +192,31 @@ function App() {
 
     return (
       <main className="app">
-
         <div className="glass-background">
-          <div className="glass-orange-light"></div>
-          <div className="glass-ridges"></div>
-          <div className="glass-reflections"></div>
-          <div className="glass-darkness"></div>
+          <div className="glass-orange-light" />
+          <div className="glass-ridges" />
+          <div className="glass-reflections" />
+          <div className="glass-darkness" />
         </div>
 
         <div className="tool-page">
-
           <div className="tool-page-shell">
-
             <header className="tool-navbar">
-
               <button
                 type="button"
                 className="tool-back-button"
-                onClick={
-                  handleBack
-                }
+                onClick={handleBack}
               >
                 ← Back
               </button>
 
               <span className="tool-page-category">
-                {
-                  activeTool.categoryTitle
-                }
+                {activeTool.categoryTitle}
               </span>
-
             </header>
 
             <div className="tool-workspace">
-
               <div className="tool-intro">
-
                 <span className="tool-number">
                   {activeTool.number ||
                     "01"}
@@ -268,20 +227,15 @@ function App() {
                 </h1>
 
                 <p>
-                  {
-                    activeTool.description
-                  }
+                  {activeTool.description}
                 </p>
-
               </div>
 
               <div className="tool-workspace-box">
-
                 {ActiveToolComponent ? (
                   <ActiveToolComponent />
                 ) : (
                   <div className="tool-workspace-content">
-
                     <span className="tool-placeholder-label">
                       TOOL WORKSPACE
                     </span>
@@ -291,25 +245,17 @@ function App() {
                     </strong>
 
                     <p>
-                      The universal
-                      file workspace
-                      and processing
-                      engine will be
-                      connected to this
-                      tool here.
+                      The workspace for this
+                      tool will be connected
+                      here.
                     </p>
-
                   </div>
                 )}
-
               </div>
-
             </div>
 
             <div className="tool-benefits">
-
               <div className="tool-benefit">
-
                 <span className="benefit-icon">
                   ◆
                 </span>
@@ -320,15 +266,13 @@ function App() {
                   </strong>
 
                   <span>
-                    Your files stay on
-                    your device.
+                    Your files stay on your
+                    device.
                   </span>
                 </div>
-
               </div>
 
               <div className="tool-benefit">
-
                 <span className="benefit-icon">
                   ↯
                 </span>
@@ -339,15 +283,12 @@ function App() {
                   </strong>
 
                   <span>
-                    Process files in
-                    seconds.
+                    Process files in seconds.
                   </span>
                 </div>
-
               </div>
 
               <div className="tool-benefit">
-
                 <span className="benefit-icon">
                   ✓
                 </span>
@@ -358,19 +299,13 @@ function App() {
                   </strong>
 
                   <span>
-                    No complicated
-                    setup.
+                    No complicated setup.
                   </span>
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </main>
     );
   }
@@ -383,22 +318,202 @@ function App() {
 
   return (
     <main className="app">
+      <style>{`
+        .kaizen-search-area {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          margin: -20px 0 68px;
+        }
+
+        .kaizen-search-box {
+          position: relative;
+          width: min(720px, 100%);
+        }
+
+        .kaizen-search-input {
+          width: 100%;
+          box-sizing: border-box;
+
+          padding:
+            17px
+            54px
+            17px
+            50px;
+
+          border:
+            1px solid
+            rgba(255,255,255,.1);
+
+          border-radius: 16px;
+
+          outline: none;
+
+          background:
+            rgba(255,255,255,.045);
+
+          color:
+            rgba(255,255,255,.92);
+
+          font-size: 14px;
+
+          backdrop-filter: blur(18px);
+
+          transition:
+            border-color .2s ease,
+            background .2s ease,
+            box-shadow .2s ease;
+        }
+
+        .kaizen-search-input::placeholder {
+          color:
+            rgba(255,255,255,.33);
+        }
+
+        .kaizen-search-input:focus {
+          border-color:
+            rgba(249,115,22,.35);
+
+          background:
+            rgba(255,255,255,.06);
+
+          box-shadow:
+            0 0 0 4px
+            rgba(249,115,22,.055);
+        }
+
+        .kaizen-search-icon {
+          position: absolute;
+          left: 19px;
+          top: 50%;
+
+          transform:
+            translateY(-52%);
+
+          color:
+            rgba(255,255,255,.38);
+
+          font-size: 19px;
+
+          pointer-events: none;
+        }
+
+        .kaizen-search-clear {
+          position: absolute;
+
+          right: 15px;
+          top: 50%;
+
+          transform:
+            translateY(-50%);
+
+          width: 30px;
+          height: 30px;
+
+          border: 0;
+          border-radius: 50%;
+
+          background:
+            rgba(255,255,255,.07);
+
+          color:
+            rgba(255,255,255,.55);
+
+          cursor: pointer;
+        }
+
+        .kaizen-search-clear:hover {
+          background:
+            rgba(255,255,255,.11);
+
+          color:
+            rgba(255,255,255,.85);
+        }
+
+        .kaizen-search-meta {
+          margin-top: 10px;
+
+          color:
+            rgba(255,255,255,.28);
+
+          font-size: 10px;
+
+          text-align: center;
+
+          letter-spacing: .08em;
+
+          text-transform: uppercase;
+        }
+
+        .kaizen-search-empty {
+          padding:
+            80px
+            20px;
+
+          text-align: center;
+
+          color:
+            rgba(255,255,255,.4);
+        }
+
+        .kaizen-search-empty strong {
+          display: block;
+
+          margin-bottom: 8px;
+
+          color:
+            rgba(255,255,255,.76);
+
+          font-size: 18px;
+        }
+
+        @media (max-width: 700px) {
+          .kaizen-search-area {
+            margin:
+              -5px
+              0
+              45px;
+          }
+
+          .kaizen-search-input {
+            padding:
+              15px
+              48px
+              15px
+              45px;
+          }
+        }
+      `}</style>
+
+      {/* ======================================================
+          BACKGROUND
+      ====================================================== */}
 
       <div className="glass-background">
-        <div className="glass-orange-light"></div>
-        <div className="glass-ridges"></div>
-        <div className="glass-reflections"></div>
-        <div className="glass-darkness"></div>
+        <div className="glass-orange-light" />
+        <div className="glass-ridges" />
+        <div className="glass-reflections" />
+        <div className="glass-darkness" />
       </div>
+
+      {/* ======================================================
+          MAIN CONTENT
+      ====================================================== */}
 
       <div className="app-content">
 
+        {/* ====================================================
+            HERO GLASS SHELL
+        ==================================================== */}
+
         <div className="glass-shell">
 
+          {/* ==================================================
+              NAVIGATION
+          ================================================== */}
+
           <nav className="navbar">
-
             <div className="brand">
-
               <div className="brand-mark">
                 改
               </div>
@@ -414,18 +529,15 @@ function App() {
                   gap: "3px",
                 }}
               >
-
                 <span
                   style={{
-                    fontSize:
-                      "25px",
-                    fontWeight:
-                      "700",
+                    fontSize: "25px",
+                    fontWeight: "700",
                     letterSpacing:
                       "3px",
                     lineHeight: "1",
                     color:
-                      "rgba(255,255,255,0.96)",
+                      "rgba(255,255,255,.96)",
                   }}
                 >
                   KAIZEN
@@ -433,27 +545,22 @@ function App() {
 
                 <span
                   style={{
-                    fontSize:
-                      "10px",
-                    fontWeight:
-                      "500",
+                    fontSize: "10px",
+                    fontWeight: "500",
                     letterSpacing:
                       "5px",
                     lineHeight: "1",
                     color:
-                      "rgba(255,255,255,0.42)",
+                      "rgba(255,255,255,.42)",
                   }}
                 >
                   改善
                 </span>
-
               </div>
-
             </div>
 
             <div className="nav-status">
-
-              <span className="status-dot"></span>
+              <span className="status-dot" />
 
               <span
                 style={{
@@ -463,17 +570,16 @@ function App() {
               >
                 カイゼンツール
               </span>
-
             </div>
-
           </nav>
 
+          {/* ==================================================
+              HERO
+          ================================================== */}
+
           <section className="hero">
-
             <div className="hero-content">
-
               <h1>
-
                 <span>
                   Your documents.
                 </span>
@@ -481,19 +587,16 @@ function App() {
                 <span className="hero-muted">
                   Made simpler.
                 </span>
-
               </h1>
 
               <p className="hero-description">
-                Simple tools for
-                managing, editing
-                and converting your
-                documents — directly
-                in your browser.
+                Simple tools for managing,
+                editing and converting your
+                documents — directly in your
+                browser.
               </p>
 
               <div className="hero-action">
-
                 <span className="hero-label">
                   PRIVATE · FAST · SIMPLE
                 </span>
@@ -512,179 +615,141 @@ function App() {
                 >
                   Explore Tools
                 </RadialGlowButton>
-
               </div>
-
-              <div className="hero-search">
-
-                <div className="hero-search-box">
-
-                  <span className="hero-search-icon">
-                    ⌕
-                  </span>
-
-                  <input
-                    type="search"
-                    value={
-                      searchQuery
-                    }
-                    onChange={
-                      handleSearchChange
-                    }
-                    onKeyDown={
-                      handleSearchKeyDown
-                    }
-                    placeholder="Search tools..."
-                    aria-label="Search tools"
-                  />
-
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      className="hero-search-clear"
-                      onClick={
-                        clearSearch
-                      }
-                      aria-label="Clear search"
-                    >
-                      ×
-                    </button>
-                  )}
-
-                </div>
-
-                <div className="hero-search-meta">
-
-                  <span>
-                    {normalizedSearch
-                      ? `${searchResultCount} ${
-                          searchResultCount ===
-                          1
-                            ? "tool"
-                            : "tools"
-                        } found`
-                      : "Search the entire KAIZEN toolkit"}
-                  </span>
-
-                  <span className="hero-search-shortcut">
-                    Enter to open
-                  </span>
-
-                </div>
-
-              </div>
-
             </div>
-
           </section>
-
         </div>
+
+        {/* ====================================================
+            TOOLKIT
+        ==================================================== */}
 
         <div
           className="toolkit"
           id="toolkit"
         >
 
+          {/* ==================================================
+              TOOLKIT INTRO
+          ================================================== */}
+
           <section className="toolkit-intro">
-
             <div>
-
               <span className="section-label">
                 KAIZEN TOOLKIT
               </span>
 
               <h2>
-
-                {normalizedSearch
+                {searchQuery.trim()
                   ? "Search"
                   : "Everything"}
 
                 <br />
 
                 <span>
-                  {normalizedSearch
+                  {searchQuery.trim()
                     ? "results."
                     : "you need."}
                 </span>
-
               </h2>
-
             </div>
 
             <p>
-              {normalizedSearch
-                ? `Showing ${searchResultCount} matching ${
-                    searchResultCount ===
-                    1
-                      ? "tool"
-                      : "tools"
-                  }.`
+              {searchQuery.trim()
+                ? `${searchResultCount} matching tools found.`
                 : "A focused collection of simple utilities for documents, PDFs, images and more."}
             </p>
-
           </section>
 
-          {filteredCategories.length ===
-          0 ? (
+          {/* ==================================================
+              SEARCH
+          ================================================== */}
 
-            <section className="search-empty-state">
-
-              <span className="section-label">
-                NO MATCHES
+          <div className="kaizen-search-area">
+            <div className="kaizen-search-box">
+              <span className="kaizen-search-icon">
+                ⌕
               </span>
 
-              <h3>
-                Nothing found for{" "}
-                <span>
-                  “{searchQuery}”
-                </span>
-              </h3>
-
-              <p>
-                Try another tool name,
-                category, or keyword.
-              </p>
-
-              <button
-                type="button"
-                onClick={
-                  clearSearch
+              <input
+                type="search"
+                className="kaizen-search-input"
+                value={searchQuery}
+                onChange={(event) =>
+                  setSearchQuery(
+                    event.target.value
+                  )
                 }
-              >
-                Clear Search
-              </button>
+                placeholder="Search tools..."
+                aria-label="Search tools"
+              />
 
-            </section>
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="kaizen-search-clear"
+                  onClick={() =>
+                    setSearchQuery("")
+                  }
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
 
+              {searchQuery && (
+                <div className="kaizen-search-meta">
+                  {searchResultCount} result
+                  {searchResultCount ===
+                  1
+                    ? ""
+                    : "s"}{" "}
+                  · press Enter to open
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ==================================================
+              SEARCH EMPTY STATE
+          ================================================== */}
+
+          {searchQuery.trim() &&
+          filteredCategories.length ===
+            0 ? (
+            <div className="kaizen-search-empty">
+              <strong>
+                No tools found.
+              </strong>
+
+              Try another search term.
+            </div>
           ) : (
+            /* ==================================================
+               CATEGORY SECTIONS
+            ================================================== */
 
             filteredCategories.map(
               (category) => (
-
                 <section
                   className="category-section"
                   id={category.id}
-                  key={
-                    category.id
-                  }
+                  key={category.id}
                 >
 
+                  {/* ==========================================
+                      CATEGORY HEADER
+                  ========================================== */}
+
                   <div className="category-header">
-
                     <div className="category-title-group">
-
                       <span className="category-number">
-                        {
-                          category.number
-                        }
+                        {category.number}
                       </span>
 
                       <div>
-
                         <h2>
-                          {
-                            category.title
-                          }
+                          {category.title}
                         </h2>
 
                         <p>
@@ -692,27 +757,27 @@ function App() {
                             category.description
                           }
                         </p>
-
                       </div>
-
                     </div>
-
                   </div>
 
-                  <div className="category-groups">
+                  {/* ==========================================
+                      CATEGORY GROUPS
+                  ========================================== */}
 
+                  <div className="category-groups">
                     {category.groups.map(
                       (group) => (
-
                         <div
                           className="tool-group"
-                          key={
-                            group.id
-                          }
+                          key={group.id}
                         >
 
-                          <div className="section-heading">
+                          {/* ================================
+                              GROUP HEADER
+                          ================================= */}
 
+                          <div className="section-heading">
                             <div>
                               <span className="section-label">
                                 {
@@ -726,17 +791,18 @@ function App() {
                                 group.description
                               }
                             </p>
-
                           </div>
 
-                          <div className="tool-grid">
+                          {/* ================================
+                              TOOL CARDS
+                          ================================= */}
 
+                          <div className="tool-grid">
                             {group.tools.map(
                               (
                                 tool,
                                 index
                               ) => (
-
                                 <ToolCard
                                   key={
                                     tool.id
@@ -764,87 +830,79 @@ function App() {
                                     )
                                   }
                                 />
-
                               )
                             )}
-
                           </div>
-
                         </div>
-
                       )
                     )}
-
                   </div>
-
                 </section>
-
               )
             )
-
           )}
 
-          {!normalizedSearch && (
-            <>
+          {/* ==================================================
+              TEAM SECTION
+          ================================================== */}
 
-              <section className="bottom-panel">
+          {!searchQuery.trim() && (
+            <TeamSection />
+          )}
 
-                <div>
+          {/* ==================================================
+              PRIVACY PANEL
+          ================================================== */}
 
-                  <span className="small-label">
-                    BUILT FOR THE WEB
+          {!searchQuery.trim() && (
+            <section className="bottom-panel">
+              <div>
+                <span className="small-label">
+                  BUILT FOR THE WEB
+                </span>
+
+                <h3>
+                  Your files stay
+                  <br />
+                  <span>
+                    with you.
                   </span>
+                </h3>
+              </div>
 
-                  <h3>
-                    Your files stay
-                    <br />
-                    <span>
-                      with you.
-                    </span>
-                  </h3>
+              <div className="bottom-description">
+                <p>
+                  KAIZEN is designed to
+                  process files directly on
+                  your device whenever possible,
+                  keeping your documents private
+                  and your workflow simple.
+                </p>
 
+                <div className="bottom-arrow">
+                  ↗
                 </div>
-
-                <div className="bottom-description">
-
-                  <p>
-                    KAIZEN is designed
-                    to process files
-                    directly on your
-                    device whenever
-                    possible, keeping
-                    your documents
-                    private and your
-                    workflow simple.
-                  </p>
-
-                  <div className="bottom-arrow">
-                    ↗
-                  </div>
-
-                </div>
-
-              </section>
-
-              <footer>
-
-                <span>
-                  KAIZEN
-                </span>
-
-                <span>
-                  DIGITAL UTILITIES / 2026
-                </span>
-
-              </footer>
-
-            </>
+              </div>
+            </section>
           )}
 
+          {/* ==================================================
+              FOOTER
+          ================================================== */}
+
+          {!searchQuery.trim() && (
+            <footer>
+              <span>
+                KAIZEN
+              </span>
+
+              <span>
+                DIGITAL UTILITIES / 2026
+              </span>
+            </footer>
+          )}
         </div>
-
       </div>
-
     </main>
   );
 }
