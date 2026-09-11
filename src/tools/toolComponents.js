@@ -21,8 +21,6 @@ import HeadersFooters from "./pdf/headers-footers/HeadersFooters.jsx";
 import FlattenPdf from "./pdf/flatten-pdf/FlattenPdf.jsx";
 import EditMetadata from "./pdf/edit-metadata/EditMetadata.jsx";
 import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
-import PdfToHandwriting from "./pdf/pdf-to-handwriting/PdfToHandwriting.jsx";
-import HandwritingToPdf from "./pdf/handwriting-to-pdf/HandwritingToPdf.jsx";
 
 import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
 import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
@@ -55,8 +53,6 @@ const toolComponents = {
   "flatten-pdf": FlattenPdf,
   "edit-metadata": EditMetadata,
   "invert-pdf-colours": InvertPdfColours,
-  "pdf-to-handwriting": PdfToHandwriting,
-  "handwriting-to-pdf": HandwritingToPdf,
 
   "encrypt-pdf": EncryptPdf,
   "remove-pdf-password": RemovePassword,

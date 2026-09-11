@@ -175,20 +175,6 @@ const toolRegistry = {
               "Invert the colours throughout a PDF.",
             icon: "◐",
           },
-          {
-            id: "pdf-to-handwriting",
-            title: "PDF to Handwriting",
-            description:
-              "Transform PDF content into handwriting style.",
-            icon: "✍",
-          },
-          {
-            id: "handwriting-to-pdf",
-            title: "Handwriting to PDF",
-            description:
-              "Turn handwritten content into a PDF.",
-            icon: "⌁",
-          },
         ],
       },
 
@@ -199,13 +185,6 @@ const toolRegistry = {
           "Create PDFs from documents, data and media.",
 
         tools: [
-          {
-            id: "resume-builder",
-            title: "Resume Builder",
-            description:
-              "Create a professional resume as a PDF.",
-            icon: "▤",
-          },
           {
             id: "word-to-pdf",
             title: "Word to PDF",
@@ -385,7 +364,6 @@ const toolRegistry = {
     ],
   },
 
-
   /* =========================================================
      IMAGES
   ========================================================= */
@@ -517,7 +495,6 @@ const toolRegistry = {
       },
     ],
   },
-
 
   /* =========================================================
      VIDEO
@@ -685,7 +662,6 @@ const toolRegistry = {
     ],
   },
 
-
   /* =========================================================
      AUDIO
   ========================================================= */
@@ -776,7 +752,6 @@ const toolRegistry = {
     ],
   },
 
-
   /* =========================================================
      DOCUMENTS
   ========================================================= */
@@ -859,7 +834,6 @@ const toolRegistry = {
       },
     ],
   },
-
 
   /* =========================================================
      UTILITIES
