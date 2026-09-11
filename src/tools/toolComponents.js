@@ -33,6 +33,7 @@ import PowerpointToPdf from "./pdf/powerpoint-to-pdf/PowerpointToPdf.jsx";
 import HtmlToPdf from "./pdf/html-to-pdf/HtmlToPdf.jsx";
 import CreatePdf from "./pdf/create-pdf/CreatePdf.jsx";
 import MarkdownToPdf from "./pdf/markdown-to-pdf/MarkdownToPdf.jsx";
+import CsvToPdf from "./pdf/csv-to-pdf/CsvToPdf.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -70,6 +71,7 @@ const toolComponents = {
   "html-to-pdf": HtmlToPdf,
   "create-pdf": CreatePdf,
   "markdown-to-pdf": MarkdownToPdf,
+  "csv-to-pdf": CsvToPdf,
 };
 
 export default toolComponents;
