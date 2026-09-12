@@ -50,6 +50,18 @@ import RemoveImageMetadata from "./images/RemoveImageMetadata.jsx";
 import ImageAdjust from "./images/ImageAdjust.jsx";
 import SharpenImage from "./images/SharpenImage.jsx";
 import DenoiseImage from "./images/DenoiseImage.jsx";
+import DocumentToPdf from "./documents/DocumentToPdf.jsx";
+import PdfToDocument from "./documents/PdfToDocument.jsx";
+import TextToPdf from "./documents/TextToPdf.jsx";
+import MarkdownConverter from "./documents/MarkdownConverter.jsx";
+
+import ExtractDocumentText from "./documents/ExtractDocumentText.jsx";
+import WordCounter from "./documents/WordCounter.jsx";
+import TextCleaner from "./documents/TextCleaner.jsx";
+
+import ExtractZip from "./utilities/ExtractZip.jsx";
+import FileMetadata from "./utilities/FileMetadata.jsx";
+import BatchRename from "./utilities/BatchRename.jsx";
 
 
 import VideoTrimmer from "./video/trimmer/VideoTrimmer.jsx";
@@ -115,6 +127,21 @@ const toolComponents = {
   "video-trimmer": VideoTrimmer,
   "video-cutter": VideoCutter,
   "join-videos": JoinVideos,
+
+
+  "document-to-pdf": DocumentToPdf,
+  "pdf-to-document": PdfToDocument,
+  "text-to-pdf": TextToPdf,
+  "markdown-to-document": MarkdownConverter,
+
+  "extract-document-text": ExtractDocumentText,
+  "document-word-counter": WordCounter,
+  "document-cleaner": TextCleaner,
+
+
+"extract-zip": ExtractZip,
+"file-metadata": FileMetadata,
+"file-renamer": BatchRename,
 
 };
 

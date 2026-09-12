@@ -758,12 +758,11 @@ const toolRegistry = {
 
         tools: [
           {
-            id: "document-to-pdf",
-            title: "Document to PDF",
-            description:
-              "Convert supported documents into PDF files.",
-            icon: "▤",
-          },
+  id: "document-to-pdf",
+  title: "Document to PDF",
+  description: "Convert supported documents into PDF files.",
+  icon: "▣",
+},
           {
             id: "pdf-to-document",
             title: "PDF to Document",
