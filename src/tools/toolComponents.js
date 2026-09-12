@@ -41,7 +41,11 @@ import CompressImage from "./images/CompressImage.jsx";
 import ResizeImage from "./images/ResizeImage.jsx";
 import FixedSizeImage from "./images/FixedSizeImage.jsx";
 import EnhanceImage from "./images/EnhanceImage.jsx";
-
+import UpscaleImage from "./images/UpscaleImage.jsx";
+import CropImage from "./images/CropImage.jsx";
+import RotateImage from "./images/RotateImage.jsx";
+import ImageToPdf from "./images/ImageToPdf.jsx";
+import RemoveImageMetadata from "./images/RemoveImageMetadata.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -88,6 +92,14 @@ const toolComponents = {
   "resize-image": ResizeImage,
   "fixed-size-image": FixedSizeImage,
   "enhance-image": EnhanceImage,
+<<<<<<< HEAD
+=======
+  "upscale-image": UpscaleImage,
+  "crop-image": CropImage,
+  "rotate-image": RotateImage,
+  "image-to-pdf": ImageToPdf,
+  "remove-image-metadata": RemoveImageMetadata,
+>>>>>>> 8292f63d212fec475d07bb80384e6ae9782e49bc
 };
 
 export default toolComponents;
