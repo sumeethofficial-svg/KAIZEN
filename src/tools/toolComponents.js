@@ -47,6 +47,10 @@ import RotateImage from "./images/RotateImage.jsx";
 import ImageToPdf from "./images/ImageToPdf.jsx";
 import RemoveImageMetadata from "./images/RemoveImageMetadata.jsx";
 
+import ImageAdjust from "./images/ImageAdjust.jsx";
+import SharpenImage from "./images/SharpenImage.jsx";
+import DenoiseImage from "./images/DenoiseImage.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -92,14 +96,16 @@ const toolComponents = {
   "resize-image": ResizeImage,
   "fixed-size-image": FixedSizeImage,
   "enhance-image": EnhanceImage,
-<<<<<<< HEAD
-=======
   "upscale-image": UpscaleImage,
   "crop-image": CropImage,
   "rotate-image": RotateImage,
   "image-to-pdf": ImageToPdf,
   "remove-image-metadata": RemoveImageMetadata,
->>>>>>> 8292f63d212fec475d07bb80384e6ae9782e49bc
+
+  "image-adjust": ImageAdjust,
+  "sharpen-image": SharpenImage,
+  "denoise-image": DenoiseImage,
+
 };
 
 export default toolComponents;

@@ -471,19 +471,19 @@ const toolRegistry = {
             icon: "◐",
           },
           {
-            id: "image-sharpen",
-            title: "Sharpen Image",
-            description:
-              "Improve perceived detail and image sharpness.",
-            icon: "✦",
-          },
+  id: "sharpen-image",
+  title: "Sharpen Image",
+  description:
+    "Improve perceived detail and image sharpness.",
+  icon: "✦",
+},
           {
-            id: "image-denoise",
-            title: "Denoise Image",
-            description:
-              "Reduce visual noise while preserving important detail.",
-            icon: "◌",
-          },
+  id: "denoise-image",
+  title: "Denoise Image",
+  description:
+    "Reduce visual noise while preserving important detail.",
+  icon: "◌",
+},
           {
             id: "image-background-remover",
             title: "Background Remover",
