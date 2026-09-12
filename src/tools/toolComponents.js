@@ -51,6 +51,9 @@ import ImageAdjust from "./images/ImageAdjust.jsx";
 import SharpenImage from "./images/SharpenImage.jsx";
 import DenoiseImage from "./images/DenoiseImage.jsx";
 
+
+import VideoTrimmer from "./video/trimmer/VideoTrimmer.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -105,6 +108,9 @@ const toolComponents = {
   "image-adjust": ImageAdjust,
   "sharpen-image": SharpenImage,
   "denoise-image": DenoiseImage,
+
+
+  "video-trimmer": VideoTrimmer,
 
 };
 
