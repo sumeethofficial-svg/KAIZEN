@@ -536,20 +536,6 @@ const toolRegistry = {
               "Combine multiple video clips into one.",
             icon: "↗",
           },
-          {
-            id: "video-snapshot",
-            title: "Video Snapshot",
-            description:
-              "Capture a frame from your video as an image.",
-            icon: "▧",
-          },
-          {
-            id: "video-thumbnail",
-            title: "Video Thumbnail",
-            description:
-              "Extract and create a thumbnail from a video.",
-            icon: "▣",
-          },
         ],
       },
 
