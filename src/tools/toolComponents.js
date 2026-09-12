@@ -53,6 +53,7 @@ import DenoiseImage from "./images/DenoiseImage.jsx";
 
 
 import VideoTrimmer from "./video/trimmer/VideoTrimmer.jsx";
+import VideoCutter from "./video/cutter/VideoCutter.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -111,6 +112,7 @@ const toolComponents = {
 
 
   "video-trimmer": VideoTrimmer,
+  "video-cutter": VideoCutter,
 
 };
 
