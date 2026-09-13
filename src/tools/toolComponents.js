@@ -67,6 +67,15 @@ import ChangeVideoSpeed from "./video/ChangeVideoSpeed.jsx";
 import RotateVideo from "./video/RotateVideo.jsx";
 ;
 
+import AudioConverter from "./audio/AudioConverter.jsx";
+import AudioCompressor from "./audio/AudioCompressor.jsx";
+import AudioTrimmer from "./audio/AudioTrimmer.jsx";
+import JoinAudio from "./audio/JoinAudio.jsx";
+import AudioChangeSpeed from "./audio/AudioChangeSpeed.jsx";
+import AudioToVideo from "./audio/AudioToVideo.jsx";
+import VideoToAudio from "./audio/VideoToAudio.jsx";
+import AudioRecorder from "./audio/AudioRecorder.jsx";
+
 import DocumentToPdf from "./documents/DocumentToPdf.jsx";
 import PdfToDocument from "./documents/PdfToDocument.jsx";
 import TextToPdf from "./documents/TextToPdf.jsx";
@@ -147,6 +156,15 @@ const toolComponents = {
   "mute-video": MuteVideo,
   "change-video-speed": ChangeVideoSpeed,
   "rotate-video": RotateVideo,
+
+  "convert-audio": AudioConverter,
+  "compress-audio": AudioCompressor,
+  "audio-trimmer": AudioTrimmer,
+  "join-audio": JoinAudio,
+  "audio-change-speed": AudioChangeSpeed,
+  "audio-to-video": AudioToVideo,
+  "video-to-audio": VideoToAudio,
+  "audio-recorder": AudioRecorder,
 
   "document-to-pdf": DocumentToPdf,
   "pdf-to-document": PdfToDocument,

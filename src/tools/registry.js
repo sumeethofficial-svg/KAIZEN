@@ -682,7 +682,7 @@ const toolRegistry = {
             icon: "◌",
           },
           {
-            id: "trim-audio",
+            id: "audio-trimmer",
             title: "Audio Trimmer",
             description:
               "Cut an audio file between precise points.",
@@ -696,7 +696,7 @@ const toolRegistry = {
             icon: "↗",
           },
           {
-            id: "change-audio-speed",
+            id: "audio-change-speed",
             title: "Change Speed",
             description:
               "Speed up or slow down audio playback.",
@@ -720,7 +720,7 @@ const toolRegistry = {
 
         tools: [
           {
-            id: "extract-audio-video",
+            id: "video-to-audio",
             title: "Video to Audio",
             description:
               "Extract an audio track from a video file.",

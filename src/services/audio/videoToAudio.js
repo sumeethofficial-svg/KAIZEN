@@ -29,6 +29,13 @@ const OUTPUTS = {
     args: [],
   },
 
+  aac: {
+    extension: "aac",
+    mimeType: "audio/aac",
+    codec: "aac",
+    args: ["-b:a", "192k"],
+  },
+
   ogg: {
     extension: "ogg",
     mimeType: "audio/ogg",
@@ -36,11 +43,11 @@ const OUTPUTS = {
     args: ["-q:a", "5"],
   },
 
-  opus: {
-    extension: "opus",
-    mimeType: "audio/ogg; codecs=opus",
-    codec: "libopus",
-    args: ["-b:a", "128k"],
+  flac: {
+    extension: "flac",
+    mimeType: "audio/flac",
+    codec: "flac",
+    args: [],
   },
 };
 
@@ -90,7 +97,7 @@ const sanitizeBaseName = (name) => {
     .trim()
     .replace(/\s+/g, "-");
 
-  return cleaned || "kaizen-speed-audio";
+  return cleaned || "kaizen-video-audio";
 };
 
 const getInputExtension = (file) => {
@@ -99,56 +106,37 @@ const getInputExtension = (file) => {
     .pop()
     ?.toLowerCase();
 
-  return extension || "audio";
+  return extension || "video";
 };
 
-const buildAtempoFilter = (speed) => {
-  const filters = [];
-  let remaining = speed;
-
-  while (remaining < 0.5) {
-    filters.push("atempo=0.5");
-    remaining /= 0.5;
-  }
-
-  while (remaining > 2) {
-    filters.push("atempo=2");
-    remaining /= 2;
-  }
-
-  filters.push(`atempo=${remaining}`);
-
-  return filters.join(",");
-};
-
-export const changeAudioSpeed = async ({
+export const videoToAudio = async ({
   file,
-  speed = 1,
   format = "mp3",
+  bitrate = "192k",
   onProgress,
   signal,
 }) => {
   if (!(file instanceof File)) {
     throw new Error(
-      "Please provide a valid audio file."
+      "Please provide a valid video file."
     );
   }
 
   if (file.size <= 0) {
     throw new Error(
-      "The selected audio file is empty."
+      "The selected video file is empty."
     );
   }
 
-  const selectedSpeed = Number(speed);
+  const looksLikeVideo =
+    file.type.startsWith("video/") ||
+    /\.(mp4|mov|mkv|webm|avi|m4v|wmv|flv|mpeg|mpg|3gp)$/i.test(
+      file.name
+    );
 
-  if (
-    !Number.isFinite(selectedSpeed) ||
-    selectedSpeed < 0.25 ||
-    selectedSpeed > 4
-  ) {
+  if (!looksLikeVideo) {
     throw new Error(
-      "Audio speed must be between 0.25× and 4×."
+      "Please select a valid video file."
     );
   }
 
@@ -160,9 +148,26 @@ export const changeAudioSpeed = async ({
     );
   }
 
+  const allowedBitrates = [
+    "96k",
+    "128k",
+    "160k",
+    "192k",
+    "256k",
+    "320k",
+  ];
+
+  if (
+    !allowedBitrates.includes(bitrate)
+  ) {
+    throw new Error(
+      "Unsupported audio bitrate."
+    );
+  }
+
   if (signal?.aborted) {
     throw new DOMException(
-      "Speed change cancelled.",
+      "Extraction cancelled.",
       "AbortError"
     );
   }
@@ -171,7 +176,7 @@ export const changeAudioSpeed = async ({
 
   if (signal?.aborted) {
     throw new DOMException(
-      "Speed change cancelled.",
+      "Extraction cancelled.",
       "AbortError"
     );
   }
@@ -218,37 +223,46 @@ export const changeAudioSpeed = async ({
       progressHandler
     );
 
-    const tempoFilter =
-      buildAtempoFilter(
-        selectedSpeed
-      );
-
     const args = [
       "-i",
       inputName,
+      "-map",
+      "0:a:0",
       "-vn",
-      "-af",
-      tempoFilter,
       "-c:a",
       outputConfig.codec,
+    ];
+
+    if (
+      format === "mp3" ||
+      format === "m4a" ||
+      format === "aac"
+    ) {
+      args.push(
+        "-b:a",
+        bitrate
+      );
+    }
+
+    args.push(
       ...outputConfig.args,
       "-y",
-      outputName,
-    ];
+      outputName
+    );
 
     const exitCode =
       await ffmpeg.exec(args);
 
     if (signal?.aborted) {
       throw new DOMException(
-        "Speed change cancelled.",
+        "Extraction cancelled.",
         "AbortError"
       );
     }
 
     if (exitCode !== 0) {
       throw new Error(
-        "Audio speed conversion failed."
+        "Video to audio conversion failed. The video may not contain an audio track."
       );
     }
 
@@ -282,24 +296,17 @@ export const changeAudioSpeed = async ({
       onProgress(100);
     }
 
-    const speedLabel =
-      String(selectedSpeed).replace(
-        ".",
-        "-"
-      );
-
     return {
       blob,
       url,
       fileName: `${sanitizeBaseName(
         file.name
-      )}-${speedLabel}x.${outputConfig.extension}`,
+      )}.${outputConfig.extension}`,
       size: blob.size,
       mimeType:
         outputConfig.mimeType,
       format:
         outputConfig.extension,
-      speed: selectedSpeed,
     };
   } finally {
     if (progressHandler) {

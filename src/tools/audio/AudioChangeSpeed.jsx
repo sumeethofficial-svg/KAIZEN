@@ -3,54 +3,79 @@ import {
   useRef,
   useState,
 } from "react";
-import { convertAudio } from "../../services/audio/convertAudio";
+import {
+  changeAudioSpeed,
+} from "../../services/audio/changeAudioSpeed";
+
+const SPEED_OPTIONS = [
+  {
+    value: 0.25,
+    label: "0.25×",
+    description: "4× slower",
+  },
+  {
+    value: 0.5,
+    label: "0.5×",
+    description: "2× slower",
+  },
+  {
+    value: 0.75,
+    label: "0.75×",
+    description: "Slightly slower",
+  },
+  {
+    value: 1,
+    label: "1×",
+    description: "Original speed",
+  },
+  {
+    value: 1.25,
+    label: "1.25×",
+    description: "Slightly faster",
+  },
+  {
+    value: 1.5,
+    label: "1.5×",
+    description: "50% faster",
+  },
+  {
+    value: 2,
+    label: "2×",
+    description: "Twice as fast",
+  },
+  {
+    value: 4,
+    label: "4×",
+    description: "4× faster",
+  },
+];
 
 const FORMAT_OPTIONS = [
   {
     value: "mp3",
     label: "MP3",
-    description:
-      "Best compatibility",
-  },
-  {
-    value: "wav",
-    label: "WAV",
-    description:
-      "Uncompressed audio",
+    description: "Best compatibility",
   },
   {
     value: "m4a",
     label: "M4A",
-    description:
-      "High quality, efficient",
+    description: "Efficient high quality",
   },
   {
-    value: "aac",
-    label: "AAC",
-    description:
-      "Compact modern format",
+    value: "wav",
+    label: "WAV",
+    description: "Uncompressed",
   },
   {
     value: "ogg",
     label: "OGG",
-    description:
-      "Open web audio",
+    description: "Open audio",
   },
   {
-    value: "flac",
-    label: "FLAC",
-    description:
-      "Lossless compression",
+    value: "opus",
+    label: "Opus",
+    description: "Compact modern audio",
   },
-];
-
-const BITRATE_OPTIONS = [
-  "96k",
-  "128k",
-  "160k",
-  "192k",
-  "256k",
-  "320k",
 ];
 
 const formatBytes = (bytes) => {
@@ -86,9 +111,7 @@ const formatDuration = (
   seconds
 ) => {
   if (
-    !Number.isFinite(
-      seconds
-    ) ||
+    !Number.isFinite(seconds) ||
     seconds <= 0
   ) {
     return "--:--";
@@ -106,32 +129,23 @@ const formatDuration = (
       60
   );
 
-  const remainingSeconds =
+  const remaining =
     totalSeconds % 60;
 
   if (hours > 0) {
     return `${hours}:${String(
       minutes
-    ).padStart(
-      2,
-      "0"
-    )}:${String(
-      remainingSeconds
-    ).padStart(
-      2,
-      "0"
-    )}`;
+    ).padStart(2, "0")}:${String(
+      remaining
+    ).padStart(2, "0")}`;
   }
 
   return `${minutes}:${String(
-    remainingSeconds
-  ).padStart(
-    2,
-    "0"
-  )}`;
+    remaining
+  ).padStart(2, "0")}`;
 };
 
-export default function AudioConverter() {
+export default function AudioChangeSpeed() {
   const inputRef =
     useRef(null);
 
@@ -150,16 +164,14 @@ export default function AudioConverter() {
   const [previewUrl, setPreviewUrl] =
     useState(null);
 
-  const [metadata, setMetadata] =
-    useState({
-      duration: 0,
-    });
+  const [duration, setDuration] =
+    useState(0);
+
+  const [speed, setSpeed] =
+    useState(1);
 
   const [format, setFormat] =
     useState("mp3");
-
-  const [bitrate, setBitrate] =
-    useState("192k");
 
   const [dragActive, setDragActive] =
     useState(false);
@@ -221,7 +233,6 @@ export default function AudioConverter() {
     }
 
     clearResult();
-
     setError("");
     setProgress(0);
 
@@ -237,26 +248,19 @@ export default function AudioConverter() {
       setFile(null);
       setPreviewUrl(null);
       setStage("error");
-
       setError(
         "Please select an audio file."
       );
-
       return;
     }
 
-    if (
-      selectedFile.size <=
-      0
-    ) {
+    if (selectedFile.size <= 0) {
       setFile(null);
       setPreviewUrl(null);
       setStage("error");
-
       setError(
         "The selected audio file is empty."
       );
-
       return;
     }
 
@@ -290,20 +294,17 @@ export default function AudioConverter() {
 
     audio.onloadedmetadata =
       () => {
-        setMetadata({
-          duration:
-            Number.isFinite(
-              audio.duration
-            )
-              ? audio.duration
-              : 0,
-        });
+        setDuration(
+          Number.isFinite(
+            audio.duration
+          )
+            ? audio.duration
+            : 0
+        );
       };
 
     audio.onerror = () => {
-      setMetadata({
-        duration: 0,
-      });
+      setDuration(0);
     };
 
     audio.src = url;
@@ -341,7 +342,7 @@ export default function AudioConverter() {
     }
   };
 
-  const handleConvert =
+  const handleChangeSpeed =
     async () => {
       if (!file) {
         return;
@@ -360,11 +361,11 @@ export default function AudioConverter() {
         controller;
 
       try {
-        const converted =
-          await convertAudio({
+        const changed =
+          await changeAudioSpeed({
             file,
+            speed,
             format,
-            bitrate,
             signal:
               controller.signal,
             onProgress:
@@ -376,19 +377,19 @@ export default function AudioConverter() {
           });
 
         resultUrlRef.current =
-          converted.url;
+          changed.url;
 
         setResult(
-          converted
+          changed
         );
 
         setProgress(100);
         setStage("success");
       } catch (
-        conversionError
+        speedError
       ) {
         if (
-          conversionError?.name ===
+          speedError?.name ===
           "AbortError"
         ) {
           setStage("ready");
@@ -397,14 +398,14 @@ export default function AudioConverter() {
         }
 
         console.error(
-          conversionError
+          speedError
         );
 
         setStage("error");
 
         setError(
-          conversionError?.message ||
-            "Something went wrong while converting the audio."
+          speedError?.message ||
+            "Something went wrong while changing the audio speed."
         );
       } finally {
         abortControllerRef.current =
@@ -412,11 +413,10 @@ export default function AudioConverter() {
       }
     };
 
-  const handleCancel =
-    () => {
-      abortControllerRef
-        .current?.abort();
-    };
+  const handleCancel = () => {
+    abortControllerRef
+      .current?.abort();
+  };
 
   const handleReset = () => {
     abortControllerRef.current?.abort();
@@ -436,14 +436,9 @@ export default function AudioConverter() {
 
     setFile(null);
     setPreviewUrl(null);
-
-    setMetadata({
-      duration: 0,
-    });
-
+    setDuration(0);
+    setSpeed(1);
     setFormat("mp3");
-    setBitrate("192k");
-
     setProgress(0);
     setError("");
     setStage("idle");
@@ -454,33 +449,39 @@ export default function AudioConverter() {
     }
   };
 
+  const selectedSpeed =
+    SPEED_OPTIONS.find(
+      (option) =>
+        option.value === speed
+    );
+
   const selectedFormat =
     FORMAT_OPTIONS.find(
       (option) =>
-        option.value ===
-        format
+        option.value === format
     );
 
-  const isLossless =
-    format === "wav" ||
-    format === "flac";
+  const newDuration =
+    duration > 0
+      ? duration / speed
+      : 0;
 
   return (
-    <div className="audio-converter-tool">
-      <div className="audio-converter-header">
+    <div className="audio-speed-tool">
+      <div className="audio-speed-header">
         <div>
           <h2>
-            Audio Converter
+            Change Audio Speed
           </h2>
 
           <p>
-            Convert audio files between
-            popular formats entirely in
-            your browser.
+            Speed up or slow down your
+            audio while keeping the
+            recording natural.
           </p>
         </div>
 
-        <div className="audio-converter-badge">
+        <div className="audio-speed-badge">
           BROWSER · PRIVATE
         </div>
       </div>
@@ -489,7 +490,7 @@ export default function AudioConverter() {
         stage === "idle" && (
           <button
             type="button"
-            className={`audio-converter-dropzone ${
+            className={`audio-speed-dropzone ${
               dragActive
                 ? "is-dragging"
                 : ""
@@ -501,7 +502,6 @@ export default function AudioConverter() {
               event
             ) => {
               event.preventDefault();
-
               setDragActive(
                 true
               );
@@ -515,8 +515,8 @@ export default function AudioConverter() {
               handleDrop
             }
           >
-            <div className="audio-converter-upload-icon">
-              ♪
+            <div className="audio-speed-upload-icon">
+              ↗
             </div>
 
             <strong>
@@ -529,8 +529,8 @@ export default function AudioConverter() {
             </span>
 
             <small>
-              MP3, WAV, M4A, AAC,
-              OGG, FLAC and more
+              MP3, WAV, M4A, OGG,
+              FLAC and more
             </small>
 
             <input
@@ -547,10 +547,10 @@ export default function AudioConverter() {
 
       {file && (
         <>
-          <div className="audio-converter-workspace">
-            <div className="audio-converter-preview-card">
-              <div className="audio-converter-preview">
-                <div className="audio-converter-disc">
+          <div className="audio-speed-workspace">
+            <div className="audio-speed-preview-card">
+              <div className="audio-speed-preview">
+                <div className="audio-speed-disc">
                   ♪
                 </div>
 
@@ -562,7 +562,7 @@ export default function AudioConverter() {
                 />
               </div>
 
-              <div className="audio-converter-file-info">
+              <div className="audio-speed-file-info">
                 <div>
                   <strong>
                     {file.name}
@@ -575,25 +575,99 @@ export default function AudioConverter() {
                   </span>
                 </div>
 
-                <div className="audio-converter-meta">
-                  {metadata.duration >
-                    0 &&
-                    formatDuration(
-                      metadata.duration
-                    )}
+                <div className="audio-speed-meta">
+                  {formatDuration(
+                    duration
+                  )}
                 </div>
               </div>
             </div>
 
             {stage !==
               "success" && (
-              <div className="audio-converter-settings">
-                <div className="audio-converter-setting-group">
+              <div className="audio-speed-settings">
+                <div className="audio-speed-setting-group">
+                  <label>
+                    Playback speed
+                  </label>
+
+                  <div className="audio-speed-options">
+                    {SPEED_OPTIONS.map(
+                      (option) => (
+                        <button
+                          key={
+                            option.value
+                          }
+                          type="button"
+                          className={
+                            speed ===
+                            option.value
+                              ? "active"
+                              : ""
+                          }
+                          onClick={() =>
+                            setSpeed(
+                              option.value
+                            )
+                          }
+                          disabled={
+                            stage ===
+                            "processing"
+                          }
+                        >
+                          <strong>
+                            {
+                              option.label
+                            }
+                          </strong>
+
+                          <span>
+                            {
+                              option.description
+                            }
+                          </span>
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <div className="audio-speed-duration-card">
+                  <div>
+                    <span>
+                      Original
+                    </span>
+
+                    <strong>
+                      {formatDuration(
+                        duration
+                      )}
+                    </strong>
+                  </div>
+
+                  <div className="audio-speed-arrow">
+                    →
+                  </div>
+
+                  <div>
+                    <span>
+                      New duration
+                    </span>
+
+                    <strong>
+                      {formatDuration(
+                        newDuration
+                      )}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="audio-speed-setting-group audio-speed-format-group">
                   <label>
                     Output format
                   </label>
 
-                  <div className="audio-converter-format-grid">
+                  <div className="audio-speed-format-grid">
                     {FORMAT_OPTIONS.map(
                       (option) => (
                         <button
@@ -634,57 +708,14 @@ export default function AudioConverter() {
                   </div>
                 </div>
 
-                {!isLossless && (
-                  <div className="audio-converter-setting-group audio-converter-bitrate-group">
-                    <label htmlFor="audio-converter-bitrate">
-                      Bitrate
-                    </label>
-
-                    <select
-                      id="audio-converter-bitrate"
-                      value={
-                        bitrate
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        setBitrate(
-                          event.target
-                            .value
-                        )
-                      }
-                      disabled={
-                        stage ===
-                        "processing"
-                      }
-                    >
-                      {BITRATE_OPTIONS.map(
-                        (value) => (
-                          <option
-                            key={
-                              value
-                            }
-                            value={
-                              value
-                            }
-                          >
-                            {value}
-                          </option>
-                        )
-                      )}
-                    </select>
-                  </div>
-                )}
-
-                <div className="audio-converter-note">
-                  <span>
-                    ⓘ
-                  </span>
+                <div className="audio-speed-note">
+                  <span>✓</span>
 
                   <p>
-                    {isLossless
-                      ? "This format preserves lossless audio quality."
-                      : `Audio will be encoded at ${bitrate}.`}
+                    The tempo changes while
+                    the audio remains
+                    properly processed for the
+                    selected speed.
                   </p>
                 </div>
               </div>
@@ -693,10 +724,10 @@ export default function AudioConverter() {
 
           {stage ===
             "processing" && (
-            <div className="audio-converter-progress">
-              <div className="audio-converter-progress-top">
+            <div className="audio-speed-progress">
+              <div className="audio-speed-progress-top">
                 <span>
-                  Converting audio…
+                  Changing audio speed…
                 </span>
 
                 <strong>
@@ -704,9 +735,9 @@ export default function AudioConverter() {
                 </strong>
               </div>
 
-              <div className="audio-converter-progress-track">
+              <div className="audio-speed-progress-track">
                 <div
-                  className="audio-converter-progress-fill"
+                  className="audio-speed-progress-fill"
                   style={{
                     width: `${progress}%`,
                   }}
@@ -715,7 +746,7 @@ export default function AudioConverter() {
 
               <button
                 type="button"
-                className="audio-converter-secondary"
+                className="audio-speed-secondary"
                 onClick={
                   handleCancel
                 }
@@ -725,10 +756,9 @@ export default function AudioConverter() {
             </div>
           )}
 
-          {stage ===
-            "error" &&
+          {stage === "error" &&
             error && (
-              <div className="audio-converter-error">
+              <div className="audio-speed-error">
                 {error}
               </div>
             )}
@@ -736,68 +766,66 @@ export default function AudioConverter() {
           {stage ===
             "success" &&
             result && (
-              <div className="audio-converter-success">
-                <div className="audio-converter-success-player">
-                  <audio
-                    src={
-                      result.url
-                    }
-                    controls
-                  />
-                </div>
-
-                <div className="audio-converter-success-info">
-                  <span>
-                    CONVERSION COMPLETE
-                  </span>
-
-                  <strong>
-                    {
-                      result.fileName
-                    }
-                  </strong>
-
-                  <small>
-                    {
-                      selectedFormat?.label
-                    }{" "}
-                    ·{" "}
-                    {formatBytes(
-                      result.size
-                    )}
-                  </small>
-                </div>
-
-                <a
-                  className="audio-converter-download"
-                  href={
+            <div className="audio-speed-success">
+              <div className="audio-speed-success-player">
+                <audio
+                  src={
                     result.url
                   }
-                  download={
-                    result.fileName
-                  }
-                >
-                  Download{" "}
+                  controls
+                />
+              </div>
+
+              <div className="audio-speed-success-info">
+                <span>
+                  SPEED CHANGE COMPLETE
+                </span>
+
+                <strong>
+                  {result.fileName}
+                </strong>
+
+                <small>
+                  {
+                    selectedSpeed?.label
+                  }{" "}
+                  ·{" "}
                   {
                     selectedFormat?.label
-                  }
-                </a>
+                  }{" "}
+                  ·{" "}
+                  {formatBytes(
+                    result.size
+                  )}
+                </small>
               </div>
-            )}
 
-          <div className="audio-converter-actions">
-            {stage ===
-              "ready" && (
-              <button
-                type="button"
-                className="audio-converter-primary"
-                onClick={
-                  handleConvert
+              <a
+                className="audio-speed-download"
+                href={
+                  result.url
+                }
+                download={
+                  result.fileName
                 }
               >
-                Convert to{" "}
+                Download Audio
+              </a>
+            </div>
+          )}
+
+          <div className="audio-speed-actions">
+            {stage === "ready" && (
+              <button
+                type="button"
+                className="audio-speed-primary"
+                onClick={
+                  handleChangeSpeed
+                }
+              >
+                Apply{" "}
                 {
-                  selectedFormat?.label
+                  selectedSpeed?.label
                 }
               </button>
             )}
@@ -806,9 +834,9 @@ export default function AudioConverter() {
               "error" && (
               <button
                 type="button"
-                className="audio-converter-primary"
+                className="audio-speed-primary"
                 onClick={
-                  handleConvert
+                  handleChangeSpeed
                 }
               >
                 Try Again
@@ -819,26 +847,24 @@ export default function AudioConverter() {
               "success" && (
               <button
                 type="button"
-                className="audio-converter-primary"
+                className="audio-speed-primary"
                 onClick={() => {
                   clearResult();
-
                   setStage(
                     "ready"
                   );
-
                   setProgress(
                     0
                   );
                 }}
               >
-                Convert Again
+                Change Again
               </button>
             )}
 
             <button
               type="button"
-              className="audio-converter-secondary"
+              className="audio-speed-secondary"
               onClick={
                 handleReset
               }
@@ -854,14 +880,14 @@ export default function AudioConverter() {
       )}
 
       <style>{`
-        .audio-converter-tool {
+        .audio-speed-tool {
           width: 100%;
           box-sizing: border-box;
           padding: 26px 30px 38px;
           color: rgba(255,255,255,.94);
         }
 
-        .audio-converter-header {
+        .audio-speed-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
@@ -869,20 +895,20 @@ export default function AudioConverter() {
           margin-bottom: 26px;
         }
 
-        .audio-converter-header h2 {
+        .audio-speed-header h2 {
           margin: 0 0 6px;
           font-size: 26px;
           line-height: 1.15;
           letter-spacing: -.03em;
         }
 
-        .audio-converter-header p {
+        .audio-speed-header p {
           margin: 0;
           color: rgba(255,255,255,.55);
           font-size: 14px;
         }
 
-        .audio-converter-badge {
+        .audio-speed-badge {
           padding: 8px 11px;
           border: 1px solid rgba(255,255,255,.1);
           border-radius: 999px;
@@ -893,7 +919,7 @@ export default function AudioConverter() {
           white-space: nowrap;
         }
 
-        .audio-converter-dropzone {
+        .audio-speed-dropzone {
           width: 100%;
           min-height: 300px;
           border: 1px dashed rgba(255,255,255,.16);
@@ -912,17 +938,17 @@ export default function AudioConverter() {
             transform .2s ease;
         }
 
-        .audio-converter-dropzone:hover,
-        .audio-converter-dropzone.is-dragging {
+        .audio-speed-dropzone:hover,
+        .audio-speed-dropzone.is-dragging {
           border-color: rgba(255,119,0,.65);
           background: rgba(255,119,0,.055);
         }
 
-        .audio-converter-dropzone:active {
+        .audio-speed-dropzone:active {
           transform: scale(.995);
         }
 
-        .audio-converter-upload-icon {
+        .audio-speed-upload-icon {
           width: 48px;
           height: 48px;
           margin-bottom: 10px;
@@ -932,39 +958,39 @@ export default function AudioConverter() {
           background: rgba(255,119,0,.12);
           color: #ff8a33;
           font-size: 23px;
-          font-weight: 700;
+          font-weight: 800;
         }
 
-        .audio-converter-dropzone strong {
+        .audio-speed-dropzone strong {
           font-size: 16px;
         }
 
-        .audio-converter-dropzone span {
+        .audio-speed-dropzone span {
           color: rgba(255,255,255,.5);
           font-size: 13px;
         }
 
-        .audio-converter-dropzone small {
+        .audio-speed-dropzone small {
           margin-top: 8px;
           color: rgba(255,255,255,.3);
           font-size: 11px;
         }
 
-        .audio-converter-workspace {
+        .audio-speed-workspace {
           display: grid;
-          grid-template-columns: minmax(0,1.25fr) minmax(290px,.75fr);
+          grid-template-columns: minmax(0,1.15fr) minmax(290px,.85fr);
           gap: 18px;
         }
 
-        .audio-converter-preview-card,
-        .audio-converter-settings {
+        .audio-speed-preview-card,
+        .audio-speed-settings {
           border: 1px solid rgba(255,255,255,.08);
           border-radius: 22px;
           background: rgba(255,255,255,.025);
           overflow: hidden;
         }
 
-        .audio-converter-preview {
+        .audio-speed-preview {
           min-height: 300px;
           padding: 22px;
           display: flex;
@@ -980,7 +1006,7 @@ export default function AudioConverter() {
             );
         }
 
-        .audio-converter-disc {
+        .audio-speed-disc {
           width: 120px;
           height: 120px;
           border-radius: 50%;
@@ -1001,11 +1027,11 @@ export default function AudioConverter() {
             rgba(255,119,0,.08);
         }
 
-        .audio-converter-preview audio {
+        .audio-speed-preview audio {
           width: min(100%, 620px);
         }
 
-        .audio-converter-file-info {
+        .audio-speed-file-info {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -1014,41 +1040,41 @@ export default function AudioConverter() {
           border-top: 1px solid rgba(255,255,255,.07);
         }
 
-        .audio-converter-file-info > div:first-child {
+        .audio-speed-file-info > div:first-child {
           min-width: 0;
           display: flex;
           flex-direction: column;
           gap: 3px;
         }
 
-        .audio-converter-file-info strong {
+        .audio-speed-file-info strong {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           font-size: 13px;
         }
 
-        .audio-converter-file-info span,
-        .audio-converter-meta {
+        .audio-speed-file-info span,
+        .audio-speed-meta {
           color: rgba(255,255,255,.4);
           font-size: 11px;
         }
 
-        .audio-converter-meta {
+        .audio-speed-meta {
           white-space: nowrap;
         }
 
-        .audio-converter-settings {
+        .audio-speed-settings {
           padding: 20px;
         }
 
-        .audio-converter-setting-group {
+        .audio-speed-setting-group {
           display: flex;
           flex-direction: column;
           gap: 10px;
         }
 
-        .audio-converter-setting-group label {
+        .audio-speed-setting-group > label {
           color: rgba(255,255,255,.6);
           font-size: 11px;
           font-weight: 700;
@@ -1056,14 +1082,15 @@ export default function AudioConverter() {
           text-transform: uppercase;
         }
 
-        .audio-converter-format-grid {
+        .audio-speed-options {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;
         }
 
-        .audio-converter-format-grid button {
-          min-height: 70px;
+        .audio-speed-options button,
+        .audio-speed-format-grid button {
+          min-height: 66px;
           padding: 11px 12px;
           border: 1px solid rgba(255,255,255,.08);
           border-radius: 13px;
@@ -1076,70 +1103,112 @@ export default function AudioConverter() {
             background .18s ease;
         }
 
-        .audio-converter-format-grid button:hover {
+        .audio-speed-options button:hover,
+        .audio-speed-format-grid button:hover {
           border-color: rgba(255,119,0,.35);
         }
 
-        .audio-converter-format-grid button.active {
+        .audio-speed-options button.active,
+        .audio-speed-format-grid button.active {
           border-color: rgba(255,119,0,.7);
           background: rgba(255,119,0,.08);
         }
 
-        .audio-converter-format-grid button strong,
-        .audio-converter-format-grid button span {
+        .audio-speed-options button strong,
+        .audio-speed-options button span,
+        .audio-speed-format-grid button strong,
+        .audio-speed-format-grid button span {
           display: block;
         }
 
-        .audio-converter-format-grid button strong {
+        .audio-speed-options button strong,
+        .audio-speed-format-grid button strong {
           margin-bottom: 4px;
           font-size: 13px;
         }
 
-        .audio-converter-format-grid button span {
+        .audio-speed-options button span,
+        .audio-speed-format-grid button span {
           color: rgba(255,255,255,.38);
           font-size: 10px;
           line-height: 1.35;
         }
 
-        .audio-converter-bitrate-group {
+        .audio-speed-duration-card {
+          margin-top: 18px;
+          padding: 14px;
+          border: 1px solid rgba(255,255,255,.07);
+          border-radius: 15px;
+          background: rgba(255,255,255,.02);
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .audio-speed-duration-card > div:not(.audio-speed-arrow) {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .audio-speed-duration-card span {
+          color: rgba(255,255,255,.38);
+          font-size: 10px;
+        }
+
+        .audio-speed-duration-card strong {
+          font-size: 14px;
+        }
+
+        .audio-speed-duration-card > div:last-child {
+          text-align: right;
+        }
+
+        .audio-speed-arrow {
+          color: #ff8730;
+          font-size: 17px;
+        }
+
+        .audio-speed-format-group {
           margin-top: 20px;
         }
 
-        .audio-converter-bitrate-group select {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 12px 11px;
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 12px;
-          background: #17120f;
-          color: white;
-          outline: none;
+        .audio-speed-format-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
         }
 
-        .audio-converter-note {
+        .audio-speed-format-grid button {
+          min-height: 62px;
+        }
+
+        .audio-speed-note {
           margin-top: 18px;
           padding: 12px;
           border: 1px solid rgba(255,119,0,.12);
           border-radius: 14px;
           background: rgba(255,119,0,.035);
           display: flex;
-          align-items: flex-start;
           gap: 9px;
+          align-items: flex-start;
         }
 
-        .audio-converter-note span {
+        .audio-speed-note span {
           color: #ff8730;
           font-size: 12px;
+          font-weight: 800;
         }
 
-        .audio-converter-note p {
-          margin: 0;
+        .audio-speed-note p {
+          margin: 1px 0 0;
           color: rgba(255,255,255,.4);
-          font-size: 11px;
+          font-size: 10px;
           line-height: 1.5;
         }
 
-        .audio-converter-progress {
+        .audio-speed-progress {
           margin-top: 18px;
           padding: 18px;
           border: 1px solid rgba(255,255,255,.08);
@@ -1147,19 +1216,18 @@ export default function AudioConverter() {
           background: rgba(255,255,255,.025);
         }
 
-        .audio-converter-progress-top {
+        .audio-speed-progress-top {
           display: flex;
-          align-items: center;
           justify-content: space-between;
           margin-bottom: 10px;
           font-size: 13px;
         }
 
-        .audio-converter-progress-top strong {
+        .audio-speed-progress-top strong {
           color: #ff8730;
         }
 
-        .audio-converter-progress-track {
+        .audio-speed-progress-track {
           width: 100%;
           height: 7px;
           overflow: hidden;
@@ -1167,18 +1235,18 @@ export default function AudioConverter() {
           background: rgba(255,255,255,.08);
         }
 
-        .audio-converter-progress-fill {
+        .audio-speed-progress-fill {
           height: 100%;
           border-radius: inherit;
           background: #ff7b20;
           transition: width .18s ease;
         }
 
-        .audio-converter-progress .audio-converter-secondary {
+        .audio-speed-progress .audio-speed-secondary {
           margin-top: 12px;
         }
 
-        .audio-converter-error {
+        .audio-speed-error {
           margin-top: 18px;
           padding: 13px 15px;
           border: 1px solid rgba(255,75,75,.2);
@@ -1188,7 +1256,7 @@ export default function AudioConverter() {
           font-size: 13px;
         }
 
-        .audio-converter-success {
+        .audio-speed-success {
           margin-top: 18px;
           padding: 16px;
           border: 1px solid rgba(105,255,160,.18);
@@ -1200,40 +1268,40 @@ export default function AudioConverter() {
           gap: 16px;
         }
 
-        .audio-converter-success-player audio {
+        .audio-speed-success-player audio {
           display: block;
           width: 100%;
         }
 
-        .audio-converter-success-info {
+        .audio-speed-success-info {
           min-width: 0;
           display: flex;
           flex-direction: column;
           gap: 4px;
         }
 
-        .audio-converter-success-info span {
+        .audio-speed-success-info span {
           color: rgba(155,255,190,.75);
           font-size: 10px;
           font-weight: 700;
           letter-spacing: .08em;
         }
 
-        .audio-converter-success-info strong {
+        .audio-speed-success-info strong {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           font-size: 13px;
         }
 
-        .audio-converter-success-info small {
+        .audio-speed-success-info small {
           color: rgba(255,255,255,.38);
           font-size: 11px;
         }
 
-        .audio-converter-primary,
-        .audio-converter-secondary,
-        .audio-converter-download {
+        .audio-speed-primary,
+        .audio-speed-secondary,
+        .audio-speed-download {
           min-height: 42px;
           padding: 0 16px;
           border-radius: 12px;
@@ -1251,37 +1319,37 @@ export default function AudioConverter() {
             background .18s ease;
         }
 
-        .audio-converter-primary,
-        .audio-converter-download {
+        .audio-speed-primary,
+        .audio-speed-download {
           background: #ff7b20;
           color: #120c08;
         }
 
-        .audio-converter-primary:hover,
-        .audio-converter-download:hover {
+        .audio-speed-primary:hover,
+        .audio-speed-download:hover {
           transform: translateY(-1px);
           background: #ff8a36;
         }
 
-        .audio-converter-secondary {
+        .audio-speed-secondary {
           border-color: rgba(255,255,255,.09);
           background: rgba(255,255,255,.025);
           color: rgba(255,255,255,.78);
         }
 
-        .audio-converter-secondary:hover {
+        .audio-speed-secondary:hover {
           border-color: rgba(255,255,255,.18);
           background: rgba(255,255,255,.05);
         }
 
-        .audio-converter-secondary:disabled,
-        .audio-converter-primary:disabled {
+        .audio-speed-secondary:disabled,
+        .audio-speed-primary:disabled {
           opacity: .45;
           cursor: not-allowed;
           transform: none;
         }
 
-        .audio-converter-actions {
+        .audio-speed-actions {
           margin-top: 18px;
           display: flex;
           justify-content: flex-end;
@@ -1289,49 +1357,66 @@ export default function AudioConverter() {
           flex-wrap: wrap;
         }
 
-        @media (max-width: 900px) {
-          .audio-converter-workspace {
+        @media (max-width: 950px) {
+          .audio-speed-workspace {
             grid-template-columns: 1fr;
           }
 
-          .audio-converter-success {
+          .audio-speed-success {
             grid-template-columns: 1fr;
           }
         }
 
         @media (max-width: 700px) {
-          .audio-converter-tool {
+          .audio-speed-tool {
             padding: 22px 18px 30px;
           }
 
-          .audio-converter-header {
+          .audio-speed-header {
             flex-direction: column;
           }
 
-          .audio-converter-preview {
+          .audio-speed-preview {
             min-height: 240px;
           }
 
-          .audio-converter-file-info {
+          .audio-speed-file-info {
             align-items: flex-start;
             flex-direction: column;
           }
 
-          .audio-converter-format-grid {
+          .audio-speed-format-grid {
             grid-template-columns: 1fr;
           }
         }
 
         @media (max-width: 480px) {
-          .audio-converter-actions {
+          .audio-speed-options {
+            grid-template-columns: 1fr;
+          }
+
+          .audio-speed-duration-card {
+            grid-template-columns: 1fr;
+          }
+
+          .audio-speed-duration-card > div:last-child {
+            text-align: left;
+          }
+
+          .audio-speed-arrow {
+            justify-self: center;
+            transform: rotate(90deg);
+          }
+
+          .audio-speed-actions {
             justify-content: stretch;
           }
 
-          .audio-converter-actions button {
+          .audio-speed-actions button {
             flex: 1 1 100%;
           }
 
-          .audio-converter-download {
+          .audio-speed-download {
             width: 100%;
           }
         }
