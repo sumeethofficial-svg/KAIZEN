@@ -23,7 +23,7 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "jszip": "^3.10.2",
-    "mammoth": "^1.12.2",
+    "mammoth": "^1.12.3",
     "marked": "^18.0.12",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.3.289",
