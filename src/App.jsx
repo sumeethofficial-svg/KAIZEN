@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -79,9 +78,6 @@ function getSearchScore(
 
   /*
    * Title begins with query
-   *
-   * "im" → Image Enhancer
-   * "pdf" → PDF to Word
    */
   if (
     title.startsWith(
@@ -92,11 +88,7 @@ function getSearchScore(
   }
 
   /*
-   * Any word in title begins
-   * with query
-   *
-   * "image" → Images to PDF
-   * "pdf" → PDF to JPG
+   * Any title word begins with query
    */
   if (
     words.some((word) =>
@@ -120,7 +112,7 @@ function getSearchScore(
   }
 
   /*
-   * Group
+   * Group match
    */
   if (
     groupTitle.includes(
@@ -131,7 +123,7 @@ function getSearchScore(
   }
 
   /*
-   * Category
+   * Category match
    */
   if (
     categoryTitle.includes(
@@ -142,7 +134,7 @@ function getSearchScore(
   }
 
   /*
-   * Description
+   * Description match
    */
   if (
     description.includes(
@@ -186,7 +178,7 @@ function App() {
 
   /*
    * =========================================================
-   * BUILD GLOBAL TOOL INDEX
+   * GLOBAL TOOL INDEX
    * =========================================================
    */
 
@@ -209,9 +201,6 @@ function App() {
   /*
    * =========================================================
    * SEARCH RESULTS
-   *
-   * No query = show every tool.
-   * Query = intelligently filtered tools.
    * =========================================================
    */
 
@@ -268,7 +257,7 @@ function App() {
 
   /*
    * =========================================================
-   * FILTER NORMAL TOOLKIT
+   * TOOLKIT CATEGORIES
    * =========================================================
    */
 
@@ -327,13 +316,12 @@ function App() {
 
   /*
    * =========================================================
-   * SEARCH PAGE OPEN
+   * OPEN SEARCH PAGE
    * =========================================================
    */
 
   function openSearchPage() {
     setIsSearchOpen(true);
-
     setSearchQuery("");
 
     requestAnimationFrame(() => {
@@ -345,82 +333,14 @@ function App() {
 
   /*
    * =========================================================
-   * SEARCH PAGE CLOSE
+   * CLOSE SEARCH PAGE
    * =========================================================
    */
 
   function closeSearchPage() {
     setIsSearchOpen(false);
-
     setSearchQuery("");
   }
-
-  /*
-   * =========================================================
-   * LOCK BODY SCROLL ON SEARCH PAGE
-   * =========================================================
-   */
-
-  useEffect(() => {
-    if (
-      !isSearchOpen
-    ) {
-      document.body.style.overflow =
-        "";
-      return;
-    }
-
-    const previousOverflow =
-      document.body.style.overflow;
-
-    document.body.style.overflow =
-      "hidden";
-
-    return () => {
-      document.body.style.overflow =
-        previousOverflow;
-    };
-  }, [
-    isSearchOpen,
-  ]);
-
-  /*
-   * =========================================================
-   * SEARCH PAGE ESCAPE
-   * =========================================================
-   */
-
-  useEffect(() => {
-    if (
-      !isSearchOpen
-    ) {
-      return;
-    }
-
-    function handleKeyDown(
-      event
-    ) {
-      if (
-        event.key === "Escape"
-      ) {
-        closeSearchPage();
-      }
-    }
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-    };
-  }, [
-    isSearchOpen,
-  ]);
 
   /*
    * =========================================================
@@ -441,19 +361,13 @@ function App() {
         category.title,
     });
 
-    /*
-     * Close search if a tool is opened
-     * from the search page.
-     */
     setIsSearchOpen(false);
-
     setSearchQuery("");
 
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior:
-        "instant",
+      behavior: "instant",
     });
   }
 
@@ -484,9 +398,7 @@ function App() {
 
   /*
    * =========================================================
-   * SEARCH ENTER
-   *
-   * Open highest-ranked result.
+   * SEARCH KEYBOARD
    * =========================================================
    */
 
@@ -495,8 +407,7 @@ function App() {
   ) {
     if (
       event.key === "Enter" &&
-      searchResults.length >
-        0
+      searchResults.length > 0
     ) {
       const result =
         searchResults[0];
@@ -690,7 +601,8 @@ function App() {
 
             inset: 0;
 
-            pointer-events: none;
+            pointer-events:
+              none;
 
             background:
               linear-gradient(
@@ -886,27 +798,8 @@ function App() {
               rgba(255,255,255,.36);
           }
 
-          .kaizen-search-description {
-            max-width:
-              590px;
-
-            margin:
-              17px
-              auto
-              0;
-
-            color:
-              rgba(255,255,255,.4);
-
-            font-size:
-              13px;
-
-            line-height:
-              1.65;
-          }
-
           /*
-           * BIG SEARCH FIELD
+           * SEARCH INPUT
            */
 
           .kaizen-search-page-input-wrap {
@@ -1008,6 +901,26 @@ function App() {
               rgba(255,255,255,.25);
           }
 
+          /*
+           * IMPORTANT:
+           * Remove the browser-native search X.
+           * We use our own custom button.
+           */
+
+          .kaizen-search-page-input::-webkit-search-decoration,
+          .kaizen-search-page-input::-webkit-search-cancel-button,
+          .kaizen-search-page-input::-webkit-search-results-button,
+          .kaizen-search-page-input::-webkit-search-results-decoration {
+            -webkit-appearance:
+              none;
+
+            appearance:
+              none;
+
+            display:
+              none;
+          }
+
           .kaizen-search-page-icon {
             position:
               absolute;
@@ -1050,6 +963,18 @@ function App() {
             height:
               32px;
 
+            display:
+              flex;
+
+            align-items:
+              center;
+
+            justify-content:
+              center;
+
+            padding:
+              0;
+
             border:
               0;
 
@@ -1067,6 +992,14 @@ function App() {
 
             font-size:
               17px;
+          }
+
+          .kaizen-search-page-clear:hover {
+            background:
+              rgba(255,255,255,.12);
+
+            color:
+              #ffffff;
           }
 
           /*
@@ -1120,7 +1053,7 @@ function App() {
           }
 
           /*
-           * SAME KAIZEN TOOL CARDS
+           * RESULTS GRID
            */
 
           .kaizen-search-results-grid {
@@ -1186,7 +1119,7 @@ function App() {
           }
 
           /*
-           * MOBILE
+           * RESPONSIVE
            */
 
           @media (max-width: 1050px) {
@@ -1203,7 +1136,7 @@ function App() {
             .kaizen-search-page-inner {
               width:
                 min(
-                  100% - 32px,
+                  calc(100% - 32px),
                   680px
                 );
 
@@ -1255,6 +1188,7 @@ function App() {
           <div className="kaizen-search-page-background" />
 
           <div className="kaizen-search-page-inner">
+
             {/* ================================================
                 HEADER
             ================================================= */}
@@ -1287,16 +1221,10 @@ function App() {
               <h1 className="kaizen-search-title">
                 Find <span>your tool.</span>
               </h1>
-
-              <p className="kaizen-search-description">
-                Search through every KAIZEN
-                utility. Results update instantly
-                as you type.
-              </p>
             </section>
 
             {/* ================================================
-                SEARCH INPUT
+                SEARCH
             ================================================= */}
 
             <div className="kaizen-search-page-input-wrap">
@@ -1306,7 +1234,7 @@ function App() {
 
               <input
                 ref={searchInputRef}
-                type="search"
+                type="text"
                 value={searchQuery}
                 onChange={(event) =>
                   setSearchQuery(
@@ -1337,7 +1265,7 @@ function App() {
             </div>
 
             {/* ================================================
-                RESULTS HEADER
+                RESULT COUNT
             ================================================= */}
 
             <div className="kaizen-search-results-header">
@@ -1424,12 +1352,6 @@ function App() {
   return (
     <main className="app">
       <style>{`
-        /*
-         * =====================================================
-         * HERO SEARCH
-         * =====================================================
-         */
-
         .kaizen-hero-search-area {
           width:
             100%;
@@ -1580,6 +1502,7 @@ function App() {
       </div>
 
       <div className="app-content">
+
         {/* ====================================================
             HERO
         ==================================================== */}
@@ -1693,11 +1616,6 @@ function App() {
                 </RadialGlowButton>
               </div>
 
-              {/* ==============================================
-                  HERO SEARCH BUTTON
-                  Clicking this opens the dedicated search page.
-              ============================================== */}
-
               <div className="kaizen-hero-search-area">
                 <div className="kaizen-hero-search-box">
                   <button
@@ -1750,10 +1668,6 @@ function App() {
               images and more.
             </p>
           </section>
-
-          {/* ==================================================
-              CATEGORIES
-          ================================================== */}
 
           {filteredCategories.map(
             (category) => (
@@ -1860,7 +1774,7 @@ function App() {
           <TeamSection />
 
           {/* ==================================================
-              PRIVACY PANEL
+              PRIVACY
           ================================================== */}
 
           <section className="bottom-panel">
