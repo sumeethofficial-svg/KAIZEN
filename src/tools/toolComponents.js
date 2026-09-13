@@ -25,6 +25,7 @@ import InvertPdfColours from "./pdf/invert-pdf-colours/InvertPdfColours.jsx";
 import EncryptPdf from "./pdf/encrypt-pdf/EncryptPdf.jsx";
 import RemovePassword from "./pdf/remove-password/RemovePassword.jsx";
 import UnlockPdf from "./pdf/unlock-pdf/UnlockPdf.jsx";
+
 import WordToPdf from "./pdf/word-to-pdf/WordToPdf.jsx";
 import ImagesToPdf from "./pdf/images-to-pdf/ImagesToPdf.jsx";
 import ExcelToPdf from "./pdf/excel-to-pdf/ExcelToPdf.jsx";
@@ -46,15 +47,30 @@ import CropImage from "./images/CropImage.jsx";
 import RotateImage from "./images/RotateImage.jsx";
 import ImageToPdf from "./images/ImageToPdf.jsx";
 import RemoveImageMetadata from "./images/RemoveImageMetadata.jsx";
-
 import ImageAdjust from "./images/ImageAdjust.jsx";
 import SharpenImage from "./images/SharpenImage.jsx";
 import DenoiseImage from "./images/DenoiseImage.jsx";
+
+import VideoTrimmer from "./video/trimmer/VideoTrimmer.jsx";
+import VideoCutter from "./video/cutter/VideoCutter.jsx";
+import JoinVideos from "./video/join-videos/JoinVideos.jsx";
+import VideoCompressor from "./video/compressor/VideoCompressor.jsx";
+import VideoEnhancer from "./video/VideoEnhancer.jsx";
+import VideoResizer from "./video/VideoResizer.jsx";
+import ChangeVideoFps from "./video/ChangeVideoFps.jsx";
+import VideoConverter from "./video/VideoConverter.jsx";
+import VideoToGif from "./video/VideoToGif.jsx";
+import GifToVideo from "./video/GifToVideo.jsx";
+import ExtractVideoAudio from "./video/ExtractVideoAudio.jsx";
+import MuteVideo from "./video/MuteVideo.jsx";
+import ChangeVideoSpeed from "./video/ChangeVideoSpeed.jsx";
+import RotateVideo from "./video/RotateVideo.jsx";
+;
+
 import DocumentToPdf from "./documents/DocumentToPdf.jsx";
 import PdfToDocument from "./documents/PdfToDocument.jsx";
 import TextToPdf from "./documents/TextToPdf.jsx";
 import MarkdownConverter from "./documents/MarkdownConverter.jsx";
-
 import ExtractDocumentText from "./documents/ExtractDocumentText.jsx";
 import WordCounter from "./documents/WordCounter.jsx";
 import TextCleaner from "./documents/TextCleaner.jsx";
@@ -62,11 +78,6 @@ import TextCleaner from "./documents/TextCleaner.jsx";
 import ExtractZip from "./utilities/ExtractZip.jsx";
 import FileMetadata from "./utilities/FileMetadata.jsx";
 import BatchRename from "./utilities/BatchRename.jsx";
-
-
-import VideoTrimmer from "./video/trimmer/VideoTrimmer.jsx";
-import VideoCutter from "./video/cutter/VideoCutter.jsx";
-import JoinVideos from "./video/join-videos/JoinVideos.jsx";
 
 const toolComponents = {
   "merge-pdf": MergePdf,
@@ -96,9 +107,9 @@ const toolComponents = {
   "encrypt-pdf": EncryptPdf,
   "remove-pdf-password": RemovePassword,
   "unlock-pdf": UnlockPdf,
+
   "word-to-pdf": WordToPdf,
   "images-to-pdf": ImagesToPdf,
-
   "excel-to-pdf": ExcelToPdf,
   "powerpoint-to-pdf": PowerpointToPdf,
   "html-to-pdf": HtmlToPdf,
@@ -118,31 +129,36 @@ const toolComponents = {
   "rotate-image": RotateImage,
   "image-to-pdf": ImageToPdf,
   "remove-image-metadata": RemoveImageMetadata,
-
   "image-adjust": ImageAdjust,
   "sharpen-image": SharpenImage,
   "denoise-image": DenoiseImage,
 
-
   "video-trimmer": VideoTrimmer,
   "video-cutter": VideoCutter,
   "join-videos": JoinVideos,
-
+  "video-compressor": VideoCompressor,
+  "enhance-video": VideoEnhancer,
+  "resize-video": VideoResizer,
+  "change-video-fps": ChangeVideoFps,
+  "convert-video": VideoConverter,
+  "video-to-gif": VideoToGif,
+  "gif-to-video": GifToVideo,
+  "extract-video-audio": ExtractVideoAudio,
+  "mute-video": MuteVideo,
+  "change-video-speed": ChangeVideoSpeed,
+  "rotate-video": RotateVideo,
 
   "document-to-pdf": DocumentToPdf,
   "pdf-to-document": PdfToDocument,
   "text-to-pdf": TextToPdf,
   "markdown-to-document": MarkdownConverter,
-
   "extract-document-text": ExtractDocumentText,
   "document-word-counter": WordCounter,
   "document-cleaner": TextCleaner,
 
-
-"extract-zip": ExtractZip,
-"file-metadata": FileMetadata,
-"file-renamer": BatchRename,
-
+  "extract-zip": ExtractZip,
+  "file-metadata": FileMetadata,
+  "file-renamer": BatchRename,
 };
 
 export default toolComponents;

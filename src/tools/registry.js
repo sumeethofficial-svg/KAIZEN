@@ -210,7 +210,7 @@ const toolRegistry = {
             id: "powerpoint-to-pdf",
             title: "PowerPoint to PDF",
             description:
-              "Convert presentations into PDF files.",
+              "Convert presentations into PDF documents.",
             icon: "P",
           },
           {
@@ -471,19 +471,19 @@ const toolRegistry = {
             icon: "◐",
           },
           {
-  id: "sharpen-image",
-  title: "Sharpen Image",
-  description:
-    "Improve perceived detail and image sharpness.",
-  icon: "✦",
-},
+            id: "sharpen-image",
+            title: "Sharpen Image",
+            description:
+              "Improve perceived detail and image sharpness.",
+            icon: "✦",
+          },
           {
-  id: "denoise-image",
-  title: "Denoise Image",
-  description:
-    "Reduce visual noise while preserving important detail.",
-  icon: "◌",
-},
+            id: "denoise-image",
+            title: "Denoise Image",
+            description:
+              "Reduce visual noise while preserving important detail.",
+            icon: "◌",
+          },
           {
             id: "image-background-remover",
             title: "Background Remover",
@@ -547,7 +547,7 @@ const toolRegistry = {
 
         tools: [
           {
-            id: "compress-video",
+            id: "video-compressor",
             title: "Video Compressor",
             description:
               "Reduce video file size with adjustable quality.",
@@ -758,11 +758,12 @@ const toolRegistry = {
 
         tools: [
           {
-  id: "document-to-pdf",
-  title: "Document to PDF",
-  description: "Convert supported documents into PDF files.",
-  icon: "▣",
-},
+            id: "document-to-pdf",
+            title: "Document to PDF",
+            description:
+              "Convert supported documents into PDF files.",
+            icon: "▣",
+          },
           {
             id: "pdf-to-document",
             title: "PDF to Document",
