@@ -88,6 +88,11 @@ import ExtractZip from "./utilities/ExtractZip.jsx";
 import FileMetadata from "./utilities/FileMetadata.jsx";
 import BatchRename from "./utilities/BatchRename.jsx";
 
+import CreateZip from "./utilities/CreateZip.jsx";
+import QRCodeGenerator from "./utilities/QrCodeGenerator.jsx";
+import TextToFile from "./utilities/TextToFile.jsx";
+import Base64 from "./utilities/Base64.jsx";
+
 const toolComponents = {
   "merge-pdf": MergePdf,
   "split-pdf": SplitPdf,
@@ -174,9 +179,14 @@ const toolComponents = {
   "document-word-counter": WordCounter,
   "document-cleaner": TextCleaner,
 
+  "create-zip": CreateZip,
   "extract-zip": ExtractZip,
   "file-metadata": FileMetadata,
   "file-renamer": BatchRename,
+
+  "qr-code-generator": QRCodeGenerator,
+  "text-to-file": TextToFile,
+  "base64-tool": Base64,
 };
 
 export default toolComponents;

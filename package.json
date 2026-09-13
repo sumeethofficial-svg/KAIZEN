@@ -29,6 +29,7 @@
     "pdfjs-dist": "^6.3.289",
     "pdfstudio": "^0.4.0",
     "pptx-svg": "^0.6.5",
+    "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tailwind-merge": "^3.6.0",
