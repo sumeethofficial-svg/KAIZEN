@@ -1619,6 +1619,86 @@ function App() {
           }
         }
 
+        /* =====================================================
+           MINIMAL GLASS KAIZEN NAVBAR
+        ====================================================== */
+
+        .kaizen-main-navbar {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          min-height: 96px;
+          box-sizing: border-box;
+          padding: 16px 28px;
+          background:
+            linear-gradient(180deg,
+              rgba(255,255,255,.028),
+              rgba(255,255,255,.008)
+            );
+          border-bottom: 1px solid rgba(255,255,255,.075);
+          box-shadow:
+            inset 0 -1px 0 rgba(255,116,28,.045);
+        }
+
+        .kaizen-navbar-left,
+        .kaizen-navbar-right {
+          display: flex;
+          align-items: center;
+          min-width: 0;
+        }
+
+        .kaizen-navbar-left {
+          justify-content: flex-start;
+          flex: 1 1 auto;
+        }
+
+        .kaizen-navbar-right {
+          justify-content: flex-end;
+          flex: 0 0 auto;
+        }
+
+        .kaizen-navbar-wordmark {
+          display: inline-block;
+          color: rgba(255,248,235,.98);
+          font-family:
+            Impact,
+            "Arial Black",
+            "Noto Sans JP",
+            "Yu Gothic",
+            sans-serif;
+          font-size: clamp(34px, 4vw, 54px);
+          font-weight: 900;
+          line-height: .86;
+          letter-spacing: .04em;
+          white-space: nowrap;
+          transform: scaleX(.92);
+          transform-origin: left center;
+          text-shadow:
+            0 1px 0 rgba(0,0,0,.28),
+            0 0 22px rgba(255,137,48,.08);
+        }
+
+        .kaizen-main-navbar .kaizen-github-button {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+        }
+
+        @media (max-width: 700px) {
+          .kaizen-main-navbar {
+            min-height: 78px;
+            padding: 12px 14px;
+          }
+
+          .kaizen-navbar-wordmark {
+            font-size: clamp(28px, 10vw, 40px);
+            letter-spacing: .03em;
+            transform: scaleX(.9);
+          }
+        }
+
         .kaizen-hero-search-area {
           width:
             100%;
@@ -1793,102 +1873,19 @@ function App() {
         ==================================================== */}
 
         <div className="glass-shell">
-          <nav className="navbar">
-            <div className="brand">
-              <div className="brand-mark">
-                改
-              </div>
-
-              <div
-                className="brand-name"
-                style={{
-                  display:
-                    "flex",
-                  flexDirection:
-                    "column",
-                  justifyContent:
-                    "center",
-                  gap: "3px",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize:
-                      "25px",
-                    fontWeight:
-                      "700",
-                    letterSpacing:
-                      "3px",
-                    lineHeight:
-                      "1",
-                    color:
-                      "rgba(255,255,255,.96)",
-                  }}
-                >
-                  KAIZEN
-                </span>
-
-                <span
-                  style={{
-                    fontSize:
-                      "10px",
-                    fontWeight:
-                      "500",
-                    letterSpacing:
-                      "5px",
-                    lineHeight:
-                      "1",
-                    color:
-                      "rgba(255,255,255,.42)",
-                  }}
-                >
-                  改善
-                </span>
+          <nav className="navbar kaizen-main-navbar">
+            <div className="kaizen-navbar-left">
+              <div className="kaizen-navbar-wordmark" aria-label="KAIZEN">
+                KAIZEN
               </div>
             </div>
 
-            <div
-              className="nav-status"
-              style={{
-                display:
-                  "flex",
-                flexDirection:
-                  "column",
-                alignItems:
-                  "flex-end",
-                justifyContent:
-                  "center",
-                gap:
-                  "8px",
-              }}
-            >
+            <div className="kaizen-navbar-right">
               <div className="kaizen-github-button">
                 <GitHubStarsButton
                   variant="default"
                   size="sm"
                 />
-              </div>
-
-              <div
-                style={{
-                  display:
-                    "flex",
-                  alignItems:
-                    "center",
-                  gap:
-                    "8px",
-                }}
-              >
-                <span className="status-dot" />
-
-                <span
-                  style={{
-                    letterSpacing:
-                      "2px",
-                  }}
-                >
-                  カイゼンツール
-                </span>
               </div>
             </div>
           </nav>
