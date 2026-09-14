@@ -509,24 +509,15 @@ function App() {
             </header>
 
             <div className="tool-workspace">
-              <div className="tool-intro">
-                <span className="tool-number">
-                  {activeTool.number ||
-                    "01"}
-                </span>
+             <div className="tool-intro">
+  <h1>
+    {activeTool.title}
+  </h1>
 
-                <h1>
-                  {
-                    activeTool.title
-                  }
-                </h1>
-
-                <p>
-                  {
-                    activeTool.description
-                  }
-                </p>
-              </div>
+  <p>
+    {activeTool.description}
+  </p>
+</div>
 
               <div className="tool-workspace-box">
                 {ActiveToolComponent ? (
