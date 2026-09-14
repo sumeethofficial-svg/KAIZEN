@@ -1,4 +1,4 @@
-const INTRO_DURATION = 4100;
+const INTRO_DURATION = 4300;
 
 function createParticle(index, total) {
   const particle =
@@ -227,45 +227,16 @@ function buildIntro() {
 
           </linearGradient>
 
-          <filter
-            id="kaizen-slash-glow"
-            x="-70%"
-            y="-70%"
-            width="240%"
-            height="240%"
-          >
-
-            <feGaussianBlur
-              stdDeviation="1.6"
-              result="blur"
-            />
-
+          <filter id="kaizen-slash-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="0.8" result="blur" />
             <feMerge>
-
-              <feMergeNode
-                in="blur"
-              />
-
-              <feMergeNode
-                in="SourceGraphic"
-              />
-
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
             </feMerge>
-
           </filter>
 
-          <filter
-            id="kaizen-slash-fire-blur"
-            x="-70%"
-            y="-70%"
-            width="240%"
-            height="240%"
-          >
-
-            <feGaussianBlur
-              stdDeviation="5"
-            />
-
+          <filter id="kaizen-slash-fire-blur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2.2" />
           </filter>
 
         </defs>
@@ -466,6 +437,9 @@ function injectStyles() {
 
       isolation: isolate;
 
+      contain: strict;
+      will-change: opacity;
+
       font-family:
         Inter,
         system-ui,
@@ -543,7 +517,7 @@ function injectStyles() {
           transparent 72%
         );
 
-      filter: blur(64px);
+      filter: blur(32px);
 
       animation:
         kaizen-breath-one
@@ -571,7 +545,7 @@ function injectStyles() {
           transparent 75%
         );
 
-      filter: blur(80px);
+      filter: blur(40px);
 
       animation:
         kaizen-breath-two
@@ -596,7 +570,7 @@ function injectStyles() {
           transparent
         );
 
-      filter: blur(44px);
+      filter: blur(24px);
 
       animation:
         kaizen-breath-three
@@ -637,12 +611,7 @@ function injectStyles() {
           transparent 100%
         );
 
-      filter:
-        blur(1px)
-        drop-shadow(
-          0 0 22px
-          rgba(255,91,0,.72)
-        );
+      filter: blur(1px);
 
       opacity: 0;
 
@@ -852,11 +821,7 @@ function injectStyles() {
         );
 
       box-shadow:
-        0 0
-        calc(
-          var(--particle-size) * 2.5
-        )
-        rgba(255,83,0,.65);
+        0 0 4px rgba(255,118,24,.55);
 
       opacity: 0;
 
@@ -926,6 +891,8 @@ function injectStyles() {
 
     .kaizen-opening-slash-wrap {
       position: absolute;
+      contain: layout paint;
+      will-change: transform;
       inset: 0;
 
       overflow: hidden;
@@ -955,8 +922,7 @@ function injectStyles() {
 
       stroke-linecap: round;
 
-      filter:
-        url(#kaizen-slash-fire-blur);
+      filter: blur(3px);
 
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
@@ -979,8 +945,7 @@ function injectStyles() {
 
       stroke-linecap: round;
 
-      filter:
-        url(#kaizen-slash-glow);
+      filter: drop-shadow(0 0 5px rgba(255,111,18,.65));
 
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
@@ -1003,15 +968,7 @@ function injectStyles() {
 
       stroke-linecap: round;
 
-      filter:
-        drop-shadow(
-          0 0 5px
-          rgba(255,255,255,.98)
-        )
-        drop-shadow(
-          0 0 16px
-          rgba(255,139,24,.95)
-        );
+      filter: drop-shadow(0 0 5px rgba(255,170,70,.75));
 
       stroke-dasharray: 1;
       stroke-dashoffset: 1;
@@ -1257,6 +1214,8 @@ function injectStyles() {
 
     .kaizen-opening-logo {
       position: absolute;
+      contain: layout paint;
+      will-change: opacity, transform;
 
       left: 50%;
       top: 50%;
@@ -1508,8 +1467,7 @@ function injectStyles() {
           transparent 68%
         );
 
-      filter:
-        blur(8px);
+      filter: blur(4px);
 
       opacity: 0;
 
@@ -1531,7 +1489,7 @@ function injectStyles() {
       position: absolute;
       inset: 0;
 
-      opacity: .07;
+      opacity: .035;
 
       background-image:
         radial-gradient(
@@ -2132,8 +2090,8 @@ export function startKaizenOpeningSlash() {
   if (particleContainer) {
     const particleCount =
       window.innerWidth < 700
-        ? 42
-        : 82;
+        ? 18
+        : 32;
 
     for (
       let index = 0;
@@ -2194,7 +2152,7 @@ export function startKaizenOpeningSlash() {
     intro.classList.add(
       "is-exiting"
     );
-  }, 3350);
+  }, 3600);
 
   window.setTimeout(() => {
     intro.remove();
