@@ -5,7 +5,13 @@ import { Analytics } from "@vercel/analytics/react";
 import App from "./App.jsx";
 import "./index.css";
 
-createRoot(document.getElementById("root")).render(
+import { startKaizenOpeningSlash } from "./components/KaizenOpeningSlash.jsx";
+
+startKaizenOpeningSlash();
+
+createRoot(
+  document.getElementById("root")
+).render(
   <StrictMode>
     <App />
     <Analytics />
