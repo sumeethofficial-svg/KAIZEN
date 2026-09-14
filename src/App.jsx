@@ -7,6 +7,7 @@ import {
 import ToolCard from "./components/ToolCard";
 import RadialGlowButton from "./components/RadialGlowButton";
 import TeamSection from "./components/TeamSection";
+import GitHubStarsButton from "./components/GitHubStarsButton";
 
 import toolRegistry from "./tools/registry";
 import toolComponents from "./tools/toolComponents";
@@ -901,12 +902,6 @@ function App() {
               rgba(255,255,255,.25);
           }
 
-          /*
-           * IMPORTANT:
-           * Remove the browser-native search X.
-           * We use our own custom button.
-           */
-
           .kaizen-search-page-input::-webkit-search-decoration,
           .kaizen-search-page-input::-webkit-search-cancel-button,
           .kaizen-search-page-input::-webkit-search-results-button,
@@ -1477,6 +1472,24 @@ function App() {
             rgba(255,255,255,.38);
         }
 
+        /*
+         * GitHub button
+         */
+
+        .kaizen-github-button {
+          display:
+            flex;
+
+          align-items:
+            center;
+
+          justify-content:
+            flex-end;
+
+          flex-shrink:
+            0;
+        }
+
         @media (max-width: 700px) {
           .kaizen-hero-search-area {
             margin-top:
@@ -1562,17 +1575,49 @@ function App() {
               </div>
             </div>
 
-            <div className="nav-status">
-              <span className="status-dot" />
+            <div
+              className="nav-status"
+              style={{
+                display:
+                  "flex",
+                flexDirection:
+                  "column",
+                alignItems:
+                  "flex-end",
+                justifyContent:
+                  "center",
+                gap:
+                  "8px",
+              }}
+            >
+              <div className="kaizen-github-button">
+                <GitHubStarsButton
+                  variant="default"
+                  size="sm"
+                />
+              </div>
 
-              <span
+              <div
                 style={{
-                  letterSpacing:
-                    "2px",
+                  display:
+                    "flex",
+                  alignItems:
+                    "center",
+                  gap:
+                    "8px",
                 }}
               >
-                カイゼンツール
-              </span>
+                <span className="status-dot" />
+
+                <span
+                  style={{
+                    letterSpacing:
+                      "2px",
+                  }}
+                >
+                  カイゼンツール
+                </span>
+              </div>
             </div>
           </nav>
 
