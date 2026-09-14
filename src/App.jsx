@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -174,8 +175,56 @@ function App() {
   const previousScrollPosition =
     useRef(0);
 
+  const [activeCategoryId, setActiveCategoryId] =
+    useState(null);
+
+  const [showScrollTop, setShowScrollTop] =
+    useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 520);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const categories =
     Object.values(toolRegistry);
+
+  /*
+   * =========================================================
+   * CATEGORY NAVIGATION
+   * =========================================================
+   */
+
+  function scrollToCategory(categoryId) {
+    setActiveCategoryId(categoryId);
+
+    const element =
+      document.getElementById(categoryId);
+
+    if (!element) {
+      return;
+    }
+
+    const offset = 118;
+    const targetTop =
+      element.getBoundingClientRect().top +
+      window.scrollY -
+      offset;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      left: 0,
+      behavior: "smooth",
+    });
+  }
 
   /*
    * =========================================================
@@ -1347,6 +1396,229 @@ function App() {
   return (
     <main className="app">
       <style>{`
+        /* ======================================================
+           CATEGORY NAVIGATION
+        ====================================================== */
+
+        .toolkit-intro {
+          position: relative;
+        }
+
+        .kaizen-category-nav {
+          position: absolute;
+          left: 50%;
+          right: auto;
+          bottom: -27px;
+          z-index: 20;
+          width: min(920px, calc(100% - 20px));
+          transform: translateX(-50%);
+          box-sizing: border-box;
+          padding: 0;
+          background: transparent;
+        }
+
+        .kaizen-category-nav-track {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: clamp(15px, 2.8vw, 34px);
+          width: 100%;
+          min-height: 54px;
+          margin: 0 auto;
+          box-sizing: border-box;
+          padding: 7px 16px;
+          overflow-x: auto;
+          scrollbar-width: none;
+          overscroll-behavior-inline: contain;
+          border: 1px solid rgba(255,255,255,.11);
+          border-radius: 18px;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028)),
+            rgba(10,10,10,.36);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.08),
+            inset 0 -1px 0 rgba(255,255,255,.025),
+            0 14px 38px rgba(0,0,0,.16);
+          backdrop-filter: blur(22px) saturate(125%);
+          -webkit-backdrop-filter: blur(22px) saturate(125%);
+        }
+
+        .kaizen-category-nav-track::before {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          border-radius: 17px;
+          pointer-events: none;
+          background:
+            linear-gradient(180deg, rgba(255,255,255,.055), transparent 28%, transparent 72%, rgba(255,255,255,.02));
+        }
+
+        .kaizen-category-nav-track::-webkit-scrollbar {
+          display: none;
+        }
+
+        .kaizen-category-nav-item {
+          position: relative;
+          flex: 0 0 auto;
+          border: 0;
+          background: transparent;
+          color: rgba(255,255,255,.38);
+          padding: 10px 2px 16px;
+          font: inherit;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: color .24s ease, transform .24s ease;
+        }
+
+        .kaizen-category-nav-item:hover {
+          color: rgba(255,255,255,.82);
+          transform: translateY(-1px);
+        }
+
+        .kaizen-category-nav-item.active {
+          color: rgba(255,255,255,.98);
+        }
+
+        .kaizen-category-nav-label {
+          position: relative;
+          z-index: 2;
+          display: inline-block;
+        }
+
+        .kaizen-category-nav-glow {
+          position: absolute;
+          left: 50%;
+          bottom: 3px;
+          width: 30px;
+          height: 4px;
+          transform: translateX(-50%) scale(.35);
+          transform-origin: center;
+          opacity: 0;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent, rgba(255,153,64,.95) 22%, rgba(255,240,214,1) 50%, rgba(255,132,38,.9) 78%, transparent);
+          box-shadow:
+            0 0 6px rgba(255,196,125,.95),
+            0 0 15px rgba(255,101,0,.62),
+            0 0 28px rgba(255,67,0,.26);
+          filter: blur(.35px);
+          pointer-events: none;
+        }
+
+        .kaizen-category-nav-glow::before {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 7px;
+          height: 7px;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          background: #fff4de;
+          box-shadow:
+            0 0 7px rgba(255,247,232,.98),
+            0 0 16px rgba(255,140,37,.88);
+        }
+
+        .kaizen-category-nav-item.active .kaizen-category-nav-glow {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+
+        @media (max-width: 700px) {
+          .kaizen-category-nav {
+            position: relative;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            width: calc(100% - 24px);
+            transform: none;
+            margin: 0 12px;
+            padding: 0;
+          }
+
+          .kaizen-category-nav-track {
+            justify-content: flex-start;
+            gap: 20px;
+            min-height: 50px;
+            padding: 6px 14px;
+            border-radius: 16px;
+          }
+
+          .kaizen-category-nav-item {
+            font-size: 10px;
+            letter-spacing: .1em;
+          }
+        }
+
+        .kaizen-scroll-top {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          z-index: 9990;
+          width: 46px;
+          height: 46px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          border: 1px solid rgba(255,255,255,.14);
+          border-radius: 14px;
+          background: rgba(12,12,12,.58);
+          color: rgba(255,255,255,.82);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.08),
+            0 10px 28px rgba(0,0,0,.24);
+          backdrop-filter: blur(14px) saturate(120%);
+          -webkit-backdrop-filter: blur(14px) saturate(120%);
+          cursor: pointer;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(10px);
+          transition:
+            opacity .22s ease,
+            visibility .22s ease,
+            transform .22s ease,
+            background .2s ease,
+            border-color .2s ease,
+            color .2s ease;
+        }
+
+        .kaizen-scroll-top.visible {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .kaizen-scroll-top:hover {
+          border-color: rgba(255,145,65,.34);
+          background: rgba(30,17,10,.72);
+          color: #fff;
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.1),
+            0 0 18px rgba(255,100,0,.14),
+            0 12px 32px rgba(0,0,0,.28);
+        }
+
+        .kaizen-scroll-top-icon {
+          font-size: 17px;
+          line-height: 1;
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 700px) {
+          .kaizen-scroll-top {
+            right: 16px;
+            bottom: 16px;
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+          }
+        }
+
         .kaizen-hero-search-area {
           width:
             100%;
@@ -1712,6 +1984,43 @@ function App() {
               utilities for documents, PDFs,
               images and more.
             </p>
+            <nav
+              className="kaizen-category-nav"
+            aria-label="Tool categories"
+          >
+            <div className="kaizen-category-nav-track">
+              {categories.map((category) => {
+                const isActive =
+                  activeCategoryId === category.id;
+
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    className={
+                      `kaizen-category-nav-item${
+                        isActive ? " active" : ""
+                      }`
+                    }
+                    onClick={() =>
+                      scrollToCategory(category.id)
+                    }
+                    aria-current={
+                      isActive ? "location" : undefined
+                    }
+                  >
+                    <span className="kaizen-category-nav-label">
+                      {category.title}
+                    </span>
+                    <span
+                      className="kaizen-category-nav-glow"
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+            </nav>
           </section>
 
           {filteredCategories.map(
@@ -1811,6 +2120,29 @@ function App() {
               </section>
             )
           )}
+
+          <button
+            type="button"
+            className={`kaizen-scroll-top${
+              showScrollTop ? " visible" : ""
+            }`}
+            onClick={() =>
+              window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+              })
+            }
+            aria-label="Back to top"
+            title="Back to top"
+          >
+            <span
+              className="kaizen-scroll-top-icon"
+              aria-hidden="true"
+            >
+              ↑
+            </span>
+          </button>
 
           {/* ==================================================
               TEAM
