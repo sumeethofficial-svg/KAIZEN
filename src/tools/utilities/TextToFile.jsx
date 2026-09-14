@@ -3,44 +3,56 @@ import { createTextFile } from "../../services/utilities/textToFile.js";
 
 function TextToFile() {
   const [text, setText] = useState("");
-  const [filename, setFilename] = useState("kaizen-file");
-  const [fileType, setFileType] = useState("txt");
-  const [isCreating, setIsCreating] = useState(false);
+  const [filename, setFilename] =
+    useState("kaizen-file");
+  const [fileType, setFileType] =
+    useState("txt");
+  const [isCreating, setIsCreating] =
+    useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] =
+    useState("");
 
   const fileTypes = {
     txt: {
       extension: "txt",
-      mimeType: "text/plain;charset=utf-8",
+      mimeType:
+        "text/plain;charset=utf-8",
     },
     md: {
       extension: "md",
-      mimeType: "text/markdown;charset=utf-8",
+      mimeType:
+        "text/markdown;charset=utf-8",
     },
     html: {
       extension: "html",
-      mimeType: "text/html;charset=utf-8",
+      mimeType:
+        "text/html;charset=utf-8",
     },
     css: {
       extension: "css",
-      mimeType: "text/css;charset=utf-8",
+      mimeType:
+        "text/css;charset=utf-8",
     },
     js: {
       extension: "js",
-      mimeType: "text/javascript;charset=utf-8",
+      mimeType:
+        "text/javascript;charset=utf-8",
     },
     json: {
       extension: "json",
-      mimeType: "application/json;charset=utf-8",
+      mimeType:
+        "application/json;charset=utf-8",
     },
     csv: {
       extension: "csv",
-      mimeType: "text/csv;charset=utf-8",
+      mimeType:
+        "text/csv;charset=utf-8",
     },
     xml: {
       extension: "xml",
-      mimeType: "application/xml;charset=utf-8",
+      mimeType:
+        "application/xml;charset=utf-8",
     },
   };
 
@@ -56,26 +68,36 @@ function TextToFile() {
     setIsCreating(true);
 
     try {
-      const selectedType = fileTypes[fileType];
+      const selectedType =
+        fileTypes[fileType];
 
       const cleanFilename =
-        filename.trim() || "kaizen-file";
+        filename.trim() ||
+        "kaizen-file";
 
       const finalFilename =
-        cleanFilename.toLowerCase().endsWith(
-          `.${selectedType.extension}`
-        )
+        cleanFilename
+          .toLowerCase()
+          .endsWith(
+            `.${selectedType.extension}`
+          )
           ? cleanFilename
           : `${cleanFilename}.${selectedType.extension}`;
 
-      const result = createTextFile(text, {
-        filename: finalFilename,
-        mimeType: selectedType.mimeType,
-      });
+      const result =
+        createTextFile(text, {
+          filename: finalFilename,
+          mimeType:
+            selectedType.mimeType,
+        });
 
-      const url = URL.createObjectURL(result.blob);
+      const url =
+        URL.createObjectURL(
+          result.blob
+        );
 
-      const link = document.createElement("a");
+      const link =
+        document.createElement("a");
 
       link.href = url;
       link.download = result.filename;
@@ -83,21 +105,26 @@ function TextToFile() {
 
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
 
       setSuccess(
         `${result.filename} created successfully.`
       );
 
-      setTimeout(() => {
+      window.setTimeout(() => {
         URL.revokeObjectURL(url);
       }, 1000);
     } catch (err) {
-      console.error("Text to File error:", err);
+      console.error(
+        "Text to File error:",
+        err
+      );
 
       setError(
-        err?.message || "Failed to create the file."
+        err?.message ||
+          "Failed to create the file."
       );
+
       setSuccess("");
     } finally {
       setIsCreating(false);
@@ -113,309 +140,418 @@ function TextToFile() {
   };
 
   const characterCount = text.length;
+
   const lineCount = text
-    ? text.split(/\r\n|\r|\n/).length
+    ? text.split(/\r\n|\r|\n/)
+        .length
     : 0;
 
   return (
-    <div className="text-to-file-tool">
-      <div className="text-input-section">
-        <label className="text-file-label">
-          Text content
-        </label>
-
-        <textarea
-          className="text-file-textarea"
-          value={text}
-          onChange={(event) => {
-            setText(event.target.value);
-            setError("");
-            setSuccess("");
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "20px 24px 30px",
+        color: "rgba(255,255,255,.94)",
+      }}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "minmax(0, 1.65fr) minmax(260px, .75fr)",
+          gap: "14px",
+          alignItems: "start",
+        }}
+      >
+        <div
+          style={{
+            border:
+              "1px solid rgba(255,255,255,.08)",
+            borderRadius: "16px",
+            padding: "15px",
+            background:
+              "rgba(255,255,255,.022)",
           }}
-          placeholder="Enter or paste your text here..."
-        />
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: "10px",
+              marginBottom: "9px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing:
+                  ".13em",
+                color:
+                  "rgba(255,153,82,.72)",
+              }}
+            >
+              TEXT CONTENT
+            </div>
 
-        <div className="text-file-stats">
-          <span>
-            {characterCount.toLocaleString()} characters
-          </span>
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.25)",
+              }}
+            >
+              <span>
+                {characterCount.toLocaleString()}{" "}
+                chars
+              </span>
 
-          <span>
-            {lineCount.toLocaleString()} lines
-          </span>
-        </div>
-      </div>
+              <span>·</span>
 
-      <div className="text-file-settings">
-        <div className="text-file-field">
-          <label>
-            File name
-          </label>
+              <span>
+                {lineCount.toLocaleString()}{" "}
+                lines
+              </span>
+            </div>
+          </div>
 
-          <input
-            type="text"
-            value={filename}
+          <textarea
+            value={text}
             onChange={(event) => {
-              setFilename(event.target.value);
+              setText(event.target.value);
               setError("");
               setSuccess("");
             }}
-            placeholder="kaizen-file"
+            placeholder="Enter or paste your text here..."
+            style={{
+              width: "100%",
+              minHeight: "255px",
+              boxSizing: "border-box",
+              resize: "vertical",
+              padding: "13px",
+              border:
+                "1px solid rgba(255,255,255,.08)",
+              borderRadius: "11px",
+              outline: "none",
+              background:
+                "rgba(0,0,0,.12)",
+              color: "#fff",
+              fontFamily:
+                "Consolas, 'Courier New', monospace",
+              fontSize: "12px",
+              lineHeight: 1.6,
+            }}
           />
         </div>
 
-        <div className="text-file-field">
-          <label>
-            File type
-          </label>
-
-          <select
-            value={fileType}
-            onChange={(event) => {
-              setFileType(event.target.value);
-              setError("");
-              setSuccess("");
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              border:
+                "1px solid rgba(255,255,255,.08)",
+              borderRadius: "16px",
+              padding: "15px",
+              background:
+                "rgba(255,255,255,.022)",
             }}
           >
-            <option value="txt">
-              TXT — Plain Text
-            </option>
+            <div
+              style={{
+                marginBottom: "12px",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing:
+                  ".13em",
+                color:
+                  "rgba(255,153,82,.72)",
+              }}
+            >
+              FILE SETTINGS
+            </div>
 
-            <option value="md">
-              MD — Markdown
-            </option>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  flexDirection:
+                    "column",
+                  gap: "6px",
+                  fontSize: "10px",
+                  color:
+                    "rgba(255,255,255,.42)",
+                }}
+              >
+                File name
 
-            <option value="html">
-              HTML
-            </option>
+                <input
+                  value={filename}
+                  onChange={(event) => {
+                    setFilename(
+                      event.target.value
+                    );
+                    setError("");
+                    setSuccess("");
+                  }}
+                  placeholder="kaizen-file"
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    boxSizing: "border-box",
+                    padding:
+                      "0 11px",
+                    border:
+                      "1px solid rgba(255,255,255,.08)",
+                    borderRadius:
+                      "9px",
+                    outline: "none",
+                    background:
+                      "rgba(255,255,255,.035)",
+                    color: "#fff",
+                    font:
+                      "inherit",
+                    fontSize:
+                      "11px",
+                  }}
+                />
+              </label>
 
-            <option value="css">
-              CSS
-            </option>
+              <label
+                style={{
+                  display: "flex",
+                  flexDirection:
+                    "column",
+                  gap: "6px",
+                  fontSize: "10px",
+                  color:
+                    "rgba(255,255,255,.42)",
+                }}
+              >
+                File type
 
-            <option value="js">
-              JS — JavaScript
-            </option>
+                <select
+                  value={fileType}
+                  onChange={(event) => {
+                    setFileType(
+                      event.target.value
+                    );
+                    setError("");
+                    setSuccess("");
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "40px",
+                    boxSizing: "border-box",
+                    padding:
+                      "0 11px",
+                    border:
+                      "1px solid rgba(255,255,255,.08)",
+                    borderRadius:
+                      "9px",
+                    outline: "none",
+                    background:
+                      "#17120f",
+                    color: "#fff",
+                    font:
+                      "inherit",
+                    fontSize:
+                      "11px",
+                    cursor:
+                      "pointer",
+                  }}
+                >
+                  <option value="txt">
+                    TXT — Plain Text
+                  </option>
+                  <option value="md">
+                    MD — Markdown
+                  </option>
+                  <option value="html">
+                    HTML
+                  </option>
+                  <option value="css">
+                    CSS
+                  </option>
+                  <option value="js">
+                    JS — JavaScript
+                  </option>
+                  <option value="json">
+                    JSON
+                  </option>
+                  <option value="csv">
+                    CSV
+                  </option>
+                  <option value="xml">
+                    XML
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
 
-            <option value="json">
-              JSON
-            </option>
-
-            <option value="csv">
-              CSV
-            </option>
-
-            <option value="xml">
-              XML
-            </option>
-          </select>
-        </div>
-      </div>
-
-      {error && (
-        <div className="text-file-error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="text-file-success">
-          {success}
-        </div>
-      )}
-
-      <div className="text-file-actions">
-        <button
-          type="button"
-          className="text-file-create-button"
-          onClick={handleGenerate}
-          disabled={isCreating}
-        >
-          {isCreating
-            ? "Creating File..."
-            : "Create & Download"}
-        </button>
-
-        {text && (
-          <button
-            type="button"
-            className="text-file-clear-button"
-            onClick={handleClear}
+          <div
+            style={{
+              padding: "12px 13px",
+              border:
+                "1px solid rgba(255,255,255,.07)",
+              borderRadius: "12px",
+              background:
+                "rgba(255,255,255,.018)",
+              color:
+                "rgba(255,255,255,.36)",
+              fontSize: "10px",
+              lineHeight: 1.5,
+            }}
           >
-            Clear
-          </button>
-        )}
+            Create a local file from your
+            text and download it directly to
+            your device.
+          </div>
+
+          {error && (
+            <div
+              style={{
+                padding:
+                  "10px 12px",
+                border:
+                  "1px solid rgba(255,70,70,.22)",
+                borderRadius:
+                  "9px",
+                background:
+                  "rgba(255,50,50,.06)",
+                color:
+                  "#ff9c9c",
+                fontSize:
+                  "11px",
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div
+              style={{
+                padding:
+                  "10px 12px",
+                border:
+                  "1px solid rgba(100,200,100,.18)",
+                borderRadius:
+                  "9px",
+                background:
+                  "rgba(100,200,100,.045)",
+                color:
+                  "#a8e5a8",
+                fontSize:
+                  "11px",
+              }}
+            >
+              {success}
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={isCreating}
+              style={{
+                flex: 1,
+                minHeight: "42px",
+                border:
+                  "1px solid rgba(255,106,0,.35)",
+                borderRadius:
+                  "10px",
+                background:
+                  "linear-gradient(135deg, rgba(255,118,0,.18), rgba(255,77,0,.1))",
+                color:
+                  "#ff9a4d",
+                font: "inherit",
+                fontSize:
+                  "11px",
+                fontWeight:
+                  700,
+                cursor:
+                  isCreating
+                    ? "not-allowed"
+                    : "pointer",
+                opacity:
+                  isCreating
+                    ? 0.55
+                    : 1,
+              }}
+            >
+              {isCreating
+                ? "Creating..."
+                : "Create & Download"}
+            </button>
+
+            {text && (
+              <button
+                type="button"
+                onClick={handleClear}
+                style={{
+                  minHeight:
+                    "42px",
+                  padding:
+                    "0 14px",
+                  border:
+                    "1px solid rgba(255,255,255,.08)",
+                  borderRadius:
+                    "10px",
+                  background:
+                    "rgba(255,255,255,.04)",
+                  color:
+                    "rgba(255,255,255,.62)",
+                  font:
+                    "inherit",
+                  fontSize:
+                    "11px",
+                  fontWeight:
+                    600,
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       <style>{`
-        .text-to-file-tool {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          width: 100%;
-          color: #fff;
+        textarea:focus,
+        input:focus,
+        select:focus {
+          border-color: rgba(255,106,0,.45) !important;
+          background: rgba(255,255,255,.04) !important;
         }
 
-        .text-input-section {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .text-file-label {
-          color: rgba(255,255,255,.5);
-          font-size: 11px;
-        }
-
-        .text-file-textarea {
-          width: 100%;
-          min-height: 280px;
-          box-sizing: border-box;
-          resize: vertical;
-          padding: 14px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 12px;
-          outline: none;
-          background: rgba(255,255,255,.035);
-          color: #fff;
-          font-family: "Consolas", "Courier New", monospace;
-          font-size: 12px;
-          line-height: 1.6;
-        }
-
-        .text-file-textarea::placeholder {
-          color: rgba(255,255,255,.25);
-        }
-
-        .text-file-textarea:focus {
-          border-color: rgba(255,120,0,.55);
-          background: rgba(255,255,255,.045);
-        }
-
-        .text-file-stats {
-          display: flex;
-          justify-content: space-between;
-          color: rgba(255,255,255,.3);
-          font-size: 10px;
-        }
-
-        .text-file-settings {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 14px;
-        }
-
-        .text-file-field {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-        }
-
-        .text-file-field label {
-          color: rgba(255,255,255,.45);
-          font-size: 11px;
-        }
-
-        .text-file-field input,
-        .text-file-field select {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 11px 12px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 9px;
-          outline: none;
-          background: rgba(255,255,255,.04);
-          color: #fff;
-          font-size: 12px;
-        }
-
-        .text-file-field input:focus,
-        .text-file-field select:focus {
-          border-color: rgba(255,120,0,.5);
-        }
-
-        .text-file-field select {
-          cursor: pointer;
-        }
-
-        .text-file-field select option {
-          background: #161616;
-          color: #fff;
-        }
-
-        .text-file-error,
-        .text-file-success {
-          padding: 13px 15px;
-          border-radius: 10px;
-          font-size: 13px;
-        }
-
-        .text-file-error {
-          border: 1px solid rgba(255,70,70,.3);
-          background: rgba(255,50,50,.06);
-          color: #ff9292;
-        }
-
-        .text-file-success {
-          border: 1px solid rgba(100,200,100,.25);
-          background: rgba(100,200,100,.05);
-          color: #9be39b;
-        }
-
-        .text-file-actions {
-          display: flex;
-          gap: 10px;
-        }
-
-        .text-file-create-button {
-          flex: 1;
-          padding: 13px;
-          border: 1px solid rgba(255,120,0,.55);
-          border-radius: 10px;
-          background: rgba(255,100,0,.12);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-          transition:
-            background .2s ease,
-            border-color .2s ease;
-        }
-
-        .text-file-create-button:hover:not(:disabled) {
-          background: rgba(255,100,0,.18);
-          border-color: rgba(255,120,0,.75);
-        }
-
-        .text-file-create-button:disabled {
-          opacity: .45;
-          cursor: not-allowed;
-        }
-
-        .text-file-clear-button {
-          padding: 13px 22px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 10px;
-          background: rgba(255,255,255,.04);
-          color: rgba(255,255,255,.65);
-          cursor: pointer;
-        }
-
-        .text-file-clear-button:hover {
-          background: rgba(255,255,255,.07);
-          color: #fff;
-        }
-
-        @media (max-width: 600px) {
-          .text-file-settings {
-            grid-template-columns: 1fr;
-          }
-
-          .text-file-actions {
-            flex-direction: column;
-          }
-
-          .text-file-clear-button {
-            width: 100%;
+        @media (max-width: 720px) {
+          .text-file-layout {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>

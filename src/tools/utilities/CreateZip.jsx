@@ -1,22 +1,32 @@
-import React, { useRef, useState } from "react";
-import { createZip } from "../../services/utilities/createZip.js";
+import React, {
+  useRef,
+  useState,
+} from "react";
+
+import {
+  createZip,
+} from "../../services/utilities/createZip.js";
 
 function CreateZip() {
   const fileInputRef = useRef(null);
   const folderInputRef = useRef(null);
 
   const [files, setFiles] = useState([]);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] =
+    useState(false);
   const [error, setError] = useState("");
-  const [zipName, setZipName] = useState("kaizen-files");
+  const [zipName, setZipName] =
+    useState("kaizen-files");
+  const [dragActive, setDragActive] =
+    useState(false);
 
   const formatFileSize = (bytes) => {
-    if (!bytes || bytes === 0) {
-      return "0 Bytes";
+    if (!bytes) {
+      return "0 B";
     }
 
     const units = [
-      "Bytes",
+      "B",
       "KB",
       "MB",
       "GB",
@@ -24,70 +34,161 @@ function CreateZip() {
     ];
 
     const index = Math.min(
-      Math.floor(Math.log(bytes) / Math.log(1024)),
+      Math.floor(
+        Math.log(bytes) / Math.log(1024)
+      ),
       units.length - 1
     );
 
     return `${(
-      bytes / Math.pow(1024, index)
-    ).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+      bytes /
+      Math.pow(1024, index)
+    ).toFixed(
+      index === 0 ? 0 : 1
+    )} ${units[index]}`;
   };
 
-  const normalizeFiles = (fileList) => {
-    if (!fileList || fileList.length === 0) {
+  const normalizeFiles = (
+    fileList
+  ) => {
+    if (
+      !fileList ||
+      fileList.length === 0
+    ) {
       return [];
     }
 
-    return Array.from(fileList).map((file) => ({
-      file,
-      relativePath:
-        file.webkitRelativePath || file.name,
-    }));
+    return Array.from(fileList).map(
+      (file) => ({
+        file,
+        relativePath:
+          file.webkitRelativePath ||
+          file.name,
+      })
+    );
   };
 
   const addFiles = (fileList) => {
-    const newFiles = normalizeFiles(fileList);
+    const newFiles =
+      normalizeFiles(fileList);
 
-    if (newFiles.length === 0) {
+    if (!newFiles.length) {
       return;
     }
 
-    setFiles((currentFiles) => [
-      ...currentFiles,
-      ...newFiles,
-    ]);
+    setFiles((currentFiles) => {
+      const existing = new Set(
+        currentFiles.map(
+          (item) =>
+            `${item.relativePath}-${item.file.size}-${item.file.lastModified}`
+        )
+      );
+
+      const additions =
+        newFiles.filter(
+          (item) =>
+            !existing.has(
+              `${item.relativePath}-${item.file.size}-${item.file.lastModified}`
+            )
+        );
+
+      return [
+        ...currentFiles,
+        ...additions,
+      ];
+    });
 
     setError("");
   };
 
-  const handleFileInput = (event) => {
-    addFiles(event.target.files);
+  const collectEntry = async (
+    entry,
+    parentPath,
+    output
+  ) => {
+    if (entry.isFile) {
+      await new Promise(
+        (resolve) => {
+          entry.file(
+            (file) => {
+              output.push({
+                file,
+                relativePath:
+                  parentPath +
+                  file.name,
+              });
 
-    event.target.value = "";
+              resolve();
+            },
+            () => resolve()
+          );
+        }
+      );
+
+      return;
+    }
+
+    if (entry.isDirectory) {
+      const reader =
+        entry.createReader();
+
+      const directoryPath =
+        `${parentPath}${entry.name}/`;
+
+      const readEntries = () =>
+        new Promise((resolve) => {
+          reader.readEntries(
+            (entries) =>
+              resolve(entries),
+            () => resolve([])
+          );
+        });
+
+      const entries = [];
+
+      while (true) {
+        const batch =
+          await readEntries();
+
+        if (!batch.length) {
+          break;
+        }
+
+        entries.push(...batch);
+      }
+
+      for (const child of entries) {
+        await collectEntry(
+          child,
+          directoryPath,
+          output
+        );
+      }
+    }
   };
 
-  const handleFolderInput = (event) => {
-    addFiles(event.target.files);
-
-    event.target.value = "";
-  };
-
-  const handleDrop = async (event) => {
+  const handleDrop = async (
+    event
+  ) => {
     event.preventDefault();
-
+    setDragActive(false);
     setError("");
 
     const items =
       event.dataTransfer?.items;
 
     if (!items) {
-      addFiles(event.dataTransfer?.files);
+      addFiles(
+        event.dataTransfer?.files
+      );
       return;
     }
 
     const droppedFiles = [];
 
-    for (const item of Array.from(items)) {
+    for (const item of Array.from(
+      items
+    )) {
       if (item.kind !== "file") {
         continue;
       }
@@ -114,86 +215,60 @@ function CreateZip() {
       }
     }
 
-    if (droppedFiles.length > 0) {
-      setFiles((currentFiles) => [
-        ...currentFiles,
-        ...droppedFiles,
-      ]);
+    if (droppedFiles.length) {
+      addFiles(
+        droppedFiles.map(
+          (item) => item.file
+        )
+      );
+
+      setFiles((current) => {
+        const existing = new Set(
+          current.map(
+            (item) =>
+              `${item.relativePath}-${item.file.size}-${item.file.lastModified}`
+          )
+        );
+
+        const additions =
+          droppedFiles.filter(
+            (item) =>
+              !existing.has(
+                `${item.relativePath}-${item.file.size}-${item.file.lastModified}`
+              )
+          );
+
+        return [
+          ...current,
+          ...additions,
+        ];
+      });
     }
   };
 
-  const collectEntry = async (
-    entry,
-    parentPath,
-    output
+  const handleFileInput = (
+    event
   ) => {
-    if (entry.isFile) {
-      await new Promise((resolve) => {
-        entry.file(
-          (file) => {
-            output.push({
-              file,
-              relativePath:
-                parentPath + file.name,
-            });
+    addFiles(
+      event.target.files
+    );
 
-            resolve();
-          },
-          () => {
-            resolve();
-          }
-        );
-      });
+    event.target.value = "";
+  };
 
-      return;
-    }
+  const handleFolderInput = (
+    event
+  ) => {
+    addFiles(
+      event.target.files
+    );
 
-    if (entry.isDirectory) {
-      const reader =
-        entry.createReader();
-
-      const directoryPath =
-        `${parentPath}${entry.name}/`;
-
-      const readEntries = () => {
-        return new Promise((resolve) => {
-          reader.readEntries(
-            (entries) => {
-              resolve(entries);
-            },
-            () => {
-              resolve([]);
-            }
-          );
-        });
-      };
-
-      let entries = [];
-
-      while (true) {
-        const batch =
-          await readEntries();
-
-        if (batch.length === 0) {
-          break;
-        }
-
-        entries.push(...batch);
-      }
-
-      for (const child of entries) {
-        await collectEntry(
-          child,
-          directoryPath,
-          output
-        );
-      }
-    }
+    event.target.value = "";
   };
 
   const removeFile = (index) => {
-    setFiles((currentFiles) =>
-      currentFiles.filter(
+    setFiles((current) =>
+      current.filter(
         (_, fileIndex) =>
           fileIndex !== index
       )
@@ -208,7 +283,7 @@ function CreateZip() {
   };
 
   const handleCreate = async () => {
-    if (files.length === 0) {
+    if (!files.length) {
       setError(
         "Please select at least one file or folder."
       );
@@ -225,12 +300,11 @@ function CreateZip() {
           .replace(/\.zip$/i, "") ||
         "kaizen-files";
 
-      const result = await createZip(
-        files,
-        {
-          filename: `${cleanName}.zip`,
-        }
-      );
+      const result =
+        await createZip(files, {
+          filename:
+            `${cleanName}.zip`,
+        });
 
       const url =
         URL.createObjectURL(
@@ -243,15 +317,12 @@ function CreateZip() {
       link.href = url;
       link.download =
         result.filename;
-      link.style.display = "none";
 
       document.body.appendChild(link);
-
       link.click();
+      link.remove();
 
-      document.body.removeChild(link);
-
-      setTimeout(() => {
+      window.setTimeout(() => {
         URL.revokeObjectURL(url);
       }, 1000);
     } catch (err) {
@@ -269,14 +340,30 @@ function CreateZip() {
     }
   };
 
+  const totalSize = files.reduce(
+    (sum, item) =>
+      sum + item.file.size,
+    0
+  );
+
   return (
-    <div className="create-zip-tool">
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "20px 24px 30px",
+        color:
+          "rgba(255,255,255,.94)",
+      }}
+    >
       <input
         ref={fileInputRef}
         type="file"
         multiple
         hidden
-        onChange={handleFileInput}
+        onChange={
+          handleFileInput
+        }
       />
 
       <input
@@ -286,114 +373,376 @@ function CreateZip() {
         webkitdirectory=""
         directory=""
         hidden
-        onChange={handleFolderInput}
+        onChange={
+          handleFolderInput
+        }
       />
 
-      <div
-        className="zip-dropzone"
-        onDrop={handleDrop}
-        onDragOver={(event) => {
-          event.preventDefault();
+      {files.length === 0 ? (
+        <div
+          onDrop={handleDrop}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragActive(true);
 
-          if (event.dataTransfer) {
-            event.dataTransfer.dropEffect =
-              "copy";
+            if (event.dataTransfer) {
+              event.dataTransfer.dropEffect =
+                "copy";
+            }
+          }}
+          onDragLeave={() =>
+            setDragActive(false)
           }
-        }}
-      >
-        <div className="zip-icon">
-          ▥
-        </div>
-
-        <div className="zip-title">
-          Drop files or folders here
-        </div>
-
-        <div className="zip-subtitle">
-          or choose files or a folder
-        </div>
-
-        <div className="zip-buttons">
-          <button
-            type="button"
-            onClick={() =>
-              fileInputRef.current?.click()
-            }
+          style={{
+            minHeight: "190px",
+            display: "flex",
+            flexDirection:
+              "column",
+            alignItems: "center",
+            justifyContent:
+              "center",
+            gap: "9px",
+            padding: "24px",
+            boxSizing:
+              "border-box",
+            border:
+              `1px dashed ${
+                dragActive
+                  ? "rgba(255,106,0,.65)"
+                  : "rgba(255,255,255,.12)"
+              }`,
+            borderRadius: "17px",
+            background:
+              dragActive
+                ? "rgba(255,106,0,.065)"
+                : "rgba(255,255,255,.022)",
+            transition:
+              "background .18s ease, border-color .18s ease",
+          }}
+        >
+          <div
+            style={{
+              width: "46px",
+              height: "46px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "center",
+              border:
+                "1px solid rgba(255,106,0,.28)",
+              borderRadius: "13px",
+              background:
+                "rgba(255,106,0,.05)",
+              color: "#ff8a3d",
+              fontSize: "21px",
+            }}
           >
-            Choose Files
-          </button>
+            ▥
+          </div>
 
-          <button
-            type="button"
-            onClick={() =>
-              folderInputRef.current?.click()
-            }
+          <strong
+            style={{
+              fontSize: "15px",
+            }}
           >
-            Choose Folder
-          </button>
-        </div>
+            Drop files or folders here
+          </strong>
 
-        <div className="zip-format">
-          All file types supported
-        </div>
-      </div>
+          <span
+            style={{
+              fontSize: "11px",
+              color:
+                "rgba(255,255,255,.34)",
+            }}
+          >
+            Build a ZIP archive directly
+            in your browser
+          </span>
 
-      {error && (
-        <div className="zip-error">
-          {error}
-        </div>
-      )}
-
-      {files.length > 0 && (
-        <>
-          <div className="zip-file-header">
-            <span>
-              {files.length}{" "}
-              {files.length === 1
-                ? "file"
-                : "files"}{" "}
-              selected
-            </span>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              marginTop: "5px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() =>
+                fileInputRef.current?.click()
+              }
+              style={{
+                minHeight: "36px",
+                padding: "0 13px",
+                border:
+                  "1px solid rgba(255,106,0,.3)",
+                borderRadius: "9px",
+                background:
+                  "rgba(255,100,0,.08)",
+                color: "#ff9a4d",
+                font: "inherit",
+                fontSize: "10px",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Choose Files
+            </button>
 
             <button
               type="button"
-              onClick={clearFiles}
+              onClick={() =>
+                folderInputRef.current?.click()
+              }
+              style={{
+                minHeight: "36px",
+                padding: "0 13px",
+                border:
+                  "1px solid rgba(255,255,255,.08)",
+                borderRadius: "9px",
+                background:
+                  "rgba(255,255,255,.04)",
+                color:
+                  "rgba(255,255,255,.65)",
+                font: "inherit",
+                fontSize: "10px",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
             >
-              Clear all
+              Choose Folder
             </button>
           </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            border:
+              "1px solid rgba(255,255,255,.08)",
+            borderRadius: "16px",
+            overflow: "hidden",
+            background:
+              "rgba(255,255,255,.022)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: "10px",
+              padding:
+                "12px 14px",
+              borderBottom:
+                "1px solid rgba(255,255,255,.055)",
+            }}
+          >
+            <div>
+              <strong
+                style={{
+                  fontSize: "12px",
+                }}
+              >
+                {files.length}{" "}
+                {files.length === 1
+                  ? "file"
+                  : "files"}{" "}
+                selected
+              </strong>
 
-          <div className="zip-file-list">
+              <div
+                style={{
+                  marginTop: "3px",
+                  fontSize: "9px",
+                  color:
+                    "rgba(255,255,255,.28)",
+                }}
+              >
+                {formatFileSize(
+                  totalSize
+                )}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "7px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  fileInputRef.current?.click()
+                }
+                style={{
+                  border:
+                    "1px solid rgba(255,255,255,.08)",
+                  borderRadius: "8px",
+                  background:
+                    "rgba(255,255,255,.04)",
+                  color:
+                    "rgba(255,255,255,.68)",
+                  padding:
+                    "7px 10px",
+                  font:
+                    "inherit",
+                  fontSize:
+                    "10px",
+                  fontWeight:
+                    600,
+                  cursor:
+                    "pointer",
+                }}
+              >
+                + Files
+              </button>
+
+              <button
+                type="button"
+                onClick={clearFiles}
+                style={{
+                  border: 0,
+                  background:
+                    "transparent",
+                  color:
+                    "rgba(255,153,82,.72)",
+                  font:
+                    "inherit",
+                  fontSize:
+                    "10px",
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div
+            style={{
+              maxHeight: "235px",
+              overflowY:
+                "auto",
+            }}
+          >
             {files.map(
               (item, index) => (
                 <div
-                  className="zip-file-item"
                   key={`${item.relativePath}-${index}`}
+                  style={{
+                    display:
+                      "grid",
+                    gridTemplateColumns:
+                      "30px minmax(0,1fr) auto",
+                    alignItems:
+                      "center",
+                    gap: "10px",
+                    padding:
+                      "9px 13px",
+                    borderBottom:
+                      index ===
+                      files.length - 1
+                        ? "none"
+                        : "1px solid rgba(255,255,255,.04)",
+                  }}
                 >
-                  <div className="zip-file-info">
-                    <div className="zip-file-symbol">
-                      FILE
+                  <div
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      display:
+                        "flex",
+                      alignItems:
+                        "center",
+                      justifyContent:
+                        "center",
+                      borderRadius:
+                        "8px",
+                      background:
+                        "rgba(255,106,0,.05)",
+                      border:
+                        "1px solid rgba(255,106,0,.12)",
+                      color:
+                        "rgba(255,153,82,.8)",
+                      fontSize:
+                        "9px",
+                      fontWeight:
+                        700,
+                    }}
+                  >
+                    {String(
+                      index + 1
+                    ).padStart(
+                      2,
+                      "0"
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      minWidth: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        overflow:
+                          "hidden",
+                        textOverflow:
+                          "ellipsis",
+                        whiteSpace:
+                          "nowrap",
+                        fontSize:
+                          "11px",
+                        color:
+                          "rgba(255,255,255,.76)",
+                      }}
+                    >
+                      {item.relativePath}
                     </div>
 
-                    <div className="zip-file-details">
-                      <div className="zip-file-name">
-                        {item.relativePath}
-                      </div>
-
-                      <div className="zip-file-size">
-                        {formatFileSize(
-                          item.file.size
-                        )}
-                      </div>
+                    <div
+                      style={{
+                        marginTop:
+                          "3px",
+                        fontSize:
+                          "9px",
+                        color:
+                          "rgba(255,255,255,.27)",
+                      }}
+                    >
+                      {formatFileSize(
+                        item.file.size
+                      )}
                     </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() =>
-                      removeFile(index)
+                      removeFile(
+                        index
+                      )
                     }
-                    aria-label={`Remove ${item.file.name}`}
+                    style={{
+                      width:
+                        "26px",
+                      height:
+                        "26px",
+                      border: 0,
+                      borderRadius:
+                        "7px",
+                      background:
+                        "rgba(255,255,255,.035)",
+                      color:
+                        "rgba(255,255,255,.4)",
+                      fontSize:
+                        "17px",
+                      cursor:
+                        "pointer",
+                    }}
                   >
                     ×
                   </button>
@@ -401,258 +750,201 @@ function CreateZip() {
               )
             )}
           </div>
+        </div>
+      )}
 
-          <div className="zip-settings">
-            <label>
-              ZIP file name
+      {error && (
+        <div
+          style={{
+            marginTop: "10px",
+            padding:
+              "10px 12px",
+            border:
+              "1px solid rgba(255,70,70,.22)",
+            borderRadius:
+              "9px",
+            background:
+              "rgba(255,50,50,.06)",
+            color:
+              "#ff9c9c",
+            fontSize:
+              "11px",
+          }}
+        >
+          {error}
+        </div>
+      )}
 
-              <input
-                type="text"
-                value={zipName}
-                onChange={(event) =>
-                  setZipName(
-                    event.target.value
-                  )
-                }
-                placeholder="kaizen-files"
-              />
-            </label>
+      {files.length > 0 && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(0,1fr) minmax(190px,.5fr)",
+            gap: "10px",
+            marginTop: "12px",
+          }}
+        >
+          <label
+            style={{
+              display:
+                "flex",
+              flexDirection:
+                "column",
+              gap: "6px",
+              padding:
+                "13px",
+              border:
+                "1px solid rgba(255,255,255,.07)",
+              borderRadius:
+                "12px",
+              background:
+                "rgba(255,255,255,.018)",
+              fontSize:
+                "10px",
+              color:
+                "rgba(255,255,255,.4)",
+            }}
+          >
+            ZIP file name
+
+            <input
+              type="text"
+              value={zipName}
+              onChange={(event) =>
+                setZipName(
+                  event.target.value
+                )
+              }
+              placeholder="kaizen-files"
+              style={{
+                width:
+                  "100%",
+                height:
+                  "39px",
+                boxSizing:
+                  "border-box",
+                padding:
+                  "0 10px",
+                border:
+                  "1px solid rgba(255,255,255,.08)",
+                borderRadius:
+                  "8px",
+                outline:
+                  "none",
+                background:
+                  "rgba(255,255,255,.035)",
+                color:
+                  "#fff",
+                font:
+                  "inherit",
+                fontSize:
+                  "11px",
+              }}
+            />
+          </label>
+
+          <div
+            style={{
+              display:
+                "flex",
+              flexDirection:
+                "column",
+              justifyContent:
+                "center",
+              padding:
+                "13px",
+              border:
+                "1px solid rgba(255,255,255,.07)",
+              borderRadius:
+                "12px",
+              background:
+                "rgba(255,255,255,.018)",
+            }}
+          >
+            <span
+              style={{
+                fontSize:
+                  "9px",
+                color:
+                  "rgba(255,255,255,.3)",
+              }}
+            >
+              ARCHIVE
+            </span>
+
+            <strong
+              style={{
+                marginTop:
+                  "4px",
+                fontSize:
+                  "11px",
+                color:
+                  "rgba(255,255,255,.72)",
+              }}
+            >
+              {zipName
+                .trim()
+                .replace(
+                  /\.zip$/i,
+                  ""
+                ) ||
+                "kaizen-files"}
+              .zip
+            </strong>
           </div>
 
           <button
             type="button"
-            className="zip-create-button"
             onClick={handleCreate}
-            disabled={isCreating}
+            disabled={
+              isCreating
+            }
+            style={{
+              gridColumn:
+                "1 / -1",
+              minHeight:
+                "42px",
+              border:
+                "1px solid rgba(255,106,0,.38)",
+              borderRadius:
+                "10px",
+              background:
+                "linear-gradient(135deg, rgba(255,118,0,.18), rgba(255,77,0,.1))",
+              color:
+                "#ff9a4d",
+              font:
+                "inherit",
+              fontSize:
+                "11px",
+              fontWeight:
+                700,
+              cursor:
+                isCreating
+                  ? "not-allowed"
+                  : "pointer",
+              opacity:
+                isCreating
+                  ? 0.55
+                  : 1,
+            }}
           >
             {isCreating
               ? "Creating ZIP..."
               : "Create ZIP"}
           </button>
-        </>
+        </div>
       )}
 
       <style>{`
-        .create-zip-tool {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          width: 100%;
-          color: #fff;
+        input:focus {
+          border-color: rgba(255,106,0,.45) !important;
+          background: rgba(255,255,255,.045) !important;
         }
 
-        .zip-dropzone {
-          min-height: 260px;
-          border: 1px dashed rgba(255,255,255,.22);
-          border-radius: 16px;
-          background: rgba(255,255,255,.025);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          cursor: default;
-          text-align: center;
-        }
-
-        .zip-dropzone:hover {
-          border-color: rgba(255,120,0,.65);
-          background: rgba(255,120,0,.035);
-        }
-
-        .zip-icon {
-          width: 48px;
-          height: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid rgba(255,120,0,.3);
-          border-radius: 12px;
-          color: #ff8a3d;
-          font-size: 22px;
-          margin-bottom: 17px;
-        }
-
-        .zip-title {
-          font-size: 17px;
-          font-weight: 600;
-        }
-
-        .zip-subtitle {
-          margin-top: 7px;
-          color: rgba(255,255,255,.5);
-          font-size: 13px;
-        }
-
-        .zip-buttons {
-          display: flex;
-          gap: 8px;
-          margin-top: 16px;
-        }
-
-        .zip-buttons button {
-          padding: 9px 14px;
-          border: 1px solid rgba(255,120,0,.4);
-          border-radius: 8px;
-          background: rgba(255,100,0,.08);
-          color: #ff9a4d;
-          font-size: 11px;
-          cursor: pointer;
-        }
-
-        .zip-buttons button:hover {
-          background: rgba(255,100,0,.16);
-          border-color: rgba(255,120,0,.7);
-        }
-
-        .zip-format {
-          margin-top: 13px;
-          color: rgba(255,255,255,.3);
-          font-size: 11px;
-        }
-
-        .zip-error {
-          padding: 13px 15px;
-          border: 1px solid rgba(255,70,70,.3);
-          border-radius: 10px;
-          background: rgba(255,50,50,.06);
-          color: #ff9292;
-          font-size: 13px;
-        }
-
-        .zip-file-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 12px 14px;
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 10px;
-          background: rgba(255,255,255,.025);
-          color: rgba(255,255,255,.55);
-          font-size: 12px;
-        }
-
-        .zip-file-header button {
-          border: 0;
-          background: transparent;
-          color: #ff9a4d;
-          cursor: pointer;
-          font-size: 11px;
-        }
-
-        .zip-file-list {
-          max-height: 300px;
-          overflow: auto;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .zip-file-item {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 11px 13px;
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 10px;
-          background: rgba(255,255,255,.02);
-        }
-
-        .zip-file-info {
-          display: flex;
-          align-items: center;
-          gap: 11px;
-          min-width: 0;
-        }
-
-        .zip-file-symbol {
-          flex-shrink: 0;
-          font-size: 8px;
-          color: #ff8a3d;
-          border: 1px solid rgba(255,120,0,.25);
-          border-radius: 6px;
-          padding: 7px 6px;
-        }
-
-        .zip-file-details {
-          min-width: 0;
-        }
-
-        .zip-file-name {
-          max-width: 650px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          font-size: 12px;
-        }
-
-        .zip-file-size {
-          margin-top: 3px;
-          color: rgba(255,255,255,.35);
-          font-size: 10px;
-        }
-
-        .zip-file-item > button {
-          flex-shrink: 0;
-          border: 0;
-          background: transparent;
-          color: rgba(255,255,255,.4);
-          font-size: 18px;
-          cursor: pointer;
-        }
-
-        .zip-file-item > button:hover {
-          color: #ff8a3d;
-        }
-
-        .zip-settings label {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-          color: rgba(255,255,255,.45);
-          font-size: 11px;
-        }
-
-        .zip-settings input {
-          padding: 11px 12px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 9px;
-          outline: none;
-          background: rgba(255,255,255,.04);
-          color: #fff;
-          font-size: 12px;
-        }
-
-        .zip-settings input:focus {
-          border-color: rgba(255,120,0,.5);
-        }
-
-        .zip-create-button {
-          padding: 13px;
-          border: 1px solid rgba(255,120,0,.55);
-          border-radius: 10px;
-          background: rgba(255,100,0,.12);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        .zip-create-button:hover:not(:disabled) {
-          background: rgba(255,100,0,.18);
-          border-color: rgba(255,120,0,.75);
-        }
-
-        .zip-create-button:disabled {
-          opacity: .45;
-          cursor: not-allowed;
-        }
-
-        @media (max-width: 600px) {
-          .zip-buttons {
-            flex-direction: column;
-          }
-
-          .zip-file-name {
-            max-width: 250px;
+        @media (max-width: 650px) {
+          .create-zip-settings {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>

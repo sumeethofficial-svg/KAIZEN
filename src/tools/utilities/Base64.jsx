@@ -5,10 +5,13 @@ import {
 } from "../../services/utilities/base64.js";
 
 function Base64() {
-  const [mode, setMode] = useState("encode");
+  const [mode, setMode] =
+    useState("encode");
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
-  const [error, setError] = useState("");
+  const [output, setOutput] =
+    useState("");
+  const [error, setError] =
+    useState("");
 
   const handleProcess = () => {
     if (!input.trim()) {
@@ -32,16 +35,23 @@ function Base64() {
 
       setOutput(result);
     } catch (err) {
-      console.error("Base64 processing error:", err);
+      console.error(
+        "Base64 processing error:",
+        err
+      );
 
       setOutput("");
+
       setError(
-        err?.message || "Failed to process the Base64 data."
+        err?.message ||
+          "Failed to process the Base64 data."
       );
     }
   };
 
-  const handleModeChange = (newMode) => {
+  const handleModeChange = (
+    newMode
+  ) => {
     setMode(newMode);
     setInput("");
     setOutput("");
@@ -60,12 +70,20 @@ function Base64() {
     }
 
     try {
-      await navigator.clipboard.writeText(output);
+      await navigator.clipboard.writeText(
+        output
+      );
 
       setError("");
     } catch (err) {
-      console.error("Copy failed:", err);
-      setError("Could not copy the result.");
+      console.error(
+        "Copy failed:",
+        err
+      );
+
+      setError(
+        "Could not copy the result."
+      );
     }
   };
 
@@ -87,7 +105,8 @@ function Base64() {
 
   const handleKeyDown = (event) => {
     if (
-      (event.ctrlKey || event.metaKey) &&
+      (event.ctrlKey ||
+        event.metaKey) &&
       event.key === "Enter"
     ) {
       handleProcess();
@@ -95,339 +114,468 @@ function Base64() {
   };
 
   return (
-    <div className="base64-tool">
-      <div className="base64-mode-switch">
-        <button
-          type="button"
-          className={
-            mode === "encode"
-              ? "base64-mode active"
-              : "base64-mode"
-          }
-          onClick={() => handleModeChange("encode")}
-        >
-          Encode
-        </button>
-
-        <button
-          type="button"
-          className={
-            mode === "decode"
-              ? "base64-mode active"
-              : "base64-mode"
-          }
-          onClick={() => handleModeChange("decode")}
-        >
-          Decode
-        </button>
-      </div>
-
-      <div className="base64-input-section">
-        <div className="base64-label-row">
-          <label className="base64-label">
-            {mode === "encode"
-              ? "Text"
-              : "Base64 data"}
-          </label>
-
-          <span className="base64-count">
-            {input.length.toLocaleString()} characters
-          </span>
-        </div>
-
-        <textarea
-          className="base64-textarea"
-          value={input}
-          onChange={(event) => {
-            setInput(event.target.value);
-            setOutput("");
-            setError("");
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "20px 24px 30px",
+        color:
+          "rgba(255,255,255,.94)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "13px",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "1fr 1fr",
+            gap: "5px",
+            padding: "4px",
+            border:
+              "1px solid rgba(255,255,255,.08)",
+            borderRadius: "11px",
+            background:
+              "rgba(255,255,255,.022)",
           }}
-          onKeyDown={handleKeyDown}
-          placeholder={
-            mode === "encode"
-              ? "Enter text to encode..."
-              : "Paste Base64 data to decode..."
-          }
-        />
-      </div>
-
-      {error && (
-        <div className="base64-error">
-          {error}
-        </div>
-      )}
-
-      <div className="base64-actions">
-        <button
-          type="button"
-          className="base64-process-button"
-          onClick={handleProcess}
         >
-          {mode === "encode"
-            ? "Encode to Base64"
-            : "Decode Base64"}
-        </button>
-
-        {input && (
           <button
             type="button"
-            className="base64-clear-button"
-            onClick={handleClear}
+            onClick={() =>
+              handleModeChange(
+                "encode"
+              )
+            }
+            style={{
+              minHeight: "38px",
+              border:
+                mode === "encode"
+                  ? "1px solid rgba(255,106,0,.32)"
+                  : "1px solid transparent",
+              borderRadius: "8px",
+              background:
+                mode === "encode"
+                  ? "rgba(255,100,0,.09)"
+                  : "transparent",
+              color:
+                mode === "encode"
+                  ? "#ff9a4d"
+                  : "rgba(255,255,255,.4)",
+              font:
+                "inherit",
+              fontSize:
+                "11px",
+              fontWeight:
+                700,
+              cursor:
+                "pointer",
+            }}
           >
-            Clear
+            Encode
           </button>
-        )}
-      </div>
 
-      {output && (
-        <div className="base64-result">
-          <div className="base64-result-header">
-            <span>
+          <button
+            type="button"
+            onClick={() =>
+              handleModeChange(
+                "decode"
+              )
+            }
+            style={{
+              minHeight: "38px",
+              border:
+                mode === "decode"
+                  ? "1px solid rgba(255,106,0,.32)"
+                  : "1px solid transparent",
+              borderRadius: "8px",
+              background:
+                mode === "decode"
+                  ? "rgba(255,100,0,.09)"
+                  : "transparent",
+              color:
+                mode === "decode"
+                  ? "#ff9a4d"
+                  : "rgba(255,255,255,.4)",
+              font:
+                "inherit",
+              fontSize:
+                "11px",
+              fontWeight:
+                700,
+              cursor:
+                "pointer",
+            }}
+          >
+            Decode
+          </button>
+        </div>
+
+        <div
+          style={{
+            border:
+              "1px solid rgba(255,255,255,.08)",
+            borderRadius: "15px",
+            padding: "15px",
+            background:
+              "rgba(255,255,255,.022)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: "10px",
+              marginBottom: "9px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing:
+                  ".13em",
+                color:
+                  "rgba(255,153,82,.72)",
+              }}
+            >
               {mode === "encode"
-                ? "Encoded Result"
-                : "Decoded Result"}
+                ? "INPUT TEXT"
+                : "BASE64 INPUT"}
             </span>
 
-            <span className="base64-result-count">
-              {output.length.toLocaleString()} characters
+            <span
+              style={{
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.24)",
+              }}
+            >
+              {input.length.toLocaleString()}{" "}
+              characters
             </span>
           </div>
 
           <textarea
-            className="base64-result-textarea"
-            value={output}
-            readOnly
+            value={input}
+            onChange={(event) => {
+              setInput(
+                event.target.value
+              );
+              setOutput("");
+              setError("");
+            }}
+            onKeyDown={
+              handleKeyDown
+            }
+            placeholder={
+              mode === "encode"
+                ? "Enter text to encode..."
+                : "Paste Base64 data to decode..."
+            }
+            style={{
+              width: "100%",
+              minHeight: "185px",
+              boxSizing: "border-box",
+              resize: "vertical",
+              padding: "13px",
+              border:
+                "1px solid rgba(255,255,255,.08)",
+              borderRadius:
+                "11px",
+              outline: "none",
+              background:
+                "rgba(0,0,0,.12)",
+              color: "#fff",
+              fontFamily:
+                "Consolas, 'Courier New', monospace",
+              fontSize: "12px",
+              lineHeight: 1.6,
+            }}
           />
-
-          <div className="base64-result-actions">
-            <button
-              type="button"
-              className="base64-copy-button"
-              onClick={handleCopy}
-            >
-              Copy Result
-            </button>
-
-            <button
-              type="button"
-              className="base64-swap-button"
-              onClick={handleSwap}
-            >
-              Use as {mode === "encode" ? "Decode" : "Encode"} Input
-            </button>
-          </div>
         </div>
-      )}
 
-      <div className="base64-hint">
-        Supports Unicode text. Press Ctrl + Enter to process.
+        {error && (
+          <div
+            style={{
+              padding:
+                "10px 12px",
+              border:
+                "1px solid rgba(255,70,70,.22)",
+              borderRadius:
+                "9px",
+              background:
+                "rgba(255,50,50,.06)",
+              color:
+                "#ff9c9c",
+              fontSize: "11px",
+              lineHeight: 1.5,
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+          }}
+        >
+          <button
+            type="button"
+            onClick={
+              handleProcess
+            }
+            style={{
+              flex: 1,
+              minHeight: "42px",
+              border:
+                "1px solid rgba(255,106,0,.35)",
+              borderRadius:
+                "10px",
+              background:
+                "linear-gradient(135deg, rgba(255,118,0,.18), rgba(255,77,0,.1))",
+              color:
+                "#ff9a4d",
+              font:
+                "inherit",
+              fontSize:
+                "11px",
+              fontWeight:
+                700,
+              cursor:
+                "pointer",
+            }}
+          >
+            {mode === "encode"
+              ? "Encode to Base64"
+              : "Decode Base64"}
+          </button>
+
+          {input && (
+            <button
+              type="button"
+              onClick={
+                handleClear
+              }
+              style={{
+                minHeight:
+                  "42px",
+                padding:
+                  "0 14px",
+                border:
+                  "1px solid rgba(255,255,255,.08)",
+                borderRadius:
+                  "10px",
+                background:
+                  "rgba(255,255,255,.04)",
+                color:
+                  "rgba(255,255,255,.62)",
+                font:
+                  "inherit",
+                fontSize:
+                  "11px",
+                fontWeight:
+                  600,
+                cursor:
+                  "pointer",
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {output && (
+          <div
+            style={{
+              border:
+                "1px solid rgba(255,255,255,.08)",
+              borderRadius:
+                "15px",
+              padding:
+                "15px",
+              background:
+                "rgba(255,255,255,.022)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems:
+                  "center",
+                justifyContent:
+                  "space-between",
+                gap: "10px",
+                marginBottom:
+                  "9px",
+              }}
+            >
+              <span
+                style={{
+                  fontSize:
+                    "10px",
+                  fontWeight:
+                    700,
+                  letterSpacing:
+                    ".13em",
+                  color:
+                    "rgba(255,153,82,.72)",
+                }}
+              >
+                {mode === "encode"
+                  ? "ENCODED RESULT"
+                  : "DECODED RESULT"}
+              </span>
+
+              <span
+                style={{
+                  fontSize:
+                    "10px",
+                  color:
+                    "rgba(255,255,255,.24)",
+                }}
+              >
+                {output.length.toLocaleString()}{" "}
+                characters
+              </span>
+            </div>
+
+            <textarea
+              value={output}
+              readOnly
+              style={{
+                width: "100%",
+                minHeight: "155px",
+                boxSizing:
+                  "border-box",
+                resize:
+                  "vertical",
+                padding:
+                  "13px",
+                border:
+                  "1px solid rgba(255,255,255,.06)",
+                borderRadius:
+                  "11px",
+                outline:
+                  "none",
+                background:
+                  "rgba(0,0,0,.18)",
+                color:
+                  "#ffb06d",
+                fontFamily:
+                  "Consolas, 'Courier New', monospace",
+                fontSize:
+                  "12px",
+                lineHeight:
+                  1.6,
+              }}
+            />
+
+            <div
+              style={{
+                display: "flex",
+                gap: "8px",
+                marginTop:
+                  "9px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={
+                  handleCopy
+                }
+                style={{
+                  flex: 1,
+                  minHeight:
+                    "40px",
+                  border:
+                    "1px solid rgba(255,106,0,.28)",
+                  borderRadius:
+                    "9px",
+                  background:
+                    "rgba(255,100,0,.08)",
+                  color:
+                    "#ff9a4d",
+                  font:
+                    "inherit",
+                  fontSize:
+                    "11px",
+                  fontWeight:
+                    700,
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Copy Result
+              </button>
+
+              <button
+                type="button"
+                onClick={
+                  handleSwap
+                }
+                style={{
+                  flex: 1,
+                  minHeight:
+                    "40px",
+                  border:
+                    "1px solid rgba(255,255,255,.08)",
+                  borderRadius:
+                    "9px",
+                  background:
+                    "rgba(255,255,255,.04)",
+                  color:
+                    "rgba(255,255,255,.68)",
+                  font:
+                    "inherit",
+                  fontSize:
+                    "11px",
+                  fontWeight:
+                    600,
+                  cursor:
+                    "pointer",
+                }}
+              >
+                Use as{" "}
+                {mode === "encode"
+                  ? "Decode"
+                  : "Encode"}{" "}
+                Input
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: "10px",
+            color:
+              "rgba(255,255,255,.22)",
+          }}
+        >
+          Supports Unicode text · Ctrl +
+          Enter to process
+        </div>
       </div>
 
       <style>{`
-        .base64-tool {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          width: 100%;
-          color: #fff;
-        }
-
-        .base64-mode-switch {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 6px;
-          padding: 4px;
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 11px;
-          background: rgba(255,255,255,.025);
-        }
-
-        .base64-mode {
-          padding: 10px;
-          border: 1px solid transparent;
-          border-radius: 8px;
-          background: transparent;
-          color: rgba(255,255,255,.4);
-          font-size: 12px;
-          cursor: pointer;
-          transition:
-            background .2s ease,
-            color .2s ease,
-            border-color .2s ease;
-        }
-
-        .base64-mode:hover {
-          color: rgba(255,255,255,.75);
-        }
-
-        .base64-mode.active {
-          border-color: rgba(255,120,0,.35);
-          background: rgba(255,100,0,.1);
-          color: #ff9a4d;
-        }
-
-        .base64-input-section {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .base64-label-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .base64-label {
-          color: rgba(255,255,255,.5);
-          font-size: 11px;
-        }
-
-        .base64-count {
-          color: rgba(255,255,255,.25);
-          font-size: 10px;
-        }
-
-        .base64-textarea,
-        .base64-result-textarea {
-          width: 100%;
-          box-sizing: border-box;
-          min-height: 220px;
-          resize: vertical;
-          padding: 14px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 11px;
-          outline: none;
-          background: rgba(255,255,255,.035);
-          color: #fff;
-          font-family: "Consolas", "Courier New", monospace;
-          font-size: 12px;
-          line-height: 1.6;
-        }
-
-        .base64-textarea::placeholder {
-          color: rgba(255,255,255,.25);
-        }
-
-        .base64-textarea:focus {
-          border-color: rgba(255,120,0,.55);
-          background: rgba(255,255,255,.045);
-        }
-
-        .base64-error {
-          padding: 13px 15px;
-          border: 1px solid rgba(255,70,70,.3);
-          border-radius: 10px;
-          background: rgba(255,50,50,.06);
-          color: #ff9292;
-          font-size: 13px;
-        }
-
-        .base64-actions {
-          display: flex;
-          gap: 10px;
-        }
-
-        .base64-process-button {
-          flex: 1;
-          padding: 13px;
-          border: 1px solid rgba(255,120,0,.55);
-          border-radius: 10px;
-          background: rgba(255,100,0,.12);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-          transition:
-            background .2s ease,
-            border-color .2s ease;
-        }
-
-        .base64-process-button:hover {
-          background: rgba(255,100,0,.18);
-          border-color: rgba(255,120,0,.75);
-        }
-
-        .base64-clear-button {
-          padding: 13px 22px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 10px;
-          background: rgba(255,255,255,.04);
-          color: rgba(255,255,255,.65);
-          cursor: pointer;
-        }
-
-        .base64-clear-button:hover {
-          background: rgba(255,255,255,.07);
-          color: #fff;
-        }
-
-        .base64-result {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          padding: 16px;
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 12px;
-          background: rgba(255,255,255,.025);
-        }
-
-        .base64-result-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          color: rgba(255,255,255,.55);
-          font-size: 11px;
-        }
-
-        .base64-result-count {
-          color: rgba(255,255,255,.25);
-          font-size: 10px;
-        }
-
-        .base64-result-textarea {
-          min-height: 180px;
-          background: rgba(0,0,0,.18);
-          color: #ffb06d;
-        }
-
-        .base64-result-actions {
-          display: flex;
-          gap: 10px;
-        }
-
-        .base64-copy-button,
-        .base64-swap-button {
-          flex: 1;
-          padding: 11px;
-          border: 1px solid rgba(255,120,0,.4);
-          border-radius: 9px;
-          background: rgba(255,100,0,.08);
-          color: #ff9a4d;
-          font-size: 11px;
-          cursor: pointer;
-        }
-
-        .base64-copy-button:hover,
-        .base64-swap-button:hover {
-          background: rgba(255,100,0,.15);
-          border-color: rgba(255,120,0,.65);
-        }
-
-        .base64-hint {
-          color: rgba(255,255,255,.25);
-          font-size: 10px;
-          text-align: center;
+        textarea:focus {
+          border-color: rgba(255,106,0,.45) !important;
+          background: rgba(255,255,255,.035) !important;
         }
 
         @media (max-width: 600px) {
-          .base64-actions,
-          .base64-result-actions {
+          .base64-actions-responsive {
             flex-direction: column;
-          }
-
-          .base64-clear-button {
-            width: 100%;
           }
         }
       `}</style>

@@ -1,445 +1,975 @@
-import React, { useMemo, useRef, useState } from "react";
 import {
-  generateRenamedFiles,
-} from "../../services/utilities/batchRename.js";
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+function formatBytes(bytes) {
+  if (!bytes) {
+    return "0 B";
+  }
+
+  const units = ["B", "KB", "MB", "GB"];
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1
+  );
+
+  return `${(
+    bytes / Math.pow(1024, index)
+  ).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function getFileExtension(name) {
+  const lastDot = name.lastIndexOf(".");
+
+  if (lastDot <= 0) {
+    return "";
+  }
+
+  return name.slice(lastDot);
+}
+
+function getBaseName(name) {
+  const extension = getFileExtension(name);
+
+  return extension
+    ? name.slice(0, -extension.length)
+    : name;
+}
 
 function BatchRename() {
   const inputRef = useRef(null);
 
   const [files, setFiles] = useState([]);
-  const [pattern, setPattern] = useState("file-{n}");
-  const [startNumber, setStartNumber] = useState(1);
-  const [error, setError] = useState("");
+  const [prefix, setPrefix] = useState("");
+  const [suffix, setSuffix] = useState("");
+  const [findText, setFindText] = useState("");
+  const [replaceText, setReplaceText] =
+    useState("");
+  const [startNumber, setStartNumber] =
+    useState(1);
+  const [step, setStep] = useState(1);
+  const [numberDigits, setNumberDigits] =
+    useState(2);
 
-  const renamedFiles = useMemo(() => {
-    if (!files.length || !pattern.trim()) {
-      return [];
-    }
+  const [dragActive, setDragActive] =
+    useState(false);
+  const [copied, setCopied] = useState(false);
 
-    try {
-      return generateRenamedFiles(
-        files,
-        pattern,
-        startNumber
-      );
-    } catch {
-      return [];
-    }
-  }, [files, pattern, startNumber]);
+  const addFiles = (selectedFiles) => {
+    const incoming = Array.from(
+      selectedFiles || []
+    );
 
-  const handleFiles = (selectedFiles) => {
-    if (!selectedFiles?.length) {
+    if (!incoming.length) {
       return;
     }
 
-    setError("");
-    setFiles(Array.from(selectedFiles));
+    setFiles((current) => {
+      const existingKeys = new Set(
+        current.map(
+          (file) =>
+            `${file.name}-${file.size}-${file.lastModified}`
+        )
+      );
+
+      const additions = incoming.filter(
+        (file) =>
+          !existingKeys.has(
+            `${file.name}-${file.size}-${file.lastModified}`
+          )
+      );
+
+      return [...current, ...additions];
+    });
   };
 
-  const handleInputChange = (event) => {
-    handleFiles(event.target.files);
+  const handleFileInput = (event) => {
+    addFiles(event.target.files);
+    event.target.value = "";
   };
 
   const handleDrop = (event) => {
     event.preventDefault();
+    setDragActive(false);
 
-    handleFiles(event.dataTransfer.files);
+    addFiles(event.dataTransfer.files);
+  };
+
+  const removeFile = (index) => {
+    setFiles((current) =>
+      current.filter(
+        (_, fileIndex) => fileIndex !== index
+      )
+    );
   };
 
   const clearFiles = () => {
     setFiles([]);
-    setError("");
-
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
   };
 
-  const downloadFile = (item) => {
-    try {
-      const url = URL.createObjectURL(item.file);
+  const previewNames = useMemo(() => {
+    return files.map((file, index) => {
+      let baseName = getBaseName(file.name);
 
-      const link = document.createElement("a");
+      if (findText) {
+        baseName = baseName.replaceAll(
+          findText,
+          replaceText
+        );
+      }
 
-      link.href = url;
-      link.download = item.newName;
+      const number =
+        startNumber + index * step;
 
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      URL.revokeObjectURL(url);
-    } catch {
-      setError(
-        `Unable to download ${item.newName}.`
+      const paddedNumber = String(
+        number
+      ).padStart(
+        Math.max(1, Number(numberDigits) || 1),
+        "0"
       );
-    }
-  };
 
-  const downloadAll = async () => {
-    if (!renamedFiles.length) {
-      setError(
-        "Please select files and enter a rename pattern."
-      );
+      const renamed =
+        `${prefix}${paddedNumber}${suffix}${getFileExtension(
+          file.name
+        )}`;
+
+      return {
+        original: file.name,
+        renamed,
+      };
+    });
+  }, [
+    files,
+    prefix,
+    suffix,
+    findText,
+    replaceText,
+    startNumber,
+    step,
+    numberDigits,
+  ]);
+
+  const copyPreview = async () => {
+    if (!previewNames.length) {
       return;
     }
 
-    setError("");
+    const text = previewNames
+      .map(
+        (item) =>
+          `${item.original} → ${item.renamed}`
+      )
+      .join("\n");
 
-    for (const item of renamedFiles) {
-      downloadFile(item);
+    try {
+      await navigator.clipboard.writeText(text);
 
-      await new Promise((resolve) =>
-        setTimeout(resolve, 150)
-      );
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 1500);
+    } catch {
+      setCopied(false);
     }
   };
 
+  const resetAll = () => {
+    setFiles([]);
+    setPrefix("");
+    setSuffix("");
+    setFindText("");
+    setReplaceText("");
+    setStartNumber(1);
+    setStep(1);
+    setNumberDigits(2);
+  };
+
+  const inputStyle = {
+    width: "100%",
+    height: "42px",
+    boxSizing: "border-box",
+    borderRadius: "10px",
+    border:
+      "1px solid rgba(255,255,255,.09)",
+    background:
+      "rgba(255,255,255,.035)",
+    color: "rgba(255,255,255,.9)",
+    padding: "0 12px",
+    outline: "none",
+    font: "inherit",
+    fontSize: "12px",
+  };
+
+  const smallButtonStyle = {
+    border:
+      "1px solid rgba(255,255,255,.08)",
+    background:
+      "rgba(255,255,255,.045)",
+    color:
+      "rgba(255,255,255,.76)",
+    borderRadius: "9px",
+    padding: "8px 11px",
+    font: "inherit",
+    fontSize: "11px",
+    fontWeight: 700,
+    cursor: "pointer",
+  };
+
   return (
-    <div className="batch-rename-tool">
-      <div
-        className="batch-rename-dropzone"
-        onClick={() =>
-          inputRef.current?.click()
-        }
-        onDrop={handleDrop}
-        onDragOver={(event) =>
-          event.preventDefault()
-        }
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          multiple
-          hidden
-          onChange={handleInputChange}
-        />
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "20px 24px 30px",
+        color:
+          "rgba(255,255,255,.94)",
+      }}
+    >
+      {files.length === 0 ? (
+        <div
+          onClick={() =>
+            inputRef.current?.click()
+          }
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() =>
+            setDragActive(false)
+          }
+          onDrop={handleDrop}
+          style={{
+            minHeight: "190px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
+            gap: "10px",
+            padding: "28px",
+            boxSizing: "border-box",
+            border:
+              `1px dashed ${
+                dragActive
+                  ? "rgba(255,106,0,.65)"
+                  : "rgba(255,255,255,.12)"
+              }`,
+            borderRadius: "18px",
+            background:
+              dragActive
+                ? "rgba(255,106,0,.07)"
+                : "rgba(255,255,255,.025)",
+            cursor: "pointer",
+            transition:
+              "border-color .18s ease, background .18s ease",
+          }}
+        >
+          <div
+            style={{
+              width: "48px",
+              height: "48px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border:
+                "1px solid rgba(255,106,0,.28)",
+              borderRadius: "14px",
+              background:
+                "rgba(255,106,0,.06)",
+              color: "#ff7a18",
+              fontSize: "22px",
+            }}
+          >
+            ✎
+          </div>
 
-        <div className="batch-rename-icon">
-          ✎
+          <strong
+            style={{
+              fontSize: "15px",
+              color:
+                "rgba(255,255,255,.9)",
+            }}
+          >
+            Drop files here
+          </strong>
+
+          <span
+            style={{
+              fontSize: "12px",
+              color:
+                "rgba(255,255,255,.38)",
+            }}
+          >
+            or click to select multiple
+            files
+          </span>
+
+          <span
+            style={{
+              marginTop: "2px",
+              fontSize: "10px",
+              color:
+                "rgba(255,255,255,.22)",
+            }}
+          >
+            Any file type
+          </span>
         </div>
+      ) : (
+        <div
+          style={{
+            border:
+              "1px solid rgba(255,255,255,.08)",
+            borderRadius: "16px",
+            background:
+              "rgba(255,255,255,.025)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: "12px",
+              padding: "13px 15px",
+              borderBottom:
+                "1px solid rgba(255,255,255,.06)",
+            }}
+          >
+            <div>
+              <strong
+                style={{
+                  fontSize: "12px",
+                }}
+              >
+                {files.length} file
+                {files.length === 1
+                  ? ""
+                  : "s"} selected
+              </strong>
 
-        <div className="batch-rename-title">
-          Drop files here
-        </div>
+              <div
+                style={{
+                  marginTop: "3px",
+                  fontSize: "10px",
+                  color:
+                    "rgba(255,255,255,.32)",
+                }}
+              >
+                {formatBytes(
+                  files.reduce(
+                    (sum, file) =>
+                      sum + file.size,
+                    0
+                  )
+                )}{" "}
+                total
+              </div>
+            </div>
 
-        <div className="batch-rename-subtitle">
-          or click to select multiple files
-        </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "7px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  inputRef.current?.click()
+                }
+                style={smallButtonStyle}
+              >
+                + Add Files
+              </button>
 
-        <div className="batch-rename-format">
-          Any file type
-        </div>
-      </div>
+              <button
+                type="button"
+                onClick={clearFiles}
+                style={{
+                  ...smallButtonStyle,
+                  color:
+                    "rgba(255,150,130,.8)",
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
 
-      {error && (
-        <div className="batch-rename-error">
-          {error}
+          <div
+            style={{
+              maxHeight: "220px",
+              overflowY: "auto",
+            }}
+          >
+            {files.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${index}`}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "34px minmax(0,1fr) auto",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding:
+                    "10px 14px",
+                  borderBottom:
+                    index === files.length - 1
+                      ? "none"
+                      : "1px solid rgba(255,255,255,.045)",
+                }}
+              >
+                <div
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      "center",
+                    borderRadius: "8px",
+                    background:
+                      "rgba(255,255,255,.045)",
+                    color:
+                      "rgba(255,255,255,.4)",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {String(
+                    index + 1
+                  ).padStart(2, "0")}
+                </div>
+
+                <div
+                  style={{
+                    minWidth: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      overflow: "hidden",
+                      textOverflow:
+                        "ellipsis",
+                      whiteSpace:
+                        "nowrap",
+                      fontSize: "12px",
+                      color:
+                        "rgba(255,255,255,.78)",
+                    }}
+                  >
+                    {file.name}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: "3px",
+                      fontSize: "9px",
+                      color:
+                        "rgba(255,255,255,.28)",
+                    }}
+                  >
+                    {formatBytes(
+                      file.size
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    removeFile(index)
+                  }
+                  aria-label={`Remove ${file.name}`}
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    border: 0,
+                    borderRadius:
+                      "7px",
+                    background:
+                      "rgba(255,255,255,.045)",
+                    color:
+                      "rgba(255,255,255,.38)",
+                    cursor: "pointer",
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        onChange={handleFileInput}
+        style={{
+          display: "none",
+        }}
+      />
+
       {files.length > 0 && (
         <>
-          <div className="batch-rename-settings">
-            <label>
-              Rename pattern
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(2, minmax(0, 1fr))",
+              gap: "12px",
+              marginTop: "14px",
+            }}
+          >
+            <div
+              style={{
+                border:
+                  "1px solid rgba(255,255,255,.07)",
+                borderRadius: "14px",
+                padding: "15px",
+                background:
+                  "rgba(255,255,255,.022)",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "12px",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  letterSpacing:
+                    ".12em",
+                  textTransform:
+                    "uppercase",
+                  color:
+                    "rgba(255,153,82,.7)",
+                }}
+              >
+                Rename Pattern
+              </div>
 
-              <input
-                type="text"
-                value={pattern}
-                onChange={(event) =>
-                  setPattern(event.target.value)
-                }
-                placeholder="file-{n}"
-              />
-            </label>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "10px",
+                }}
+              >
+                <label
+                  style={{
+                    fontSize: "10px",
+                    color:
+                      "rgba(255,255,255,.4)",
+                  }}
+                >
+                  Prefix
+                  <input
+                    value={prefix}
+                    onChange={(event) =>
+                      setPrefix(
+                        event.target.value
+                      )
+                    }
+                    placeholder="IMG_"
+                    style={{
+                      ...inputStyle,
+                      marginTop: "6px",
+                    }}
+                  />
+                </label>
 
-            <label>
-              Starting number
+                <label
+                  style={{
+                    fontSize: "10px",
+                    color:
+                      "rgba(255,255,255,.4)",
+                  }}
+                >
+                  Suffix
+                  <input
+                    value={suffix}
+                    onChange={(event) =>
+                      setSuffix(
+                        event.target.value
+                      )
+                    }
+                    placeholder="_final"
+                    style={{
+                      ...inputStyle,
+                      marginTop: "6px",
+                    }}
+                  />
+                </label>
+              </div>
+            </div>
 
+            <div
+              style={{
+                border:
+                  "1px solid rgba(255,255,255,.07)",
+                borderRadius: "14px",
+                padding: "15px",
+                background:
+                  "rgba(255,255,255,.022)",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "12px",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  letterSpacing:
+                    ".12em",
+                  textTransform:
+                    "uppercase",
+                  color:
+                    "rgba(255,153,82,.7)",
+                }}
+              >
+                Replace Text
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    "1fr 1fr",
+                  gap: "10px",
+                }}
+              >
+                <input
+                  value={findText}
+                  onChange={(event) =>
+                    setFindText(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Find"
+                  style={inputStyle}
+                />
+
+                <input
+                  value={replaceText}
+                  onChange={(event) =>
+                    setReplaceText(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Replace"
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(3, minmax(0, 1fr))",
+              gap: "12px",
+              marginTop: "12px",
+            }}
+          >
+            <label
+              style={{
+                border:
+                  "1px solid rgba(255,255,255,.07)",
+                borderRadius: "14px",
+                padding: "14px",
+                background:
+                  "rgba(255,255,255,.022)",
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.4)",
+              }}
+            >
+              Start Number
               <input
                 type="number"
                 min="0"
                 value={startNumber}
                 onChange={(event) =>
                   setStartNumber(
-                    Number(event.target.value) || 0
+                    Number(
+                      event.target.value
+                    ) || 0
                   )
                 }
+                style={{
+                  ...inputStyle,
+                  marginTop: "6px",
+                }}
+              />
+            </label>
+
+            <label
+              style={{
+                border:
+                  "1px solid rgba(255,255,255,.07)",
+                borderRadius: "14px",
+                padding: "14px",
+                background:
+                  "rgba(255,255,255,.022)",
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.4)",
+              }}
+            >
+              Step
+              <input
+                type="number"
+                min="1"
+                value={step}
+                onChange={(event) =>
+                  setStep(
+                    Math.max(
+                      1,
+                      Number(
+                        event.target.value
+                      ) || 1
+                    )
+                  )
+                }
+                style={{
+                  ...inputStyle,
+                  marginTop: "6px",
+                }}
+              />
+            </label>
+
+            <label
+              style={{
+                border:
+                  "1px solid rgba(255,255,255,.07)",
+                borderRadius: "14px",
+                padding: "14px",
+                background:
+                  "rgba(255,255,255,.022)",
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.4)",
+              }}
+            >
+              Number Digits
+              <input
+                type="number"
+                min="1"
+                max="8"
+                value={numberDigits}
+                onChange={(event) =>
+                  setNumberDigits(
+                    Math.min(
+                      8,
+                      Math.max(
+                        1,
+                        Number(
+                          event.target
+                            .value
+                        ) || 1
+                      )
+                    )
+                  )
+                }
+                style={{
+                  ...inputStyle,
+                  marginTop: "6px",
+                }}
               />
             </label>
           </div>
 
-          <div className="batch-rename-help">
-            <span>
-              {"{n}"} → number
-            </span>
+          <div
+            style={{
+              marginTop: "14px",
+              border:
+                "1px solid rgba(255,255,255,.07)",
+              borderRadius: "14px",
+              background:
+                "rgba(255,255,255,.022)",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent:
+                  "space-between",
+                padding:
+                  "13px 15px",
+                borderBottom:
+                  "1px solid rgba(255,255,255,.055)",
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    letterSpacing:
+                      ".12em",
+                    color:
+                      "rgba(255,153,82,.7)",
+                  }}
+                >
+                  PREVIEW
+                </div>
 
-            <span>
-              {"{name}"} → original name
-            </span>
-
-            <span>
-              {"{ext}"} → extension
-            </span>
-          </div>
-
-          <div className="batch-rename-list">
-            <div className="batch-rename-list-header">
-              <span>
-                {files.length}{" "}
-                {files.length === 1
-                  ? "file"
-                  : "files"}
-              </span>
+                <div
+                  style={{
+                    marginTop: "4px",
+                    fontSize: "11px",
+                    color:
+                      "rgba(255,255,255,.32)",
+                  }}
+                >
+                  Review the new filenames
+                  before downloading.
+                </div>
+              </div>
 
               <button
                 type="button"
-                onClick={clearFiles}
+                onClick={copyPreview}
+                style={smallButtonStyle}
               >
-                Clear
+                {copied
+                  ? "✓ Copied"
+                  : "Copy Preview"}
               </button>
             </div>
 
-            {renamedFiles.map(
-              (item, index) => (
-                <div
-                  className="batch-rename-row"
-                  key={`${item.originalName}-${index}`}
-                >
-                  <div className="batch-rename-old">
-                    {item.originalName}
-                  </div>
-
-                  <div className="batch-rename-arrow">
-                    →
-                  </div>
-
-                  <div className="batch-rename-new">
-                    {item.newName}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      downloadFile(item)
-                    }
+            <div
+              style={{
+                maxHeight: "250px",
+                overflowY: "auto",
+              }}
+            >
+              {previewNames.map(
+                (item, index) => (
+                  <div
+                    key={`${item.original}-${index}`}
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns:
+                        "1fr auto 1fr",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding:
+                        "10px 15px",
+                      borderBottom:
+                        index ===
+                        previewNames.length - 1
+                          ? "none"
+                          : "1px solid rgba(255,255,255,.04)",
+                    }}
                   >
-                    Download
-                  </button>
-                </div>
-              )
-            )}
+                    <span
+                      style={{
+                        overflow: "hidden",
+                        textOverflow:
+                          "ellipsis",
+                        whiteSpace:
+                          "nowrap",
+                        fontSize: "11px",
+                        color:
+                          "rgba(255,255,255,.43)",
+                      }}
+                    >
+                      {item.original}
+                    </span>
+
+                    <span
+                      style={{
+                        color:
+                          "rgba(255,153,82,.65)",
+                        fontSize:
+                          "12px",
+                      }}
+                    >
+                      →
+                    </span>
+
+                    <span
+                      style={{
+                        overflow: "hidden",
+                        textOverflow:
+                          "ellipsis",
+                        whiteSpace:
+                          "nowrap",
+                        fontSize: "11px",
+                        color:
+                          "rgba(255,255,255,.82)",
+                      }}
+                    >
+                      {item.renamed}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
           </div>
 
-          <button
-            type="button"
-            className="batch-rename-download-all"
-            onClick={downloadAll}
+          <div
+            style={{
+              display: "flex",
+              justifyContent:
+                "flex-end",
+              gap: "9px",
+              marginTop: "14px",
+              flexWrap: "wrap",
+            }}
           >
-            Download All Renamed Files
-          </button>
+            <button
+              type="button"
+              onClick={resetAll}
+              style={{
+                ...smallButtonStyle,
+                padding:
+                  "10px 15px",
+              }}
+            >
+              Reset
+            </button>
+
+            <button
+              type="button"
+              onClick={
+                copyPreview
+              }
+              style={{
+                minHeight: "40px",
+                padding:
+                  "0 16px",
+                border: 0,
+                borderRadius:
+                  "10px",
+                background:
+                  "linear-gradient(135deg,#ff7600,#ff4d00)",
+                color: "#fff",
+                font: "inherit",
+                fontSize: "11px",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow:
+                  "0 8px 24px rgba(255,91,0,.18)",
+              }}
+            >
+              {copied
+                ? "✓ Preview Copied"
+                : "Copy Renaming Plan"}
+            </button>
+          </div>
         </>
       )}
-
-      <style>{`
-        .batch-rename-tool {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          width: 100%;
-          color: #fff;
-        }
-
-        .batch-rename-dropzone {
-          min-height: 260px;
-          border: 1px dashed rgba(255,255,255,.22);
-          border-radius: 16px;
-          background: rgba(255,255,255,.025);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          text-align: center;
-        }
-
-        .batch-rename-dropzone:hover {
-          border-color: rgba(255,120,0,.65);
-          background: rgba(255,120,0,.035);
-        }
-
-        .batch-rename-icon {
-          width: 48px;
-          height: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid rgba(255,120,0,.3);
-          border-radius: 12px;
-          color: #ff8a3d;
-          font-size: 21px;
-          margin-bottom: 17px;
-        }
-
-        .batch-rename-title {
-          font-size: 17px;
-          font-weight: 600;
-        }
-
-        .batch-rename-subtitle {
-          margin-top: 7px;
-          color: rgba(255,255,255,.5);
-          font-size: 13px;
-        }
-
-        .batch-rename-format {
-          margin-top: 13px;
-          color: rgba(255,255,255,.3);
-          font-size: 11px;
-        }
-
-        .batch-rename-error {
-          padding: 13px 15px;
-          border: 1px solid rgba(255,70,70,.3);
-          border-radius: 10px;
-          background: rgba(255,50,50,.06);
-          color: #ff9292;
-          font-size: 13px;
-        }
-
-        .batch-rename-settings {
-          display: grid;
-          grid-template-columns: 2fr 1fr;
-          gap: 12px;
-        }
-
-        .batch-rename-settings label {
-          display: flex;
-          flex-direction: column;
-          gap: 7px;
-          color: rgba(255,255,255,.45);
-          font-size: 11px;
-        }
-
-        .batch-rename-settings input {
-          padding: 11px 12px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 9px;
-          outline: none;
-          background: rgba(255,255,255,.04);
-          color: #fff;
-          font-size: 12px;
-        }
-
-        .batch-rename-settings input:focus {
-          border-color: rgba(255,120,0,.5);
-        }
-
-        .batch-rename-help {
-          display: flex;
-          gap: 18px;
-          flex-wrap: wrap;
-          padding: 10px 12px;
-          border: 1px solid rgba(255,255,255,.07);
-          border-radius: 9px;
-          color: rgba(255,255,255,.35);
-          font-size: 10px;
-        }
-
-        .batch-rename-list {
-          overflow: hidden;
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 12px;
-          background: rgba(255,255,255,.02);
-        }
-
-        .batch-rename-list-header {
-          display: flex;
-          justify-content: space-between;
-          padding: 11px 14px;
-          border-bottom: 1px solid rgba(255,255,255,.08);
-          color: rgba(255,255,255,.45);
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: .07em;
-        }
-
-        .batch-rename-list-header button {
-          border: 0;
-          background: transparent;
-          color: #ff9a4d;
-          cursor: pointer;
-          font-size: 11px;
-        }
-
-        .batch-rename-row {
-          display: grid;
-          grid-template-columns: 1fr auto 1fr auto;
-          align-items: center;
-          gap: 12px;
-          padding: 10px 13px;
-          border-bottom: 1px solid rgba(255,255,255,.05);
-        }
-
-        .batch-rename-row:last-child {
-          border-bottom: 0;
-        }
-
-        .batch-rename-old,
-        .batch-rename-new {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          font-size: 12px;
-        }
-
-        .batch-rename-old {
-          color: rgba(255,255,255,.4);
-        }
-
-        .batch-rename-new {
-          color: rgba(255,255,255,.75);
-        }
-
-        .batch-rename-arrow {
-          color: rgba(255,120,0,.7);
-        }
-
-        .batch-rename-row button {
-          padding: 7px 10px;
-          border: 1px solid rgba(255,120,0,.3);
-          border-radius: 7px;
-          background: transparent;
-          color: #ff9a4d;
-          cursor: pointer;
-          font-size: 10px;
-        }
-
-        .batch-rename-download-all {
-          padding: 13px;
-          border: 1px solid rgba(255,120,0,.55);
-          border-radius: 10px;
-          background: rgba(255,100,0,.12);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        @media (max-width: 750px) {
-          .batch-rename-settings {
-            grid-template-columns: 1fr;
-          }
-
-          .batch-rename-row {
-            grid-template-columns: 1fr;
-          }
-
-          .batch-rename-arrow {
-            display: none;
-          }
-        }
-      `}</style>
     </div>
   );
 }

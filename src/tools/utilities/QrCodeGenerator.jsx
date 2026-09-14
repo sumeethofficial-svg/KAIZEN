@@ -4,12 +4,15 @@ import { generateQRCode } from "../../services/utilities/qrCodeGenerator.js";
 function QRCodeGenerator() {
   const [text, setText] = useState("");
   const [qrCode, setQrCode] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] =
+    useState(false);
   const [error, setError] = useState("");
 
   const handleGenerate = async () => {
     if (!text.trim()) {
-      setError("Please enter some text or a link.");
+      setError(
+        "Please enter some text or a link."
+      );
       setQrCode("");
       return;
     }
@@ -18,18 +21,23 @@ function QRCodeGenerator() {
     setIsGenerating(true);
 
     try {
-      const result = await generateQRCode(text, {
-        width: 320,
-        margin: 2,
-        errorCorrectionLevel: "M",
-      });
+      const result =
+        await generateQRCode(text, {
+          width: 320,
+          margin: 2,
+          errorCorrectionLevel: "M",
+        });
 
       setQrCode(result.dataUrl);
     } catch (err) {
-      console.error("QR code generation failed:", err);
+      console.error(
+        "QR code generation failed:",
+        err
+      );
 
       setError(
-        err?.message || "Failed to generate the QR code."
+        err?.message ||
+          "Failed to generate the QR code."
       );
 
       setQrCode("");
@@ -49,281 +57,306 @@ function QRCodeGenerator() {
       return;
     }
 
-    const link = document.createElement("a");
+    const link =
+      document.createElement("a");
 
     link.href = qrCode;
     link.download = "kaizen-qr-code.png";
 
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    if (
+      event.key === "Enter" &&
+      (event.ctrlKey || event.metaKey)
+    ) {
       handleGenerate();
     }
   };
 
   return (
-    <div className="qr-generator-tool">
-      <div className="qr-input-section">
-        <label className="qr-label">
-          Text or link
-        </label>
-
-        <textarea
-          className="qr-input"
-          value={text}
-          onChange={(event) => {
-            setText(event.target.value);
-            setError("");
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        padding: "20px 24px 30px",
+        color: "rgba(255,255,255,.94)",
+      }}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            qrCode
+              ? "minmax(0, 1fr) 320px"
+              : "1fr",
+          gap: "16px",
+          alignItems: "start",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
           }}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter text, URL, email, phone number, or any other content..."
-          rows={5}
-        />
-
-        <div className="qr-input-hint">
-          Press Ctrl + Enter to generate
-        </div>
-      </div>
-
-      {error && (
-        <div className="qr-error">
-          {error}
-        </div>
-      )}
-
-      <div className="qr-actions">
-        <button
-          type="button"
-          className="qr-generate-button"
-          onClick={handleGenerate}
-          disabled={isGenerating}
         >
-          {isGenerating
-            ? "Generating..."
-            : "Generate QR Code"}
-        </button>
-
-        {text && (
-          <button
-            type="button"
-            className="qr-clear-button"
-            onClick={handleClear}
+          <div
+            style={{
+              fontSize: "10px",
+              fontWeight: 700,
+              letterSpacing: ".14em",
+              color: "rgba(255,153,82,.72)",
+              textTransform: "uppercase",
+            }}
           >
-            Clear
-          </button>
+            QR CONTENT
+          </div>
+
+          <textarea
+            value={text}
+            onChange={(event) => {
+              setText(event.target.value);
+              setError("");
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter text, URL, email, phone number, or any other content..."
+            rows={7}
+            style={{
+              width: "100%",
+              minHeight: "180px",
+              boxSizing: "border-box",
+              resize: "vertical",
+              padding: "14px",
+              border:
+                "1px solid rgba(255,255,255,.09)",
+              borderRadius: "13px",
+              outline: "none",
+              background:
+                "rgba(255,255,255,.025)",
+              color: "#fff",
+              font: "inherit",
+              fontSize: "12px",
+              lineHeight: 1.6,
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent:
+                "space-between",
+              gap: "10px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.25)",
+              }}
+            >
+              {text.length.toLocaleString()}{" "}
+              characters
+            </span>
+
+            <span
+              style={{
+                fontSize: "10px",
+                color:
+                  "rgba(255,255,255,.22)",
+              }}
+            >
+              Ctrl + Enter to generate
+            </span>
+          </div>
+
+          {error && (
+            <div
+              style={{
+                padding: "11px 13px",
+                border:
+                  "1px solid rgba(255,70,70,.22)",
+                borderRadius: "10px",
+                background:
+                  "rgba(255,50,50,.06)",
+                color: "#ff9c9c",
+                fontSize: "11px",
+                lineHeight: 1.5,
+              }}
+            >
+              {error}
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "flex",
+              gap: "9px",
+              marginTop: "2px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              style={{
+                flex: 1,
+                minHeight: "42px",
+                border:
+                  "1px solid rgba(255,106,0,.35)",
+                borderRadius: "10px",
+                background:
+                  "linear-gradient(135deg, rgba(255,118,0,.18), rgba(255,77,0,.1))",
+                color: "#ff9a4d",
+                font: "inherit",
+                fontSize: "12px",
+                fontWeight: 700,
+                cursor: isGenerating
+                  ? "not-allowed"
+                  : "pointer",
+                opacity: isGenerating
+                  ? 0.55
+                  : 1,
+              }}
+            >
+              {isGenerating
+                ? "Generating..."
+                : "Generate QR Code"}
+            </button>
+
+            {text && (
+              <button
+                type="button"
+                onClick={handleClear}
+                style={{
+                  minHeight: "42px",
+                  padding: "0 16px",
+                  border:
+                    "1px solid rgba(255,255,255,.08)",
+                  borderRadius: "10px",
+                  background:
+                    "rgba(255,255,255,.04)",
+                  color:
+                    "rgba(255,255,255,.64)",
+                  font: "inherit",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {qrCode && (
+          <div
+            style={{
+              border:
+                "1px solid rgba(255,255,255,.08)",
+              borderRadius: "16px",
+              padding: "15px",
+              background:
+                "rgba(255,255,255,.025)",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "11px",
+                fontSize: "10px",
+                fontWeight: 700,
+                letterSpacing: ".13em",
+                color:
+                  "rgba(255,153,82,.72)",
+              }}
+            >
+              PREVIEW
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent:
+                  "center",
+                padding: "12px",
+                borderRadius: "11px",
+                background: "#fff",
+              }}
+            >
+              <img
+                src={qrCode}
+                alt="Generated QR code"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  maxWidth: "280px",
+                  height: "auto",
+                  aspectRatio: "1 / 1",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+
+            <div
+              style={{
+                marginTop: "10px",
+                padding: "9px 10px",
+                border:
+                  "1px solid rgba(255,255,255,.06)",
+                borderRadius: "9px",
+                background:
+                  "rgba(255,255,255,.02)",
+                color:
+                  "rgba(255,255,255,.38)",
+                fontSize: "10px",
+                lineHeight: 1.45,
+                wordBreak: "break-word",
+              }}
+            >
+              {text}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleDownload}
+              style={{
+                width: "100%",
+                minHeight: "40px",
+                marginTop: "10px",
+                border:
+                  "1px solid rgba(255,106,0,.35)",
+                borderRadius: "10px",
+                background:
+                  "rgba(255,100,0,.1)",
+                color: "#ff9a4d",
+                font: "inherit",
+                fontSize: "11px",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              ↓ Download PNG
+            </button>
+          </div>
         )}
       </div>
 
-      {qrCode && (
-        <div className="qr-result">
-          <div className="qr-result-header">
-            <span>Generated QR Code</span>
-          </div>
-
-          <div className="qr-preview">
-            <img
-              src={qrCode}
-              alt="Generated QR code"
-              className="qr-image"
-            />
-          </div>
-
-          <div className="qr-result-text">
-            {text}
-          </div>
-
-          <button
-            type="button"
-            className="qr-download-button"
-            onClick={handleDownload}
-          >
-            Download PNG
-          </button>
-        </div>
-      )}
-
       <style>{`
-        .qr-generator-tool {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          width: 100%;
-          color: #fff;
+        textarea:focus {
+          border-color: rgba(255,106,0,.45) !important;
+          background: rgba(255,255,255,.04) !important;
         }
 
-        .qr-input-section {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .qr-label {
-          color: rgba(255,255,255,.5);
-          font-size: 11px;
-        }
-
-        .qr-input {
-          width: 100%;
-          min-height: 130px;
-          box-sizing: border-box;
-          resize: vertical;
-          padding: 13px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 10px;
-          outline: none;
-          background: rgba(255,255,255,.04);
-          color: #fff;
-          font-family: inherit;
-          font-size: 13px;
-          line-height: 1.5;
-        }
-
-        .qr-input::placeholder {
-          color: rgba(255,255,255,.28);
-        }
-
-        .qr-input:focus {
-          border-color: rgba(255,120,0,.55);
-          background: rgba(255,255,255,.05);
-        }
-
-        .qr-input-hint {
-          color: rgba(255,255,255,.25);
-          font-size: 10px;
-        }
-
-        .qr-error {
-          padding: 13px 15px;
-          border: 1px solid rgba(255,70,70,.3);
-          border-radius: 10px;
-          background: rgba(255,50,50,.06);
-          color: #ff9292;
-          font-size: 13px;
-        }
-
-        .qr-actions {
-          display: flex;
-          gap: 10px;
-        }
-
-        .qr-generate-button {
-          flex: 1;
-          padding: 13px;
-          border: 1px solid rgba(255,120,0,.55);
-          border-radius: 10px;
-          background: rgba(255,100,0,.12);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-          transition:
-            background .2s ease,
-            border-color .2s ease;
-        }
-
-        .qr-generate-button:hover:not(:disabled) {
-          background: rgba(255,100,0,.18);
-          border-color: rgba(255,120,0,.75);
-        }
-
-        .qr-generate-button:disabled {
-          opacity: .45;
-          cursor: not-allowed;
-        }
-
-        .qr-clear-button {
-          padding: 13px 22px;
-          border: 1px solid rgba(255,255,255,.12);
-          border-radius: 10px;
-          background: rgba(255,255,255,.04);
-          color: rgba(255,255,255,.65);
-          cursor: pointer;
-        }
-
-        .qr-clear-button:hover {
-          background: rgba(255,255,255,.07);
-          color: #fff;
-        }
-
-        .qr-result {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 14px;
-          padding: 20px;
-          border: 1px solid rgba(255,255,255,.1);
-          border-radius: 14px;
-          background: rgba(255,255,255,.025);
-        }
-
-        .qr-result-header {
-          align-self: stretch;
-          color: rgba(255,255,255,.55);
-          font-size: 11px;
-        }
-
-        .qr-preview {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 16px;
-          border-radius: 10px;
-          background: #fff;
-        }
-
-        .qr-image {
-          display: block;
-          width: 320px;
-          height: 320px;
-          max-width: 100%;
-          object-fit: contain;
-        }
-
-        .qr-result-text {
-          width: 100%;
-          box-sizing: border-box;
-          padding: 10px 12px;
-          border: 1px solid rgba(255,255,255,.08);
-          border-radius: 8px;
-          background: rgba(255,255,255,.025);
-          color: rgba(255,255,255,.45);
-          font-size: 11px;
-          line-height: 1.5;
-          word-break: break-word;
-          text-align: center;
-        }
-
-        .qr-download-button {
-          width: 100%;
-          padding: 12px;
-          border: 1px solid rgba(255,120,0,.45);
-          border-radius: 9px;
-          background: rgba(255,100,0,.1);
-          color: #ff9a4d;
-          font-weight: 600;
-          cursor: pointer;
-        }
-
-        .qr-download-button:hover {
-          background: rgba(255,100,0,.17);
-          border-color: rgba(255,120,0,.7);
-        }
-
-        @media (max-width: 600px) {
-          .qr-actions {
-            flex-direction: column;
-          }
-
-          .qr-clear-button {
-            width: 100%;
-          }
-
-          .qr-image {
-            width: 260px;
-            height: 260px;
+        @media (max-width: 760px) {
+          .qr-responsive-grid {
+            grid-template-columns: 1fr !important;
           }
         }
       `}</style>
