@@ -133,3 +133,11 @@ CSV
 JSON
 XML
 RTF
+```
+## 📄 License
+
+KAIZEN is open source and released under the **MIT License**.
+
+You are free to use, modify, distribute, and build upon KAIZEN in accordance with the terms of the license.
+
+See the [LICENSE](LICENSE) file for the complete license terms.
